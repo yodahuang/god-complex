@@ -39,6 +39,7 @@
     # Fonts
     comic-mono
     jetbrains-mono
+    (nerdfonts.override { fonts = [ "Meslo" ]; })
     # Apps
     obsidian
     # logseq need to be per-platform
@@ -68,13 +69,6 @@
 
   # Define Emacs service at system level
 
-  /*
-  programs.emacs = {
-    enable = true;
-    package = if pkgs.stdenv.hostPlatform.isDarwin then pkgs.emacs-macport else pkgs.emacs;
-  };
-  */
-
   programs.doom-emacs = {
     enable = true;
     doomPrivateDir = ./doom.d; # Directory containing your config.el, init.el and packages.el files
@@ -85,12 +79,18 @@
     emacsPackage = pkgs.emacs;
   };
 
-  # 1Password agent. May need to change with new installation.
+  programs.direnv = {
+    enable = true;
+    enableZshIntegration = true;
+    nix-direnv.enable = true;
+  };
+
   programs.ssh = {
     enable = true;
     matchBlocks = {
       "*" = {
         extraOptions = {
+          # 1Password agent. May need to change with new installation.
           IdentityAgent = "\"~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock\"";
         };
       };
