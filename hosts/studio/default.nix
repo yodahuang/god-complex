@@ -20,7 +20,7 @@
       "mas"
       # As of June 2023, the nix-installed have some issue with QEMU
       # https://github.com/NixOS/nixpkgs/issues/169118
-      # "podman"
+      "podman"
     ];
     casks = [
       "raycast"
@@ -35,7 +35,7 @@
       "mos"
       "rectangle"
       "dash"
-      "fleet"
+      "steam"
     ];
     # These app IDs are from using the mas CLI app
     # mas = mac app store

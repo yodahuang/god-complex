@@ -9,6 +9,7 @@
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
     nix-doom-emacs.url = "github:nix-community/nix-doom-emacs";
     devenv.url = "github:cachix/devenv/latest";
+    devenv.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs = inputs@{ self, darwin, nixpkgs, home-manager, nix-doom-emacs, ... }:
@@ -20,14 +21,18 @@
         ./configuration.nix
         ./hosts/studio/default.nix
         home-manager.darwinModules.home-manager
-	  {
-	    home-manager.useGlobalPkgs = true;
-	    home-manager.useUserPackages = true;
-	    home-manager.users.yanda = import ./home.nix;
-	    # Inspired by 
-            # https://discourse.nixos.org/t/adding-doom-emacs-using-home-manager/27742/2
-	    home-manager.extraSpecialArgs.flake-inputs = inputs;
-	  }
+        {
+          home-manager.useGlobalPkgs = true;
+          home-manager.useUserPackages = true;
+          home-manager.users.yanda = import ./home.nix;
+          # Inspired by
+          # https://discourse.nixos.org/t/adding-doom-emacs-using-home-manager/27742/2
+          home-manager.extraSpecialArgs = {
+            flake-inputs = inputs;
+            # This is already in Darwin
+            is_darwin = true;
+          };
+        }
       ];
       system = "aarch64-darwin";
       specialArgs.flake-inputs = inputs;

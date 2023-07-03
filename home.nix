@@ -1,4 +1,4 @@
-{ config, pkgs, flake-inputs, ... }:
+{ config, pkgs, lib, flake-inputs, is_darwin, ... }:
 
 {
   imports = [
@@ -34,7 +34,6 @@
     fzf
     btop
     flake-inputs.devenv.packages.${system}.devenv
-    podman
     # Nix specific
     nil
     nixfmt
@@ -45,6 +44,9 @@
     # Apps
     obsidian
     # logseq need to be per-platform
+  ] ++ lib.optionals (!is_darwin) [
+    podman
+    logseq
   ];
 
   # Let Home Manager install and manage itself.
@@ -67,6 +69,7 @@
         rebase=true;
       };
       mergetool.prompt = "false";
+      core.editor = "vim";
     };
     delta.enable = true;
   };
@@ -86,6 +89,9 @@
       { name = "fzf-fish"; src = fzf-fish.src; }
       { name = "done"; src = done.src; }
     ];
+    shellInit = lib.optionalString is_darwin ''
+      eval "$(/opt/homebrew/bin/brew shellenv)"
+    '';
   };
 
   # Define Emacs service at system level
