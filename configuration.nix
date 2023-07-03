@@ -17,7 +17,11 @@
   environment.shells = with pkgs; [ bashInteractive zsh fish ];
 
   nixpkgs.config.allowUnfreePredicate = pkg:
-    builtins.elem (lib.getName pkg) [ "obsidian" "1password-cli" ];
+    builtins.elem (lib.getName pkg) [
+      "obsidian"
+      "1password-cli"
+      "vscode"
+    ];
 
   users.users.yanda = {
     name = "yanda";

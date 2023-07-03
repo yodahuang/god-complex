@@ -28,11 +28,13 @@
   home.packages = with pkgs; [
     # Common util
     neofetch
+    bat
     ripgrep
     exa
     fzf
     btop
     flake-inputs.devenv.packages.${system}.devenv
+    podman
     # Nix specific
     nil
     nixfmt
@@ -52,6 +54,21 @@
     enable = true;
     userName = "Yanda Huang";
     userEmail = "realyanda@hey.com";
+    aliases = {
+      "co" = "checkout";
+      "st" = "status";
+      "sw" = "switch";
+    };
+    extraConfig = {
+      merge = {
+        conflictstyle = "diff3";
+      };
+      pull = {
+        rebase=true;
+      };
+      mergetool.prompt = "false";
+    };
+    delta.enable = true;
   };
 
   programs.kitty = {
@@ -60,6 +77,10 @@
 
   programs.fish = {
     enable = true;
+    shellAbbrs = {
+      ls = "exa";
+      cat = "bat";
+    };
     plugins = with pkgs.fishPlugins; [
       { name = "tide"; src = tide.src; }
       { name = "fzf-fish"; src = fzf-fish.src; }
@@ -77,6 +98,13 @@
     # The macport patch uses llvm 6, and upgrading it causes several segfaults.
     # emacsPackage = if pkgs.stdenv.hostPlatform.isDarwin then pkgs.emacs-macport else pkgs.emacs;
     emacsPackage = pkgs.emacs;
+  };
+
+
+  programs.neovim = {
+    enable = true;
+    viAlias = true;
+    vimAlias = true;
   };
 
   programs.direnv = {
@@ -112,6 +140,17 @@
         user = "yanda";
       };
     };
+  };
+
+  programs.vscode = {
+    enable = true;
+    extensions = with pkgs.vscode-extensions; [
+      asvetliakov.vscode-neovim
+      rust-lang.rust-analyzer
+      mskelton.one-dark-theme
+      jnoortheen.nix-ide
+      eamodio.gitlens
+    ];
   };
 
 }

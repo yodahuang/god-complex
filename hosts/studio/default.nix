@@ -18,6 +18,9 @@
     };
     brews = [
       "mas"
+      # As of June 2023, the nix-installed have some issue with QEMU
+      # https://github.com/NixOS/nixpkgs/issues/169118
+      # "podman"
     ];
     casks = [
       "raycast"
