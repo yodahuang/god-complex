@@ -1,9 +1,7 @@
 { config, pkgs, lib, flake-inputs, is_darwin, ... }:
 
 {
-  imports = [
-    flake-inputs.nix-doom-emacs.hmModule
-  ];
+  imports = [ flake-inputs.nix-doom-emacs.hmModule ];
 
   # This value determines the Home Manager release that your
   # configuration is compatible with. This helps avoid breakage
@@ -20,29 +18,27 @@
 
   fonts.fontconfig.enable = true;
 
-  home.packages = with pkgs; [
-    # Common util
-    neofetch
-    bat
-    ripgrep
-    exa
-    fzf
-    btop
-    flake-inputs.devenv.packages.${system}.devenv
-    # Nix specific
-    nil
-    nixfmt
-    # Fonts
-    comic-mono
-    jetbrains-mono
-    (nerdfonts.override { fonts = [ "Meslo" ]; })
-    # Apps
-    obsidian
-    # logseq need to be per-platform
-  ] ++ lib.optionals (!is_darwin) [
-    podman
-    logseq
-  ];
+  home.packages = with pkgs;
+    [
+      # Common util
+      neofetch
+      bat
+      ripgrep
+      exa
+      fzf
+      btop
+      flake-inputs.devenv.packages.${system}.devenv
+      # Nix specific
+      nil
+      nixfmt
+      # Fonts
+      comic-mono
+      jetbrains-mono
+      (nerdfonts.override { fonts = [ "Meslo" ]; })
+      # Apps
+      obsidian
+      # logseq need to be per-platform
+    ] ++ lib.optionals (!is_darwin) [ podman logseq brave ];
 
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
@@ -57,21 +53,15 @@
       "sw" = "switch";
     };
     extraConfig = {
-      merge = {
-        conflictstyle = "diff3";
-      };
-      pull = {
-        rebase=true;
-      };
+      merge = { conflictstyle = "diff3"; };
+      pull = { rebase = true; };
       mergetool.prompt = "false";
       core.editor = "vim";
     };
     delta.enable = true;
   };
 
-  programs.kitty = {
-    enable = true;
-  };
+  programs.kitty = { enable = true; };
 
   programs.fish = {
     enable = true;
@@ -80,9 +70,18 @@
       cat = "bat";
     };
     plugins = with pkgs.fishPlugins; [
-      { name = "tide"; src = tide.src; }
-      { name = "fzf-fish"; src = fzf-fish.src; }
-      { name = "done"; src = done.src; }
+      {
+        name = "tide";
+        src = tide.src;
+      }
+      {
+        name = "fzf-fish";
+        src = fzf-fish.src;
+      }
+      {
+        name = "done";
+        src = done.src;
+      }
     ];
     shellInit = lib.optionalString is_darwin ''
       eval "$(/opt/homebrew/bin/brew shellenv)"
@@ -93,14 +92,14 @@
 
   programs.doom-emacs = {
     enable = true;
-    doomPrivateDir = ./doom.d; # Directory containing your config.el, init.el and packages.el files
+    doomPrivateDir =
+      ./doom.d; # Directory containing your config.el, init.el and packages.el files
     # Getting a working emacs shouldn't be this hard
     # https://github.com/NixOS/nixpkgs/issues/127902
     # The macport patch uses llvm 6, and upgrading it causes several segfaults.
     # emacsPackage = if pkgs.stdenv.hostPlatform.isDarwin then pkgs.emacs-macport else pkgs.emacs;
     emacsPackage = pkgs.emacs;
   };
-
 
   programs.neovim = {
     enable = true;
@@ -119,8 +118,13 @@
     matchBlocks = {
       "*" = {
         extraOptions = {
-          # 1Password agent. May need to change with new installation.
-          IdentityAgent = "\"~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock\"";
+          # On NixOS, it's in its usual location.
+          # On Darwin, it's from some random place AppStore puts.
+          IdentityAgent = if is_darwin then
+            ''
+              "~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"''
+          else
+            "~/.1password/agent.sock";
         };
       };
       # Hardcoding the local ip here instead of using Tailscale ones.
@@ -151,7 +155,14 @@
       mskelton.one-dark-theme
       jnoortheen.nix-ide
       eamodio.gitlens
+      catppuccin.catppuccin-vsc-icons
     ];
+    userSettings = {
+      "nix.serverPath" = "nil";
+      "nix.formatterPath" = "nixfmt";
+      "workbench.colorTheme" = "One Dark";
+      "workbench.iconTheme" = "catppuccin-frappe";
+    };
   };
 
 }

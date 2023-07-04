@@ -113,10 +113,12 @@
   # services.xserver.libinput.enable = true;
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
+  programs.fish.enable = true;
   users.users.yanda = {
     isNormalUser = true;
     description = "Yanda";
     extraGroups = [ "networkmanager" "wheel" ];
+    shell = pkgs.fish;
     packages = with pkgs; [
       firefox
     ];
@@ -143,6 +145,18 @@
   #   enable = true;
   #   enableSSHSupport = true;
   # };
+  
+  # Stuffs only exist in NixOS
+  programs.steam = {
+    enable = true;
+    remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play
+    dedicatedServer.openFirewall = true; # Open ports in the firewall for Source Dedicated Server
+  };
+  
+  programs._1password-gui = {
+    enable = true;
+    polkitPolicyOwners = ["yanda"];
+  };
 
   # List services that you want to enable:
 
