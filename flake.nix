@@ -38,6 +38,23 @@
       specialArgs.flake-inputs = inputs;
     };
 
+    nixosConfigurations."Rig" = nixpkgs.lib.nixosSystem {
+      system = "x86_64-linux";
+      modules = [ 
+        ./hosts/rig/default.nix
+        home-manager.nixosModules.home-manager
+        {
+          home-manager.useGlobalPkgs = true;
+          home-manager.useUserPackages = true;
+          home-manager.users.yanda = import ./home.nix;
+          home-manager.extraSpecialArgs = {
+            flake-inputs = inputs;
+            is_darwin = false;
+          };
+        }
+      ];
+    };
+
     # Expose the package set, including overlays, for convenience.
     darwinPackages = self.darwinConfigurations."Studio".pkgs;
   };
