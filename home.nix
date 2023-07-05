@@ -37,8 +37,7 @@
       (nerdfonts.override { fonts = [ "Meslo" ]; })
       # Apps
       obsidian
-      # logseq need to be per-platform
-    ] ++ lib.optionals (!is_darwin) [ podman logseq brave ];
+    ] ++ lib.optionals (!is_darwin) [ podman logseq ventoy ];
 
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
