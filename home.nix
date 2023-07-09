@@ -151,16 +151,16 @@
     extensions = with pkgs.vscode-extensions; [
       asvetliakov.vscode-neovim
       rust-lang.rust-analyzer
-      mskelton.one-dark-theme
       jnoortheen.nix-ide
       eamodio.gitlens
       catppuccin.catppuccin-vsc-icons
+      catppuccin.catppuccin-vsc
     ];
     userSettings = {
       "nix.serverPath" = "nil";
       "nix.formatterPath" = "nixfmt";
-      "workbench.colorTheme" = "One Dark";
       "workbench.iconTheme" = "catppuccin-frappe";
+      "workbench.colorTheme" = "Catppuccin Macchiato";
     };
   };
 
