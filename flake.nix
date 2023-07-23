@@ -10,9 +10,10 @@
     nix-doom-emacs.url = "github:nix-community/nix-doom-emacs";
     devenv.url = "github:cachix/devenv/latest";
     devenv.inputs.nixpkgs.follows = "nixpkgs";
+    nur.url = "github:nix-community/NUR";
   };
 
-  outputs = inputs@{ self, darwin, nixpkgs, home-manager, nix-doom-emacs, ... }:
+  outputs = inputs@{ self, darwin, nixpkgs, home-manager, nix-doom-emacs, nur, ... }:
   {
     # Build darwin flake using:
     # $ darwin-rebuild build --flake .#studio
@@ -22,6 +23,7 @@
         ./hosts/studio/default.nix
         home-manager.darwinModules.home-manager
         {
+          nixpkgs.overlays = [nur.overlay];
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
           home-manager.users.yanda = import ./home.nix;
@@ -44,6 +46,7 @@
         ./hosts/rig/default.nix
         home-manager.nixosModules.home-manager
         {
+          nixpkgs.overlays = [nur.overlay];
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
           home-manager.users.yanda = import ./home.nix;

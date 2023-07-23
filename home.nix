@@ -155,12 +155,34 @@
       eamodio.gitlens
       catppuccin.catppuccin-vsc-icons
       catppuccin.catppuccin-vsc
+      github.copilot
     ];
     userSettings = {
       "nix.serverPath" = "nil";
       "nix.formatterPath" = "nixfmt";
       "workbench.iconTheme" = "catppuccin-frappe";
       "workbench.colorTheme" = "Catppuccin Macchiato";
+      "editor.formatOnSave" = true;
+      "editor.inlineSuggest.enabled" = true;
+      "editor.fontFamily" =
+        "'Comic Mono','Droid Sans Mono', 'monospace', monosspace";
+    };
+  };
+
+  programs.firefox = {
+    enable = true;
+    profiles.default = {
+      id = 0;
+      name = "Default";
+      extensions = with pkgs.nur.repos.rycee.firefox-addons; [
+        darkreader
+        onepassword-password-manager
+      ];
+      search.engines = {
+        "Kagi" = {
+          urls = [{ template = "https://kagi.com/search?q={searchTerms}"; }];
+        };
+      };
     };
   };
 
