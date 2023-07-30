@@ -1,7 +1,16 @@
+{ pkgs, lib, ... }: {
 
-{ pkgs, ... }: {
+  imports = [ ../../common.nix ];
+
+  # Auto upgrade nix package and the daemon service.
+  services.nix-daemon.enable = true;
+
+  environment.shells = with pkgs; [ bashInteractive zsh fish ];
 
   system = {
+    # Used for backwards compatibility, please read the changelog before changing.
+    # $ darwin-rebuild changelog
+    stateVersion = 4;
     defaults = {
       finder = {
         AppleShowAllExtensions = true;
@@ -36,6 +45,7 @@
       "rectangle"
       "dash"
       "steam"
+      "balenaetcher"
     ];
     # These app IDs are from using the mas CLI app
     # mas = mac app store
@@ -44,9 +54,9 @@
     # $ mas search <app name>
     #
     masApps = {
-     "tailscale" = 1475387142;
-     "Things 3" = 904280696;
-     "Structured" = 1499198946;
+      "tailscale" = 1475387142;
+      "Things 3" = 904280696;
+      "Structured" = 1499198946;
     };
   };
 }

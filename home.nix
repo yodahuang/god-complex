@@ -1,7 +1,9 @@
-{ config, pkgs, lib, flake-inputs, is_darwin, ... }:
+{ config, pkgs, lib, flake-inputs, is_darwin, with_display, ... }:
 
 {
-  imports = [ flake-inputs.nix-doom-emacs.hmModule ];
+  imports = [ 
+    flake-inputs.nix-doom-emacs.hmModule 
+  ] ++ lib.optionals (with_display) [ ./home_gui.nix ];
 
   # This value determines the Home Manager release that your
   # configuration is compatible with. This helps avoid breakage
@@ -16,8 +18,6 @@
   # manual building is failing for me
   manual.manpages.enable = false;
 
-  fonts.fontconfig.enable = true;
-
   home.packages = with pkgs;
     [
       # Common util
@@ -31,13 +31,7 @@
       # Nix specific
       nil
       nixfmt
-      # Fonts
-      comic-mono
-      jetbrains-mono
-      (nerdfonts.override { fonts = [ "Meslo" ]; })
-      # Apps
-      obsidian
-    ] ++ lib.optionals (!is_darwin) [ podman logseq ventoy ];
+    ] ++ lib.optionals (!is_darwin) [ podman ];
 
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
@@ -59,8 +53,6 @@
     };
     delta.enable = true;
   };
-
-  programs.kitty = { enable = true; };
 
   programs.fish = {
     enable = true;
@@ -142,46 +134,6 @@
       "rig" = {
         hostname = "192.168.4.72";
         user = "yanda";
-      };
-    };
-  };
-
-  programs.vscode = {
-    enable = true;
-    extensions = with pkgs.vscode-extensions; [
-      asvetliakov.vscode-neovim
-      rust-lang.rust-analyzer
-      jnoortheen.nix-ide
-      eamodio.gitlens
-      catppuccin.catppuccin-vsc-icons
-      catppuccin.catppuccin-vsc
-      github.copilot
-    ];
-    userSettings = {
-      "nix.serverPath" = "nil";
-      "nix.formatterPath" = "nixfmt";
-      "workbench.iconTheme" = "catppuccin-frappe";
-      "workbench.colorTheme" = "Catppuccin Macchiato";
-      "editor.formatOnSave" = true;
-      "editor.inlineSuggest.enabled" = true;
-      "editor.fontFamily" =
-        "'Comic Mono','Droid Sans Mono', 'monospace', monosspace";
-    };
-  };
-
-  programs.firefox = {
-    enable = true;
-    profiles.default = {
-      id = 0;
-      name = "Default";
-      extensions = with pkgs.nur.repos.rycee.firefox-addons; [
-        darkreader
-        onepassword-password-manager
-      ];
-      search.engines = {
-        "Kagi" = {
-          urls = [{ template = "https://kagi.com/search?q={searchTerms}"; }];
-        };
       };
     };
   };
