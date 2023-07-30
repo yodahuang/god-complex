@@ -56,7 +56,7 @@
       nixosConfigurations."EarlGrey" = nixpkgs.lib.nixosSystem {
         system = "aarch64-linux";
         modules = [
-          ./hosts/ear_grey/default.nix
+          ./hosts/earl_grey/default.nix
           ./common.nix
           home-manager.nixosModules.home-manager
           (make_home_manager_config { is_darwin = false; with_display = false; })

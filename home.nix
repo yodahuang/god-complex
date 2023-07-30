@@ -123,9 +123,9 @@
         hostname = "192.168.4.153";
         user = "pi";
       };
-      "pi" = {
+      "earl_grey" = {
         hostname = "192.168.4.117";
-        user = "pi";
+        user = "yanda";
       };
       "nas" = {
         hostname = "192.168.4.54";

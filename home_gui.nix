@@ -25,6 +25,7 @@
       catppuccin.catppuccin-vsc-icons
       catppuccin.catppuccin-vsc
       github.copilot
+      mattn.lisp
     ];
     userSettings = {
       "nix.enableLanguageServer" = true;

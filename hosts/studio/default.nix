@@ -1,6 +1,6 @@
 { pkgs, lib, ... }: {
 
-  user.users.yanda = {
+  users.users.yanda = {
     home = "/Users/yanda";
   };
 
