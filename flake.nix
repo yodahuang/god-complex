@@ -14,29 +14,33 @@
   };
 
   outputs =
-    inputs@{ self, darwin, nixpkgs, home-manager, nix-doom-emacs, nur, ... }: {
+    inputs@{ self, darwin, nixpkgs, home-manager, nix-doom-emacs, nur, ... }: 
+    let
+      # A helper function to build the home-manager configuration.
+      make_home_manager_config = {is_darwin, with_display, ...}: {
+          nixpkgs.overlays = [ nur.overlay ];
+          home-manager.useGlobalPkgs = true;
+          home-manager.useUserPackages = true;
+          home-manager.users.yanda = import ./home.nix;
+          # Inspired by
+          # https://discourse.nixos.org/t/adding-doom-emacs-using-home-manager/27742/2
+          home-manager.extraSpecialArgs = {
+            flake-inputs = inputs;
+            inherit is_darwin with_display;
+          };
+      };
+    in
+    {
       # Build darwin flake using:
       # $ darwin-rebuild build --flake .#studio
       darwinConfigurations."Studio" = darwin.lib.darwinSystem {
+        system = "aarch64-darwin";
         modules = [
           ./hosts/studio/default.nix
+          ./common.nix
           home-manager.darwinModules.home-manager
-          {
-            nixpkgs.overlays = [ nur.overlay ];
-            home-manager.useGlobalPkgs = true;
-            home-manager.useUserPackages = true;
-            home-manager.users.yanda = import ./home.nix;
-            # Inspired by
-            # https://discourse.nixos.org/t/adding-doom-emacs-using-home-manager/27742/2
-            home-manager.extraSpecialArgs = {
-              flake-inputs = inputs;
-              # This is already in Darwin
-              is_darwin = true;
-              with_display = true;
-            };
-          }
+          (make_home_manager_config { is_darwin = true; with_display = true; })
         ];
-        system = "aarch64-darwin";
         specialArgs.flake-inputs = inputs;
       };
 
@@ -45,17 +49,17 @@
         modules = [
           ./hosts/rig/default.nix
           home-manager.nixosModules.home-manager
-          {
-            nixpkgs.overlays = [ nur.overlay ];
-            home-manager.useGlobalPkgs = true;
-            home-manager.useUserPackages = true;
-            home-manager.users.yanda = import ./home.nix;
-            home-manager.extraSpecialArgs = {
-              flake-inputs = inputs;
-              is_darwin = false;
-              with_display = true;
-            };
-          }
+          (make_home_manager_config { is_darwin = false; with_display = true; })
+        ];
+      };
+      
+      nixosConfigurations."EarlGrey" = nixpkgs.lib.nixosSystem {
+        system = "aarch64-linux";
+        modules = [
+          ./hosts/ear_grey/default.nix
+          ./common.nix
+          home-manager.nixosModules.home-manager
+          (make_home_manager_config { is_darwin = false; with_display = false; })
         ];
       };
 

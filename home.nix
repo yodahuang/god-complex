@@ -108,7 +108,7 @@
     enable = true;
     matchBlocks = {
       "*" = {
-        extraOptions = {
+        extraOptions = lib.optionalAttrs with_display {
           # On NixOS, it's in its usual location.
           # On Darwin, it's from some random place AppStore puts.
           IdentityAgent = if is_darwin then

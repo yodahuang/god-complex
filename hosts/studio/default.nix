@@ -1,6 +1,8 @@
 { pkgs, lib, ... }: {
 
-  imports = [ ../../common.nix ];
+  user.users.yanda = {
+    home = "/Users/yanda";
+  };
 
   # Auto upgrade nix package and the daemon service.
   services.nix-daemon.enable = true;
