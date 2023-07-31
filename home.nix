@@ -79,10 +79,9 @@
     '';
   };
 
-  # Define Emacs service at system level
-
   programs.doom-emacs = {
-    enable = true;
+    # We cheated here. This is to prevent doom-emacs compiling for forever on pi.
+    enable = !with_display;
     doomPrivateDir =
       ./doom.d; # Directory containing your config.el, init.el and packages.el files
     # Getting a working emacs shouldn't be this hard
