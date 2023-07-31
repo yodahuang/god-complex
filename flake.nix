@@ -11,10 +11,12 @@
     devenv.url = "github:cachix/devenv/latest";
     devenv.inputs.nixpkgs.follows = "nixpkgs";
     nur.url = "github:nix-community/NUR";
+    vscode-server.url = "github:nix-community/nixos-vscode-server";
+    vscode-server.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs =
-    inputs@{ self, darwin, nixpkgs, home-manager, nix-doom-emacs, nur, ... }: 
+    inputs@{ self, darwin, nixpkgs, home-manager, nix-doom-emacs, nur, vscode-server, ... }: 
     let
       # A helper function to build the home-manager configuration.
       make_home_manager_config = {is_darwin, with_display, ...}: {

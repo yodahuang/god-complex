@@ -3,6 +3,7 @@
 {
   imports = [ 
     flake-inputs.nix-doom-emacs.hmModule 
+    flake-inputs.vscode-server.homeModules.default
   ] ++ lib.optionals (with_display) [ ./home_gui.nix ];
 
   # This value determines the Home Manager release that your
@@ -136,5 +137,6 @@
       };
     };
   };
-
+  
+  services.vscode-server.enable = true;
 }
