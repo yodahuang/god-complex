@@ -2,6 +2,7 @@
 {
   imports= [
     ./hardware-configuration.nix
+    ./adguard_home.nix
   ];
 
   # Use uboot.
@@ -9,6 +10,18 @@
   boot.loader.generic-extlinux-compatible.enable = true;
   
   networking.hostName = "EarlGrey";
+  networking.firewall = {
+    enable = true;
+    allowedTCPPorts = [ 
+      22 # ssh
+      80
+      443 
+      1080 # AdGuard
+    ];
+    allowedUDPPorts = [ 
+      53 # dns by AdGuard
+    ];
+  };
 
   services.openssh.enable = true;
 
@@ -19,4 +32,5 @@
   };
 
   system.stateVersion = "23.05";
+  
 }

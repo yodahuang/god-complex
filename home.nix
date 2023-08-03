@@ -77,6 +77,8 @@
     ];
     shellInit = lib.optionalString is_darwin ''
       eval "$(/opt/homebrew/bin/brew shellenv)"
+    '' + ''
+      fish_vi_key_bindings
     '';
   };
 
