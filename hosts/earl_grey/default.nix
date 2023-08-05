@@ -1,17 +1,6 @@
 { config, pkgs, ... }:
 let 
-  homePage = pkgs.homer.withAssets {
-    name = "homelab";
-    config = {
-      /* https://github.com/bastienwirtz/homer/blob/main/docs/configuration.md */
-      title = "App dashboard";
-      subtitle ="Homer";
-    };
-    extraAssets = [
-      /* Any extra assets (such as icons) to include.
-      /* These can be referenced through "assets/" in the Homer configuration. */
-    ];
-  };
+  homePage = pkgs.callPackage ./homepage.nix { };
 in
 {
   imports= [
