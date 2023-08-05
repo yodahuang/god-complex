@@ -33,8 +33,6 @@
       };
     in
     {
-      # Build darwin flake using:
-      # $ darwin-rebuild build --flake .#studio
       darwinConfigurations."Studio" = darwin.lib.darwinSystem {
         system = "aarch64-darwin";
         modules = [
@@ -58,6 +56,13 @@
       nixosConfigurations."EarlGrey" = nixpkgs.lib.nixosSystem {
         system = "aarch64-linux";
         modules = [
+          {
+            nixpkgs.overlays = [ 
+              (self: super: {
+                homer = super.callPackage ./pkgs/homer.nix { };
+              }) 
+            ];
+          }
           ./hosts/earl_grey/default.nix
           ./common.nix
           home-manager.nixosModules.home-manager

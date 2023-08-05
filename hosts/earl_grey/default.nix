@@ -1,4 +1,18 @@
 { config, pkgs, ... }:
+let 
+  homePage = pkgs.homer.withAssets {
+    name = "homelab";
+    config = {
+      /* https://github.com/bastienwirtz/homer/blob/main/docs/configuration.md */
+      title = "App dashboard";
+      subtitle ="Homer";
+    };
+    extraAssets = [
+      /* Any extra assets (such as icons) to include.
+      /* These can be referenced through "assets/" in the Homer configuration. */
+    ];
+  };
+in
 {
   imports= [
     ./hardware-configuration.nix
@@ -55,6 +69,12 @@
         upstream_dns = [
           "https://dns.cloudflare.com/dns-query"
         ];
+        rewrites = [
+          {
+            domain = "*.home";
+            answer = "192.168.4.117";
+          }
+        ];
       };
       filters = [
         {
@@ -79,4 +99,25 @@
     };
   };
 
+  services.caddy= {
+    enable = true;
+    logFormat = ''
+      level INFO
+    '';
+    # Note that it's not localhost. Now we let it bind on all interfaces.
+    virtualHosts.":80, my.home" = {
+      extraConfig = ''
+        root * ${homePage}
+        file_server
+        tls internal
+      '';
+      # Needed as the default one,
+      # `output file ''${config.services.caddy.logDir}/access-''${hostName}.log`
+      # cannot handle multiple hosts.
+      logFormat = ''
+        output discard
+      '';
+    };
+  };
+  
 }
