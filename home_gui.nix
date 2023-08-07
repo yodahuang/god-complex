@@ -30,7 +30,6 @@
     userSettings = {
       "nix.enableLanguageServer" = true;
       "nix.serverPath" = "nil";
-      "nix.formatterPath" = "nixfmt";
       "workbench.iconTheme" = "catppuccin-frappe";
       "workbench.colorTheme" = "Catppuccin Macchiato";
       "editor.formatOnSave" = true;
@@ -38,9 +37,7 @@
       "editor.fontFamily" =
         "'Comic Mono','Droid Sans Mono', 'monospace', monosspace";
       "remote.SSH.useLocalServer" = false;
-      "remote.SSH.remotePlatform" = {
-        "earl_grey" = "linux";
-      };
+      "remote.SSH.remotePlatform" = { "earl_grey" = "linux"; };
     };
   };
 
