@@ -5,10 +5,9 @@
 { config, pkgs, ... }:
 
 {
-  imports =
-    [ # Include the results of the hardware scan.
-      ./hardware-configuration.nix
-    ];
+  imports = [ # Include the results of the hardware scan.
+    ./hardware-configuration.nix
+  ];
 
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
@@ -23,20 +22,6 @@
 
   # Enable networking
   networking.networkmanager.enable = true;
-
-  nix = {
-    settings = {
-      experimental-features = ["nix-command" "flakes"];
-      substituters = [
-        "https://nix-community.cachix.org"
-        "https://cache.nixos.org/"
-      ];
-      trusted-public-keys = [
-        "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
-        "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
-      ];
-    };
-  };
 
   # Set your time zone.
   time.timeZone = "America/Los_Angeles";
@@ -95,7 +80,7 @@
     driSupport = true;
     driSupport32Bit = true;
   };
-  services.xserver.videoDrivers = ["nvidia"];
+  services.xserver.videoDrivers = [ "nvidia" ];
   hardware.nvidia = {
     # Modesetting is needed for most wayland compositors
     modesetting.enable = true;
@@ -108,20 +93,17 @@
     package = config.boot.kernelPackages.nvidiaPackages.stable;
   };
 
-
   # Enable touchpad support (enabled default in most desktopManager).
   # services.xserver.libinput.enable = true;
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
-  programs.fish.enable = true;
   users.users.yanda = {
     isNormalUser = true;
-    description = "Yanda";
     extraGroups = [ "networkmanager" "wheel" ];
-    shell = pkgs.fish;
-    packages = with pkgs; [
-      # firefox
-    ];
+    packages = with pkgs;
+      [
+        # firefox
+      ];
   };
 
   # Enable automatic login for the user.
@@ -131,13 +113,6 @@
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
 
-  # List packages installed in system profile. To search, run:
-  # $ nix search wget
-  environment.systemPackages = with pkgs; [
-     neovim
-     git
-  ];
-
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
   # programs.mtr.enable = true;
@@ -145,17 +120,19 @@
   #   enable = true;
   #   enableSSHSupport = true;
   # };
-  
+
   # Stuffs only exist in NixOS
   programs.steam = {
     enable = true;
-    remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play
-    dedicatedServer.openFirewall = true; # Open ports in the firewall for Source Dedicated Server
+    remotePlay.openFirewall =
+      true; # Open ports in the firewall for Steam Remote Play
+    dedicatedServer.openFirewall =
+      true; # Open ports in the firewall for Source Dedicated Server
   };
-  
+
   programs._1password-gui = {
     enable = true;
-    polkitPolicyOwners = ["yanda"];
+    polkitPolicyOwners = [ "yanda" ];
   };
 
   # List services that you want to enable:

@@ -19,17 +19,17 @@
     inputs@{ self, darwin, nixpkgs, home-manager, nix-doom-emacs, nur, vscode-server, ... }: 
     let
       # A helper function to build the home-manager configuration.
-      make_home_manager_config = {is_darwin, with_display, ...}: {
-          nixpkgs.overlays = [ nur.overlay ];
-          home-manager.useGlobalPkgs = true;
-          home-manager.useUserPackages = true;
-          home-manager.users.yanda = import ./home.nix;
-          # Inspired by
-          # https://discourse.nixos.org/t/adding-doom-emacs-using-home-manager/27742/2
-          home-manager.extraSpecialArgs = {
-            flake-inputs = inputs;
-            inherit is_darwin with_display;
-          };
+      make_home_manager_config = { is_darwin, with_display, ... }: {
+        nixpkgs.overlays = [ nur.overlay ];
+        home-manager.useGlobalPkgs = true;
+        home-manager.useUserPackages = true;
+        home-manager.users.yanda = import ./home.nix;
+        # Inspired by
+        # https://discourse.nixos.org/t/adding-doom-emacs-using-home-manager/27742/2
+        home-manager.extraSpecialArgs = {
+          flake-inputs = inputs;
+          inherit is_darwin with_display;
+        };
       };
     in
     {
@@ -39,7 +39,10 @@
           ./hosts/studio/default.nix
           ./common.nix
           home-manager.darwinModules.home-manager
-          (make_home_manager_config { is_darwin = true; with_display = true; })
+          (make_home_manager_config {
+            is_darwin = true;
+            with_display = true;
+          })
         ];
         specialArgs.flake-inputs = inputs;
       };
@@ -48,11 +51,15 @@
         system = "x86_64-linux";
         modules = [
           ./hosts/rig/default.nix
+          ./common.nix
           home-manager.nixosModules.home-manager
-          (make_home_manager_config { is_darwin = false; with_display = true; })
+          (make_home_manager_config {
+            is_darwin = false;
+            with_display = true;
+          })
         ];
       };
-      
+
       nixosConfigurations."EarlGrey" = nixpkgs.lib.nixosSystem {
         system = "aarch64-linux";
         modules = [
@@ -66,7 +73,10 @@
           ./hosts/earl_grey/default.nix
           ./common.nix
           home-manager.nixosModules.home-manager
-          (make_home_manager_config { is_darwin = false; with_display = false; })
+          (make_home_manager_config {
+            is_darwin = false;
+            with_display = false;
+          })
         ];
       };
 
