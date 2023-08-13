@@ -89,8 +89,7 @@
           ./hosts/surface/default.nix
           ./common.nix
           ./nixos/default.nix
-          # ./nixos/nvidia.nix
-          # nixos-hardware.nixosModules.microsoft-surface-common
+          nixos-hardware.nixosModules.microsoft-surface-common
           home-manager.nixosModules.home-manager
           (make_home_manager_config {
             is_darwin = false;
