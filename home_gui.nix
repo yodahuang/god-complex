@@ -19,13 +19,15 @@
     enable = true;
     extensions = with pkgs.vscode-extensions; [
       asvetliakov.vscode-neovim
-      rust-lang.rust-analyzer
-      jnoortheen.nix-ide
       eamodio.gitlens
       catppuccin.catppuccin-vsc-icons
       catppuccin.catppuccin-vsc
       github.copilot
+      # Languages
+      jnoortheen.nix-ide
       mattn.lisp
+      tamasfe.even-better-toml
+      rust-lang.rust-analyzer
     ];
     userSettings = {
       "nix.enableLanguageServer" = true;
