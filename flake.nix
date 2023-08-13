@@ -2,7 +2,8 @@
   description = "Yanda's one for all";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixos-hardware.url = "github:NixOS/nixos-hardware/master";
     darwin.url = "github:lnl7/nix-darwin";
     darwin.inputs.nixpkgs.follows = "nixpkgs";
     home-manager.url = "github:nix-community/home-manager";
@@ -16,7 +17,7 @@
   };
 
   outputs =
-    inputs@{ self, darwin, nixpkgs, home-manager, nix-doom-emacs, nur, vscode-server, ... }: 
+    inputs@{ self, darwin, nixpkgs, home-manager, nix-doom-emacs, nur, vscode-server, nixos-hardware, ... }: 
     let
       # A helper function to build the home-manager configuration.
       make_home_manager_config = { is_darwin, with_display, ... }: {
@@ -52,6 +53,8 @@
         modules = [
           ./hosts/rig/default.nix
           ./common.nix
+          ./nixos/default.nix
+          ./nixos/nvidia.nix
           home-manager.nixosModules.home-manager
           (make_home_manager_config {
             is_darwin = false;
@@ -79,6 +82,23 @@
           })
         ];
       };
+
+      nixosConfigurations."Surface" = nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
+        modules = [
+          ./hosts/surface/default.nix
+          ./common.nix
+          ./nixos/default.nix
+          # ./nixos/nvidia.nix
+          # nixos-hardware.nixosModules.microsoft-surface-common
+          home-manager.nixosModules.home-manager
+          (make_home_manager_config {
+            is_darwin = false;
+            with_display = true;
+          })
+        ];
+      };
+
 
       # Expose the package set, including overlays, for convenience.
       darwinPackages = self.darwinConfigurations."Studio".pkgs;

@@ -32,4 +32,32 @@
     name = "yanda";
     shell = pkgs.fish;
   };
+  
+  # For remote build.
+  # Remember to copy the identify file there.
+  programs.ssh.extraConfig = ''
+    Host rig
+      IdentityFile /root/.ssh/id_ed25519
+      User yanda
+      HostName 192.168.4.72
+  '';
+
+	nix.buildMachines = [ {
+	 hostName = "rig";
+	 system = "x86_64-linux";
+   protocol = "ssh-ng";
+	 # if the builder supports building for multiple architectures, 
+	 # replace the previous line by, e.g.,
+	 # systems = ["x86_64-linux" "aarch64-linux"];
+	 maxJobs = 1;
+	 speedFactor = 2;
+	 supportedFeatures = [ "nixos-test" "big-parallel" "kvm" ];
+	 mandatoryFeatures = [ ];
+	}] ;
+	nix.distributedBuilds = true;
+	# optional, useful when the builder has a faster internet connection than yours
+	nix.extraOptions = ''
+		builders-use-substitutes = true
+	'';
+
 }
