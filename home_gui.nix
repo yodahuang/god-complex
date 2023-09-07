@@ -18,11 +18,13 @@
   programs.vscode = {
     enable = true;
     extensions = with pkgs.vscode-extensions; [
+      ms-vscode-remote.remote-ssh
       asvetliakov.vscode-neovim
       eamodio.gitlens
       catppuccin.catppuccin-vsc-icons
       catppuccin.catppuccin-vsc
       github.copilot
+      mkhl.direnv
       # Languages
       jnoortheen.nix-ide
       mattn.lisp
@@ -32,6 +34,9 @@
     userSettings = {
       "nix.enableLanguageServer" = true;
       "nix.serverPath" = "nil";
+      "nix.serverSettings" = {
+        nil = { formatting = { command = [ "nixfmt" ]; }; };
+      };
       "workbench.iconTheme" = "catppuccin-frappe";
       "workbench.colorTheme" = "Catppuccin Macchiato";
       "editor.formatOnSave" = true;
@@ -40,6 +45,7 @@
         "'Comic Mono','Droid Sans Mono', 'monospace', monosspace";
       "remote.SSH.useLocalServer" = false;
       "remote.SSH.remotePlatform" = { "earl_grey" = "linux"; };
+      "extensions.autoUpdate" = false;
     };
   };
 

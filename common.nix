@@ -25,6 +25,7 @@
       "1password-cli"
       "vscode"
       "vscode-extension-github-copilot"
+      "vscode-extension-ms-vscode-remote-remote-ssh"
     ];
 
   users.users.yanda = {
@@ -32,15 +33,6 @@
     name = "yanda";
     shell = pkgs.fish;
   };
-  
-  # For remote build.
-  # Remember to copy the identify file there.
-  programs.ssh.extraConfig = ''
-    Host rig
-      IdentityFile /root/.ssh/id_ed25519
-      User yanda
-      HostName 192.168.4.72
-  '';
 
 	nix.buildMachines = [ {
 	 hostName = "rig";

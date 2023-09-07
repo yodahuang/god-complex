@@ -92,6 +92,15 @@
     polkitPolicyOwners = [ "yanda" ];
   };
 
+  # For remote build.
+  # Remember to copy the identify file there.
+  programs.ssh.extraConfig = ''
+    Host rig
+      IdentityFile /root/.ssh/id_ed25519
+      User yanda
+      HostName 192.168.4.72
+  '';
+
   # List services that you want to enable:
 
   # Enable the OpenSSH daemon.
