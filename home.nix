@@ -1,8 +1,8 @@
 { config, pkgs, lib, flake-inputs, is_darwin, with_display, ... }:
-
-{
-  imports = [ 
-    flake-inputs.nix-doom-emacs.hmModule 
+let ips = import ./hosts/ips.nix;
+in {
+  imports = [
+    flake-inputs.nix-doom-emacs.hmModule
     flake-inputs.vscode-server.homeModules.default
   ] ++ lib.optionals (with_display) [ ./home_gui.nix ];
 
@@ -29,6 +29,7 @@
       fzf
       btop
       flake-inputs.devenv.packages.${system}.devenv
+      tailscale
       # Nix specific
       nil
       nixfmt
@@ -122,23 +123,23 @@
       };
       # Hardcoding the local ip here instead of using Tailscale ones.
       "octo" = {
-        hostname = "192.168.4.153";
+        hostname = ips.octo;
         user = "pi";
       };
       "earl_grey" = {
-        hostname = "192.168.4.117";
+        hostname = ips.earl_grey;
         user = "yanda";
       };
       "nas" = {
-        hostname = "192.168.4.54";
+        hostname = ips.nas;
         user = "yanda-admin";
       };
       "rig" = {
-        hostname = "192.168.4.72";
+        hostname = ips.rig;
         user = "yanda";
       };
     };
   };
-  
+
   services.vscode-server.enable = true;
 }
