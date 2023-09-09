@@ -68,6 +68,7 @@ pkgs.homer.withAssets {
             name = "Plex";
             logo = "assets/homer-icons/png/plex.png";
             subtitle = "Plex server";
+            url = "http://plex.home";
           }
         ];
       }

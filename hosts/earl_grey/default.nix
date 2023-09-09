@@ -1,11 +1,7 @@
 { config, pkgs, ... }:
-let
-  ADGUARD_PORT = 1080;
+let ADGUARD_PORT = 1080;
 in {
-  imports = [
-     ./hardware-configuration.nix 
-     ./caddy.nix
-  ];
+  imports = [ ./hardware-configuration.nix ./caddy.nix ];
 
   # Use uboot.
   boot.loader.grub.enable = false;

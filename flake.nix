@@ -16,8 +16,8 @@
     vscode-server.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs =
-    inputs@{ self, darwin, nixpkgs, home-manager, nix-doom-emacs, nur, vscode-server, nixos-hardware, ... }: 
+  outputs = inputs@{ self, darwin, nixpkgs, home-manager, nix-doom-emacs, nur
+    , vscode-server, nixos-hardware, ... }:
     let
       # A helper function to build the home-manager configuration.
       make_home_manager_config = { is_darwin, with_display, ... }: {
@@ -32,8 +32,7 @@
           inherit is_darwin with_display;
         };
       };
-    in
-    {
+    in {
       darwinConfigurations."Studio" = darwin.lib.darwinSystem {
         system = "aarch64-darwin";
         modules = [
@@ -67,10 +66,8 @@
         system = "aarch64-linux";
         modules = [
           {
-            nixpkgs.overlays = [ 
-              (self: super: {
-                homer = super.callPackage ./pkgs/homer.nix { };
-              }) 
+            nixpkgs.overlays = [
+              (self: super: { homer = super.callPackage ./pkgs/homer.nix { }; })
             ];
           }
           ./hosts/earl_grey/default.nix
@@ -97,7 +94,6 @@
           })
         ];
       };
-
 
       # Expose the package set, including overlays, for convenience.
       darwinPackages = self.darwinConfigurations."Studio".pkgs;

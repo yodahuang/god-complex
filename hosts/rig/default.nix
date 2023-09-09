@@ -14,12 +14,9 @@
   # Enable the Budgie Desktop environment.
   services.xserver.displayManager.lightdm.enable = true;
   services.xserver.desktopManager.budgie.enable = true;
-  
+
   # Add myself to it as this is the build machine.
-  nix.settings.trusted-users = [
-    "root"
-    "yanda"
-  ];
+  nix.settings.trusted-users = [ "root" "yanda" ];
 
   programs.steam = {
     enable = true;

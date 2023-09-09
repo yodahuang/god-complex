@@ -1,11 +1,10 @@
 { config, pkgs, ... }:
-let 
+let
   homePage = pkgs.callPackage ./homepage.nix { };
   ips = import ../ips.nix;
   # TODO: Duplicate here.
   ADGUARD_PORT = 1080;
-  in
-{
+in {
   services.caddy = {
     enable = true;
     logFormat = ''
