@@ -1,7 +1,5 @@
-{ config, pkgs, ... }:
-let ADGUARD_PORT = 1080;
-in {
-  imports = [ ./hardware-configuration.nix ./caddy.nix ];
+{ config, pkgs, lib, ... }: {
+  imports = [ ./hardware-configuration.nix ./caddy.nix ./adguard_home.nix ];
 
   # Use uboot.
   boot.loader.grub.enable = false;
@@ -21,8 +19,6 @@ in {
     ];
   };
 
-  services.openssh.enable = true;
-
   users.users.yanda = {
     isNormalUser = true;
     description = "Yanda";
@@ -31,53 +27,28 @@ in {
 
   system.stateVersion = "23.05";
 
+  services.openssh.enable = true;
+
   services.tailscale = {
     enable = true;
     useRoutingFeatures = "server";
   };
 
-  # Services.
-  services.adguardhome = {
-    enable = true;
-    mutableSettings = false;
-    openFirewall = true;
-    settings = {
-      bind_host = "0.0.0.0";
-      bind_port = ADGUARD_PORT;
-      http = { address = "0.0.0.0:1080"; };
-      dns = {
-        bind_hosts = [ "0.0.0.0" ];
-        port = 53;
-        bootstrap_dns =
-          [ "9.9.9.10" "149.112.112.10" "2620:fe::10" "2620:fe::fe:10" ];
-        upstream_dns = [ "https://dns.cloudflare.com/dns-query" ];
-        rewrites = [{
-          domain = "*.home";
-          answer = "192.168.4.117";
-        }];
-      };
-      filters = [
-        {
-          enabled = true;
-          url =
-            "https://adguardteam.github.io/HostlistsRegistry/assets/filter_1.txt";
-          name = "AdGuard DNS filter";
-          id = 1;
-        }
-        {
-          enabled = true;
-          url =
-            "https://adguardteam.github.io/HostlistsRegistry/assets/filter_29.txt";
-          name = "CHN: AdRules DNS List";
-          id = 1690779191;
-        }
-      ];
-      users = [{
-        name = "yanda";
-        password =
-          "$2a$10$BQ0wuBshl8/n6b0Pfa0KYeC3bPo/Hvv9QLbS.w8xtXCPN8.WUvtUi";
-      }];
-    };
-  };
+  # Cross copilation doesn't seem to work.
+  # nixpkgs = {
+  #   buildPlatform = {
+  #     system = "x86_64-linux";
+  #     config = "x86_64-unknown-linux-gnu";
+  #   };
+  # };
+
+  # ssh access to remote machine.
+  # Don't forget to generate the file and copy the pub key to rig.
+  programs.ssh.extraConfig = ''
+    Host rig
+      IdentityFile /root/.ssh/id_ed25519
+      User yanda
+      HostName 192.168.4.72
+  '';
 
 }
