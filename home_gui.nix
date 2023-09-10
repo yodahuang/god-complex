@@ -44,7 +44,11 @@
       "editor.fontFamily" =
         "'Comic Mono','Droid Sans Mono', 'monospace', monosspace";
       "remote.SSH.useLocalServer" = false;
-      "remote.SSH.remotePlatform" = { "earl_grey" = "linux"; };
+      "remote.SSH.remotePlatform" = {
+        "earl_grey" = "linux";
+        "rig" = "linux";
+        "octo" = "linux";
+      };
       "extensions.autoUpdate" = false;
     };
   };

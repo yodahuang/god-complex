@@ -126,18 +126,22 @@ in {
       "octo" = {
         hostname = ips.octo;
         user = "pi";
+        forwardAgent = true;
       };
       "earl_grey" = {
         hostname = ips.earl_grey;
         user = "yanda";
+        forwardAgent = true;
       };
       "nas" = {
         hostname = ips.nas;
         user = "yanda-admin";
+        forwardAgent = true;
       };
       "rig" = {
         hostname = ips.rig;
         user = "yanda";
+        forwardAgent = true;
       };
     };
   };
