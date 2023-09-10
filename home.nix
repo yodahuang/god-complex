@@ -89,11 +89,10 @@ in {
     enable = with_display;
     doomPrivateDir =
       ./doom.d; # Directory containing your config.el, init.el and packages.el files
-    # Getting a working emacs shouldn't be this hard
-    # https://github.com/NixOS/nixpkgs/issues/127902
-    # The macport patch uses llvm 6, and upgrading it causes several segfaults.
-    # emacsPackage = if pkgs.stdenv.hostPlatform.isDarwin then pkgs.emacs-macport else pkgs.emacs;
-    emacsPackage = pkgs.emacs;
+    emacsPackage = if pkgs.stdenv.hostPlatform.isDarwin then
+      pkgs.emacs-macport
+    else
+      pkgs.emacs;
   };
 
   programs.neovim = {
