@@ -34,7 +34,7 @@
     useRoutingFeatures = "server";
   };
 
-  # Cross copilation doesn't seem to work.
+  # Cross compilation doesn't seem to work.
   # nixpkgs = {
   #   buildPlatform = {
   #     system = "x86_64-linux";

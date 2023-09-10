@@ -26,7 +26,7 @@ in {
       neofetch
       bat
       ripgrep
-      exa
+      eza
       fzf
       btop
       flake-inputs.devenv.packages.${system}.devenv
@@ -60,7 +60,7 @@ in {
   programs.fish = {
     enable = true;
     shellAbbrs = {
-      ls = "exa";
+      ls = "eza";
       cat = "bat";
     };
     plugins = with pkgs.fishPlugins; [
