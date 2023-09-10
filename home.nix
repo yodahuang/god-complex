@@ -1,4 +1,5 @@
-{ config, pkgs, lib, flake-inputs, is_darwin, with_display, ... }:
+{ config, pkgs, lib, flake-inputs, is_darwin, with_display, usually_headless
+, ... }:
 let ips = import ./hosts/ips.nix;
 in {
   imports = [
@@ -111,7 +112,7 @@ in {
     enable = true;
     matchBlocks = {
       "*" = {
-        extraOptions = lib.optionalAttrs with_display {
+        extraOptions = lib.optionalAttrs (!usually_headless) {
           # On NixOS, it's in its usual location.
           # On Darwin, it's from some random place AppStore puts.
           IdentityAgent = if is_darwin then

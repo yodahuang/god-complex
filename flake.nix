@@ -20,18 +20,19 @@
     , vscode-server, nixos-hardware, ... }:
     let
       # A helper function to build the home-manager configuration.
-      make_home_manager_config = { is_darwin, with_display, ... }: {
-        nixpkgs.overlays = [ nur.overlay ];
-        home-manager.useGlobalPkgs = true;
-        home-manager.useUserPackages = true;
-        home-manager.users.yanda = import ./home.nix;
-        # Inspired by
-        # https://discourse.nixos.org/t/adding-doom-emacs-using-home-manager/27742/2
-        home-manager.extraSpecialArgs = {
-          flake-inputs = inputs;
-          inherit is_darwin with_display;
+      make_home_manager_config =
+        { is_darwin, with_display, usually_headless, ... }: {
+          nixpkgs.overlays = [ nur.overlay ];
+          home-manager.useGlobalPkgs = true;
+          home-manager.useUserPackages = true;
+          home-manager.users.yanda = import ./home.nix;
+          # Inspired by
+          # https://discourse.nixos.org/t/adding-doom-emacs-using-home-manager/27742/2
+          home-manager.extraSpecialArgs = {
+            flake-inputs = inputs;
+            inherit is_darwin with_display usually_headless;
+          };
         };
-      };
     in {
       darwinConfigurations."Studio" = darwin.lib.darwinSystem {
         system = "aarch64-darwin";
@@ -42,6 +43,7 @@
           (make_home_manager_config {
             is_darwin = true;
             with_display = true;
+            usually_headless = false;
           })
         ];
         specialArgs.flake-inputs = inputs;
@@ -58,6 +60,7 @@
           (make_home_manager_config {
             is_darwin = false;
             with_display = true;
+            usually_headless = true;
           })
         ];
       };
@@ -76,6 +79,7 @@
           (make_home_manager_config {
             is_darwin = false;
             with_display = false;
+            usually_headless = true;
           })
         ];
       };
@@ -91,6 +95,7 @@
           (make_home_manager_config {
             is_darwin = false;
             with_display = true;
+            usually_headless = false;
           })
         ];
       };
