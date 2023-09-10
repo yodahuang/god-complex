@@ -18,6 +18,8 @@
   # Add myself to it as this is the build machine.
   nix.settings.trusted-users = [ "root" "yanda" ];
 
+  boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
+
   programs.steam = {
     enable = true;
     remotePlay.openFirewall =
