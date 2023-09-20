@@ -1,6 +1,4 @@
-{ config, pkgs, lib, flake-inputs, is_darwin, ... }:
-
-{
+{ config, pkgs, lib, flake-inputs, is_darwin, ... }: {
   fonts.fontconfig.enable = true;
 
   home.packages = with pkgs;
@@ -17,20 +15,24 @@
 
   programs.vscode = {
     enable = true;
-    extensions = with pkgs.vscode-extensions; [
-      ms-vscode-remote.remote-ssh
-      asvetliakov.vscode-neovim
-      eamodio.gitlens
-      catppuccin.catppuccin-vsc-icons
-      catppuccin.catppuccin-vsc
-      github.copilot
-      mkhl.direnv
-      # Languages
-      jnoortheen.nix-ide
-      mattn.lisp
-      tamasfe.even-better-toml
-      rust-lang.rust-analyzer
-    ];
+    extensions = with pkgs.vscode-extensions;
+      [
+        ms-vscode-remote.remote-ssh
+        asvetliakov.vscode-neovim
+        eamodio.gitlens
+        catppuccin.catppuccin-vsc-icons
+        catppuccin.catppuccin-vsc
+        github.copilot
+        mkhl.direnv
+        # Languages
+        jnoortheen.nix-ide
+        mattn.lisp
+        tamasfe.even-better-toml
+        rust-lang.rust-analyzer
+        ms-python.python
+      ]
+      ++ (with flake-inputs.nix-vscode-extensions.extensions.${pkgs.system}.vscode-marketplace;
+        [ charliermarsh.ruff ]);
     userSettings = {
       "nix.enableLanguageServer" = true;
       "nix.serverPath" = "nil";
@@ -43,6 +45,7 @@
       "editor.inlineSuggest.enabled" = true;
       "editor.fontFamily" =
         "'Comic Mono','Droid Sans Mono', 'monospace', monosspace";
+      "editor.fontSize" = 16;
       "remote.SSH.useLocalServer" = false;
       "remote.SSH.remotePlatform" = {
         "earl_grey" = "linux";
@@ -50,6 +53,7 @@
         "octo" = "linux";
       };
       "extensions.autoUpdate" = false;
+      "extensions.autoCheckUpdates" = false;
     };
   };
 

@@ -14,10 +14,11 @@
     nur.url = "github:nix-community/NUR";
     vscode-server.url = "github:nix-community/nixos-vscode-server";
     vscode-server.inputs.nixpkgs.follows = "nixpkgs";
+    nix-vscode-extensions.url = "github:nix-community/nix-vscode-extensions";
   };
 
   outputs = inputs@{ self, darwin, nixpkgs, home-manager, nix-doom-emacs, nur
-    , vscode-server, nixos-hardware, ... }:
+    , vscode-server, nixos-hardware, nix-vscode-extensions, ... }:
     let
       # A helper function to build the home-manager configuration.
       make_home_manager_config =

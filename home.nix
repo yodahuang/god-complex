@@ -28,6 +28,7 @@ in {
       ripgrep
       eza
       fzf
+      yazi
       btop
       flake-inputs.devenv.packages.${system}.devenv
       tailscale
