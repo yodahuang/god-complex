@@ -1,4 +1,8 @@
-{ config, pkgs, lib, flake-inputs, is_darwin, ... }: {
+{ config, pkgs, lib, flake-inputs, is_darwin, ... }:
+let
+  vscode_extensions =
+    flake-inputs.nix-vscode-extensions.extensions.${pkgs.system}.vscode-marketplace;
+in {
   fonts.fontconfig.enable = true;
 
   home.packages = with pkgs;
@@ -17,12 +21,16 @@
     enable = true;
     extensions = with pkgs.vscode-extensions;
       [
+        # Look
+        catppuccin.catppuccin-vsc-icons
+        catppuccin.catppuccin-vsc
+      ] ++ (with vscode_extensions; [
+        # General
         ms-vscode-remote.remote-ssh
         asvetliakov.vscode-neovim
         eamodio.gitlens
-        catppuccin.catppuccin-vsc-icons
-        catppuccin.catppuccin-vsc
         github.copilot
+        # Tools
         mkhl.direnv
         # Languages
         jnoortheen.nix-ide
@@ -30,9 +38,11 @@
         tamasfe.even-better-toml
         rust-lang.rust-analyzer
         ms-python.python
-      ]
-      ++ (with flake-inputs.nix-vscode-extensions.extensions.${pkgs.system}.vscode-marketplace;
-        [ charliermarsh.ruff ]);
+        charliermarsh.ruff
+        # Fun
+        hoovercj.vscode-power-mode
+        tonybaloney.vscode-pets
+      ]);
     userSettings = {
       "nix.enableLanguageServer" = true;
       "nix.serverPath" = "nil";
@@ -54,6 +64,7 @@
       };
       "extensions.autoUpdate" = false;
       "extensions.autoCheckUpdates" = false;
+      "extensions.experimental.affinity" = { "asvetliakov.vscode-neovim" = 1; };
     };
   };
 
