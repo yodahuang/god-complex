@@ -15,10 +15,11 @@
     vscode-server.url = "github:nix-community/nixos-vscode-server";
     vscode-server.inputs.nixpkgs.follows = "nixpkgs";
     nix-vscode-extensions.url = "github:nix-community/nix-vscode-extensions";
+    inputs.agenix.url = "github:ryantm/agenix";
   };
 
   outputs = inputs@{ self, darwin, nixpkgs, home-manager, nix-doom-emacs, nur
-    , vscode-server, nixos-hardware, nix-vscode-extensions, ... }:
+    , vscode-server, nixos-hardware, nix-vscode-extensions, agenix, ... }:
     let
       # A helper function to build the home-manager configuration.
       make_home_manager_config =
@@ -82,6 +83,7 @@
             with_display = false;
             usually_headless = true;
           })
+          agenix.nixosModules.default
         ];
       };
 

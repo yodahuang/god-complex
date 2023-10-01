@@ -13,6 +13,7 @@ in {
       (nerdfonts.override { fonts = [ "Meslo" ]; })
       # Apps
       obsidian
+      discord
     ] ++ lib.optionals (!is_darwin) [ logseq ventoy ];
 
   programs.kitty = { enable = true; };

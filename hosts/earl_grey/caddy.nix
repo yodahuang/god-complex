@@ -7,12 +7,21 @@ let
 in {
   services.caddy = {
     enable = true;
+    package = (pkgs.callPackage ../pkgs/caddy.nix {
+      plugins = [ "https://github.com/caddy-dns/cloudflare" ];
+      vendorSha256 = "";
+    });
     logFormat = ''
       level INFO
     '';
     globalConfig = ''
       local_certs
     '';
+    # extraConfig = ''
+    #   tls {
+    #     dns cloudflare 
+    #   }
+    # '';
     # Note that it's not localhost. Now we let it bind on all interfaces.
     virtualHosts = {
       ":80, my.home" = {
