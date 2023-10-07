@@ -1,105 +1,112 @@
 { config, pkgs, lib, ... }:
 let
   homePage = pkgs.callPackage ./homepage.nix { };
+  meowdy = pkgs.callPackage ../../pkgs/meowdy.nix { };
   ips = import ../ips.nix;
   # TODO: Duplicate here.
   ADGUARD_PORT = 1080;
+  # Helper functions
+  make_hostnames = name: "http://${name}.home, ${name}.int.yanda.rocks";
+  # From my custom format to Caddyfile
+  transform_to_virtual_hosts = hosts:
+    lib.listToAttrs (map (name:
+      let hostnames = make_hostnames name;
+      in {
+        name = hostnames;
+        value = {
+          logFormat =
+            "output file ${config.services.caddy.logDir}/access-${name}.log";
+          extraConfig = hosts.${name}.extraConfig;
+        };
+      }) (lib.attrNames hosts));
 in {
   services.caddy = {
     enable = true;
-    package = (pkgs.callPackage ../../pkgs/meowdy.nix { });
+    package = meowdy.override {
+      externalPlugins = [{
+        name = "cloudflare-dns";
+        repo = "github.com/caddy-dns/cloudflare";
+        version = "bfe272c8525b6dd8248fcdddb460fd6accfc4e84";
+      }];
+      vendorHash = "sha256-mwIsWJYKuEZpOU38qZOG1LEh4QpK4EO0/8l4UGsroU8=";
+    };
     logFormat = ''
       level INFO
     '';
     globalConfig = ''
-      local_certs
+      acme_dns cloudflare {env.CF_API_TOKEN}
     '';
-    # extraConfig = ''
-    #   tls {
-    #     dns cloudflare {env.CF_API_TOKEN}
-    #   }
-    # '';
     # Note that it's not localhost. Now we let it bind on all interfaces.
-    virtualHosts = {
-      ":80, my.home" = {
+    virtualHosts = transform_to_virtual_hosts {
+      "my" = {
         extraConfig = ''
           root * ${homePage}
           file_server
         '';
-        # Needed as the default one,
-        # `output file ''${config.services.caddy.logDir}/access-''${hostName}.log`
-        # cannot handle multiple hosts.
-        logFormat = ''
-          output discard
-        '';
       };
-      "adguard.home" = {
+      "adguard" = {
         extraConfig = ''
           reverse_proxy localhost:${toString ADGUARD_PORT}
         '';
       };
-      "radarr.home" = {
+      "radarr" = {
         extraConfig = ''
           reverse_proxy ${ips.nas}:7878
         '';
       };
-      "bazarr.home" = {
+      "bazarr" = {
         extraConfig = ''
           reverse_proxy ${ips.nas}:6767
         '';
       };
-      "sonarr.home" = {
+      "sonarr" = {
         extraConfig = ''
           reverse_proxy ${ips.nas}:8989
         '';
       };
-      "plex.home" = {
+      "plex" = {
         extraConfig = ''
           reverse_proxy ${ips.nas}:32400
         '';
       };
-      "ethernet-switch.home" = {
+      "ethernet-switch" = {
         extraConfig = ''
           reverse_proxy ${ips.ethernet_switch}
         '';
       };
-      "power.home" = {
+      "power" = {
         extraConfig = ''
           reverse_proxy ${ips.nas}:9999
         '';
       };
-      "nas.home" = {
+      "nas" = {
         extraConfig = ''
           reverse_proxy ${ips.nas}:4200
         '';
       };
-      "sabnzbd.home" = {
+      "sabnzbd" = {
         extraConfig = ''
           reverse_proxy ${ips.nas}:8080
         '';
       };
-      "homebridge.home" = {
+      "homebridge" = {
         extraConfig = ''
           reverse_proxy localhost:8581
         '';
       };
-      "octoprint.home" = {
+      "octoprint" = {
         extraConfig = ''
           reverse_proxy ${ips.octo}:1080
         '';
       };
-      "home-assistant.home" = {
+      "home-assistant" = {
         extraConfig = ''
           reverse_proxy ${ips.octo}:8123
         '';
       };
-      "phoscon.home" = {
-        extraConfig = ''
-          reverse_proxy localhost:3080
-        '';
-      };
     };
   };
+
   systemd.services.caddy = {
     serviceConfig = {
       # CF_API_TOKEN=XXX
