@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 let
   homePage = pkgs.callPackage ./homepage.nix { };
   ips = import ../ips.nix;
@@ -7,10 +7,7 @@ let
 in {
   services.caddy = {
     enable = true;
-    package = (pkgs.callPackage ../pkgs/caddy.nix {
-      plugins = [ "https://github.com/caddy-dns/cloudflare" ];
-      vendorSha256 = "";
-    });
+    package = (pkgs.callPackage ../../pkgs/meowdy.nix { });
     logFormat = ''
       level INFO
     '';
@@ -19,7 +16,7 @@ in {
     '';
     # extraConfig = ''
     #   tls {
-    #     dns cloudflare 
+    #     dns cloudflare {env.CF_API_TOKEN}
     #   }
     # '';
     # Note that it's not localhost. Now we let it bind on all interfaces.
@@ -101,6 +98,12 @@ in {
           reverse_proxy localhost:3080
         '';
       };
+    };
+  };
+  systemd.services.caddy = {
+    serviceConfig = {
+      # CF_API_TOKEN=XXX
+      EnvironmentFile = config.age.secrets.cloudflare.path;
     };
   };
 }

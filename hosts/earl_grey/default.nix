@@ -51,7 +51,7 @@
       HostName 192.168.4.72
   '';
 
-  # To use the Caddy with DNS plugin. Very unfortunate.
-  nix.settings.sandbox = false;
+  # Sescrets
+  age.secrets.cloudflare.file = ../../secrets/cloudflare.age;
 
 }
