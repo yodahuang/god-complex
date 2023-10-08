@@ -51,24 +51,24 @@ pkgs.homer.withAssets {
             name = "Radarr";
             logo = "assets/homer-icons/png/radarr.png";
             subtitle = "Get movies";
-            url = "http://radarr.home";
+            url = "https://radarr.int.yanda.rocks";
           }
           {
             name = "Sonarr";
             logo = "assets/homer-icons/png/sonarr.png";
-            url = "http://sonarr.home";
+            url = "https://sonarr.int.yanda.rocks";
           }
           {
             name = "Bazarr";
             logo = "assets/homer-icons/png/bazarr.png";
             subtitle = "Get Subtitles";
-            url = "http://bazarr.home";
+            url = "https://bazarr.int.yanda.rocks";
           }
           {
             name = "Plex";
             logo = "assets/homer-icons/png/plex.png";
             subtitle = "Plex server";
-            url = "http://plex.home";
+            url = "https://plex.int.yanda.rocks";
           }
         ];
       }
@@ -80,31 +80,25 @@ pkgs.homer.withAssets {
             name = "Home Assistnat";
             logo = "assets/homer-icons/png/home-assistant.png";
             subtitle = "One place to store them all";
-            url = "http://home-assistant.home";
+            url = "https://home-assistant.int.yanda.rocks";
           }
           {
             name = "HomeBridge";
             logo = "assets/homer-icons/png/homebridge.png";
             subtitle = "Username and password are both admin";
-            url = "http://homebridge.home";
-          }
-          {
-            name = "Phoscon (deCONZ)";
-            logo = "assets/icons/phoscon.svg";
-            subtitle = "All Zigbee stuff";
-            url = "http://phoscon.home";
+            url = "https://homebridge.int.yanda.rocks";
           }
           {
             name = "AdGuard Home";
             logo = "assets/homer-icons/png/adguardhome.png";
             subtitle = "Block ads and trackings";
-            url = "http://adguard.home";
+            url = "https://adguard.int.yanda.rocks";
           }
           {
             name = "Ethernet Switch";
             icon = "fas fa-ethernet";
             subtitle = "TP-Link switch";
-            url = "http://ethernet-switch.home";
+            url = "https://ethernet-switch.int.yanda.rocks";
           }
         ];
       }
@@ -116,25 +110,15 @@ pkgs.homer.withAssets {
             name = "Calibre";
             logo = "assets/homer-icons/png/calibreweb.png";
             subtitle = "Manage books";
-            url = "http://calibre.home";
+            url = "https://calibre.int.yanda.rocks";
           }
           {
             name = "Readarr";
             logo = "assets/homer-icons/png/readarr.png";
             subtitle = "Get more books";
-            url = "http://readarr.home";
+            url = "https://readarr.int.yanda.rocks";
           }
         ];
-      }
-      {
-        name = "Admin";
-        icon = "fas fa-user-cog";
-        items = [{
-          name = "Portainer";
-          logo = "assets/homer-icons/png/portainer.png";
-          subtitle = "Manage all the containers";
-          url = "http://portainer.home";
-        }];
       }
       {
         name = "Misc";
@@ -144,19 +128,19 @@ pkgs.homer.withAssets {
             name = "NAS";
             logo = "assets/homer-icons/png/synology.png";
             subtitle = "One NAS to host them all";
-            url = "http://nas.home";
+            url = "https://nas.int.yanda.rocks";
           }
           {
             name = "OctoPrint";
             logo = "assets/homer-icons/png/octoprint.png";
             subtitle = "Control 3D printer with ease";
-            url = "http://octoprint.home";
+            url = "https://octoprint.int.yanda.rocks";
           }
           {
             name = "Sabnzbd";
             logo = "assets/homer-icons/png/sabnzbd.png";
             subtitle = "Download manager";
-            url = "http://sabnzbd.home";
+            url = "https://sabnzbd.int.yanda.rocks";
           }
         ];
       }
