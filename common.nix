@@ -26,6 +26,7 @@
       "vscode"
       "vscode-extension-github-copilot"
       "vscode-extension-ms-vscode-remote-remote-ssh"
+      "discord"
     ];
 
   users.users.yanda = {

@@ -51,4 +51,7 @@
       HostName 192.168.4.72
   '';
 
+  # Sescrets
+  age.secrets.cloudflare.file = ../../secrets/cloudflare.age;
+
 }
