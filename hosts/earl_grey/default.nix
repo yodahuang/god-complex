@@ -1,4 +1,6 @@
-{ config, pkgs, lib, ... }: {
+{ config, pkgs, lib, ... }:
+let ips = import ../ips.nix;
+in {
   imports = [ ./hardware-configuration.nix ./caddy.nix ./adguard_home.nix ];
 
   # Use uboot.
@@ -48,7 +50,7 @@
     Host rig
       IdentityFile /root/.ssh/id_ed25519
       User yanda
-      HostName 192.168.4.72
+      HostName ${ips.rig}
   '';
 
   # Sescrets
