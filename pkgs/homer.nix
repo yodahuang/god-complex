@@ -5,7 +5,7 @@ let
   homer_icons = fetchFromGitHub {
     owner = "NX211";
     repo = "homer-icons";
-    rev = "fbf21fb";
+    rev = "c23d6413b03629d45f80fe8d493224bae38baf23";
     sha256 = "sha256-rRGdRPkUPPv7pvIkRl9+XT0EfjD8PNrUGwizycG4KrA=";
   };
   homer_v2_theme = fetchFromGitHub {
@@ -16,10 +16,10 @@ let
   };
   homer = fetchzip rec {
     pname = "homer";
-    version = "23.05.1";
+    version = "23.10.1";
     url =
       "https://github.com/bastienwirtz/${pname}/releases/download/v${version}/${pname}.zip";
-    hash = "sha256-pYVbJ+7i4K3QWRYxVd2tu/aQ3FgfhGH6VM2ZRils53c=";
+    hash = "sha256-KUEqrjO9LAoigZsQGLy5JrtsXx+HDXaz4Y4Vpba0uNw=";
     stripRoot = false;
 
     passthru = {

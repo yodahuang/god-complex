@@ -91,7 +91,6 @@ pkgs.homer.withAssets {
           {
             name = "AdGuard Home";
             logo = "assets/homer-icons/png/adguardhome.png";
-            subtitle = "Block ads and trackings";
             url = "https://adguard.int.yanda.rocks";
           }
           {
@@ -99,24 +98,6 @@ pkgs.homer.withAssets {
             icon = "fas fa-ethernet";
             subtitle = "TP-Link switch";
             url = "https://ethernet-switch.int.yanda.rocks";
-          }
-        ];
-      }
-      {
-        name = "Books";
-        icon = "fas fa-book";
-        items = [
-          {
-            name = "Calibre";
-            logo = "assets/homer-icons/png/calibreweb.png";
-            subtitle = "Manage books";
-            url = "https://calibre.int.yanda.rocks";
-          }
-          {
-            name = "Readarr";
-            logo = "assets/homer-icons/png/readarr.png";
-            subtitle = "Get more books";
-            url = "https://readarr.int.yanda.rocks";
           }
         ];
       }
@@ -129,6 +110,12 @@ pkgs.homer.withAssets {
             logo = "assets/homer-icons/png/synology.png";
             subtitle = "One NAS to host them all";
             url = "https://nas.int.yanda.rocks";
+          }
+          {
+            name = "Paperless";
+            logo = "assets/homer-icons/png/paperless-ng.png";
+            subtitle = "The (not) paperless docs";
+            url = "https://paperless.int.yanda.rocks";
           }
           {
             name = "OctoPrint";

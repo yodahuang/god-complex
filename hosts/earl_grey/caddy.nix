@@ -91,7 +91,7 @@ in {
       };
       "homebridge" = {
         extraConfig = ''
-          reverse_proxy localhost:8581
+          reverse_proxy ${ips.octo}:8581
         '';
       };
       "octoprint" = {
@@ -102,6 +102,11 @@ in {
       "home-assistant" = {
         extraConfig = ''
           reverse_proxy ${ips.octo}:8123
+        '';
+      };
+      "paperless" = {
+        extraConfig = ''
+          reverse_proxy ${ips.nas}:8000
         '';
       };
     };
