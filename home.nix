@@ -55,6 +55,7 @@ in {
       mergetool.prompt = "false";
       core.editor = "vim";
     };
+    lfs.enable = true;
     delta.enable = true;
   };
 

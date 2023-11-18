@@ -16,6 +16,8 @@
         AppleShowAllExtensions = true;
         ShowPathbar = true;
       };
+      # Repeat the key instead inputting strange characters.
+      NSGlobalDomain.ApplePressAndHoldEnabled = false;
     };
   };
 
