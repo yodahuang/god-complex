@@ -16,7 +16,18 @@ in {
       discord
     ] ++ lib.optionals (!is_darwin) [ logseq ventoy ];
 
-  programs.kitty = { enable = true; };
+  programs.kitty = {
+    enable = true;
+    font = {
+      name = "Meslo";
+      size = 16;
+    };
+    theme = "Catppuccin-Macchiato";
+    settings = {
+      background_opacity = "0.8";
+      background_blur = 64;
+    };
+  };
 
   programs.vscode = {
     enable = true;
