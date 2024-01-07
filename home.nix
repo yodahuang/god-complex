@@ -32,6 +32,7 @@ in {
       btop
       flake-inputs.devenv.packages.${system}.devenv
       tailscale
+      atool
       # Nix specific
       nil
       nixfmt
@@ -86,9 +87,12 @@ in {
     '';
   };
 
+  # This is quite broken.
+  # Tracked in https://github.com/nix-community/nix-doom-emacs/issues/353
   programs.doom-emacs = {
     # We cheated here. This is to prevent doom-emacs compiling for forever on pi.
-    enable = with_display;
+    # enable = with_display;
+    enable = false;
     doomPrivateDir =
       ./doom.d; # Directory containing your config.el, init.el and packages.el files
     emacsPackage = if pkgs.stdenv.hostPlatform.isDarwin then

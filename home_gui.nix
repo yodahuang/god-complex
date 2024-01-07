@@ -50,6 +50,7 @@ in {
         tamasfe.even-better-toml
         rust-lang.rust-analyzer
         ms-python.python
+        ms-python.vscode-pylance
         charliermarsh.ruff
         # Fun
         hoovercj.vscode-power-mode
@@ -77,6 +78,11 @@ in {
       "extensions.autoUpdate" = false;
       "extensions.autoCheckUpdates" = false;
       "extensions.experimental.affinity" = { "asvetliakov.vscode-neovim" = 1; };
+      "[python]" = {
+        "editor.formatOnSave" = true;
+        "editor.defaultFormatter" = "charliermarsh.ruff";
+        "editor.codeActionsOnSave" = { "source.organizeImports" = true; };
+      };
     };
   };
 
