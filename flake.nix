@@ -63,7 +63,7 @@
           (make_home_manager_config {
             is_darwin = false;
             with_display = true;
-            usually_headless = true;
+            usually_headless = false;
           })
         ];
       };
