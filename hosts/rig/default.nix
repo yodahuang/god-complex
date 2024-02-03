@@ -28,4 +28,11 @@
       true; # Open ports in the firewall for Source Dedicated Server
   };
 
+  environment.systemPackages = with pkgs; [ protontricks ];
+
+  i18n.inputMethod = {
+    enabled = "fcitx5";
+    fcitx5.addons = with pkgs; [ fcitx5-rime fcitx5-gtk ];
+  };
+
 }

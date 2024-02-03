@@ -95,11 +95,17 @@ in {
       extensions = with pkgs.nur.repos.rycee.firefox-addons; [
         darkreader
         onepassword-password-manager
+        ublock-origin
+        tampermonkey
       ];
-      search.engines = {
-        "Kagi" = {
-          urls = [{ template = "https://kagi.com/search?q={searchTerms}"; }];
+      search = {
+        force = true;
+        engines = {
+          "Kagi" = {
+            urls = [{ template = "https://kagi.com/search?q={searchTerms}"; }];
+          };
         };
+        default = "Kagi";
       };
     };
   };

@@ -33,6 +33,7 @@ in {
       flake-inputs.devenv.packages.${system}.devenv
       tailscale
       atool
+      unzip
       # Nix specific
       nil
       nixfmt
