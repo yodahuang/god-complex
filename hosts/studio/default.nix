@@ -50,6 +50,7 @@
       "balenaetcher"
       "godot"
       "whisky"
+      "pdfsam-basic"
     ];
     # These app IDs are from using the mas CLI app
     # mas = mac app store
