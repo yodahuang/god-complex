@@ -67,8 +67,14 @@ pkgs.homer.withAssets {
           {
             name = "Plex";
             logo = "assets/homer-icons/png/plex.png";
-            subtitle = "Plex server";
+            subtitle = "Movies";
             url = "https://plex.int.yanda.rocks";
+          }
+          {
+            name = "Jellyfin";
+            logo = "assets/homer-icons/png/jellyfin.png";
+            subtitle = "Vlogs";
+            url = "http://jellyfin.int.yanda.rocks";
           }
         ];
       }

@@ -109,6 +109,11 @@ in {
           reverse_proxy ${ips.nas}:8000
         '';
       };
+      "jellyfin" = {
+        extraConfig = ''
+          reverse_proxy ${ips.nas}:8096
+        '';
+      };
     };
   };
 
