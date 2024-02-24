@@ -81,7 +81,7 @@ in {
       "[python]" = {
         "editor.formatOnSave" = true;
         "editor.defaultFormatter" = "charliermarsh.ruff";
-        "editor.codeActionsOnSave" = { "source.organizeImports" = true; };
+        "editor.codeActionsOnSave" = { "source.organizeImports" = "explicit"; };
       };
     };
   };
