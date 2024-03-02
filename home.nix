@@ -27,7 +27,7 @@ in {
       bat
       ripgrep
       eza
-      fzf
+      # fzf
       yazi
       btop
       flake-inputs.devenv.packages.${system}.devenv
@@ -110,9 +110,12 @@ in {
 
   programs.direnv = {
     enable = true;
-    enableZshIntegration = true;
     nix-direnv.enable = true;
   };
+
+  programs.zoxide.enable = true;
+
+  programs.atuin.enable = true;
 
   programs.ssh = {
     enable = true;
