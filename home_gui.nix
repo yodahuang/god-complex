@@ -37,11 +37,14 @@ in {
         catppuccin.catppuccin-vsc-icons
         catppuccin.catppuccin-vsc
       ] ++ (with vscode_extensions; [
+        # Look
+        whizkydee.material-palenight-theme
         # General
         ms-vscode-remote.remote-ssh
         asvetliakov.vscode-neovim
         eamodio.gitlens
         github.copilot
+        github.copilot-chat
         # Tools
         mkhl.direnv
         # Languages
@@ -79,7 +82,6 @@ in {
       "extensions.autoCheckUpdates" = false;
       "extensions.experimental.affinity" = { "asvetliakov.vscode-neovim" = 1; };
       "[python]" = {
-        "editor.formatOnSave" = true;
         "editor.defaultFormatter" = "charliermarsh.ruff";
         "editor.codeActionsOnSave" = { "source.organizeImports" = "explicit"; };
       };
