@@ -38,7 +38,8 @@ in {
         catppuccin.catppuccin-vsc
       ] ++ (with vscode_extensions; [
         # Look
-        whizkydee.material-palenight-theme
+        sainnhe.gruvbox-material
+        jonathanharty.gruvbox-material-icon-theme
         # General
         ms-vscode-remote.remote-ssh
         asvetliakov.vscode-neovim
