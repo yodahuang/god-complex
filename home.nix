@@ -27,16 +27,15 @@ in {
       bat
       ripgrep
       eza
-      # fzf
+      devenv
       yazi
       btop
-      flake-inputs.devenv.packages.${system}.devenv
       tailscale
       atool
       unzip
       # Nix specific
       nil
-      nixfmt
+      nixfmt-rfc-style
     ] ++ lib.optionals (!is_darwin) [ podman ];
 
   # Let Home Manager install and manage itself.
