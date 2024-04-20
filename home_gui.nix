@@ -1,11 +1,23 @@
-{ config, pkgs, lib, flake-inputs, is_darwin, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  flake-inputs,
+  is_darwin,
+  ...
+}:
 let
-  vscode_extensions =
-    flake-inputs.nix-vscode-extensions.extensions.${pkgs.system}.vscode-marketplace;
-in {
+  vscode_extensions = flake-inputs.nix-vscode-extensions.extensions.${pkgs.system}.vscode-marketplace;
+  vscode_pinned_extensions = (import ./special/vscode/extensions.nix) {
+    pkgs = pkgs;
+    lib = lib;
+  };
+in
+{
   fonts.fontconfig.enable = true;
 
-  home.packages = with pkgs;
+  home.packages =
+    with pkgs;
     [
       # Fonts
       comic-mono
@@ -14,7 +26,11 @@ in {
       # Apps
       obsidian
       discord
-    ] ++ lib.optionals (!is_darwin) [ logseq ventoy ];
+    ]
+    ++ lib.optionals (!is_darwin) [
+      logseq
+      ventoy
+    ];
 
   programs.kitty = {
     enable = true;
@@ -31,12 +47,14 @@ in {
 
   programs.vscode = {
     enable = true;
-    extensions = with pkgs.vscode-extensions;
+    extensions =
+      with pkgs.vscode-extensions;
       [
         # Look
         catppuccin.catppuccin-vsc-icons
         catppuccin.catppuccin-vsc
-      ] ++ (with vscode_extensions; [
+      ]
+      ++ (with vscode_extensions; [
         # Look
         sainnhe.gruvbox-material
         jonathanharty.gruvbox-material-icon-theme
@@ -53,25 +71,28 @@ in {
         mattn.lisp
         tamasfe.even-better-toml
         rust-lang.rust-analyzer
-        ms-python.python
         ms-python.vscode-pylance
         charliermarsh.ruff
         # Fun
         hoovercj.vscode-power-mode
         tonybaloney.vscode-pets
-      ]);
+      ])
+      ++ (with vscode_pinned_extensions; [ ms-python.python ]);
     userSettings = {
       "nix.enableLanguageServer" = true;
       "nix.serverPath" = "nil";
       "nix.serverSettings" = {
-        nil = { formatting = { command = [ "nixfmt" ]; }; };
+        nil = {
+          formatting = {
+            command = [ "nixfmt" ];
+          };
+        };
       };
       "workbench.iconTheme" = "catppuccin-frappe";
       "workbench.colorTheme" = "Catppuccin Macchiato";
       "editor.formatOnSave" = true;
       "editor.inlineSuggest.enabled" = true;
-      "editor.fontFamily" =
-        "'Comic Mono','Droid Sans Mono', 'monospace', monosspace";
+      "editor.fontFamily" = "'Comic Mono','Droid Sans Mono', 'monospace', monosspace";
       "editor.fontSize" = 16;
       "remote.SSH.useLocalServer" = false;
       "remote.SSH.remotePlatform" = {
@@ -81,10 +102,14 @@ in {
       };
       "extensions.autoUpdate" = false;
       "extensions.autoCheckUpdates" = false;
-      "extensions.experimental.affinity" = { "asvetliakov.vscode-neovim" = 1; };
+      "extensions.experimental.affinity" = {
+        "asvetliakov.vscode-neovim" = 1;
+      };
       "[python]" = {
         "editor.defaultFormatter" = "charliermarsh.ruff";
-        "editor.codeActionsOnSave" = { "source.organizeImports" = "explicit"; };
+        "editor.codeActionsOnSave" = {
+          "source.organizeImports" = "explicit";
+        };
       };
     };
   };
@@ -105,12 +130,11 @@ in {
         force = true;
         engines = {
           "Kagi" = {
-            urls = [{ template = "https://kagi.com/search?q={searchTerms}"; }];
+            urls = [ { template = "https://kagi.com/search?q={searchTerms}"; } ];
           };
         };
         default = "Kagi";
       };
     };
   };
-
 }
