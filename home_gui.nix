@@ -62,8 +62,6 @@ in
         ms-vscode-remote.remote-ssh
         asvetliakov.vscode-neovim
         eamodio.gitlens
-        github.copilot
-        github.copilot-chat
         # Tools
         mkhl.direnv
         # Languages
@@ -77,7 +75,11 @@ in
         hoovercj.vscode-power-mode
         tonybaloney.vscode-pets
       ])
-      ++ (with vscode_pinned_extensions; [ ms-python.python ]);
+      ++ (with vscode_pinned_extensions; [
+        ms-python.python
+        github.copilot-chat
+        github.copilot
+      ]);
     userSettings = {
       "nix.enableLanguageServer" = true;
       "nix.serverPath" = "nil";
