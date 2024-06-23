@@ -5,9 +5,9 @@ in {
     enable = true;
     mutableSettings = false;
     openFirewall = true;
+    host = "0.0.0.0";
+    port = ADGUARD_PORT;
     settings = {
-      bind_host = "0.0.0.0";
-      bind_port = ADGUARD_PORT;
       http = { address = "0.0.0.0:1080"; };
       dns = {
         bind_hosts = [ "0.0.0.0" ];
