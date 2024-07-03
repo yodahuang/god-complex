@@ -1,7 +1,17 @@
-{ config, pkgs, lib, flake-inputs, is_darwin, with_display, usually_headless
-, ... }:
-let ips = import ./hosts/ips.nix;
-in {
+{
+  config,
+  pkgs,
+  lib,
+  flake-inputs,
+  is_darwin,
+  with_display,
+  usually_headless,
+  ...
+}:
+let
+  ips = import ./hosts/ips.nix;
+in
+{
   imports = [
     flake-inputs.nix-doom-emacs.hmModule
     flake-inputs.vscode-server.homeModules.default
@@ -20,7 +30,8 @@ in {
   # manual building is failing for me
   manual.manpages.enable = false;
 
-  home.packages = with pkgs;
+  home.packages =
+    with pkgs;
     [
       # Common util
       neofetch
@@ -36,7 +47,9 @@ in {
       # Nix specific
       nil
       nixfmt-rfc-style
-    ] ++ lib.optionals (!is_darwin) [ podman ];
+    ]
+    ++ lib.optionals (!is_darwin) [ podman ]
+    ++ lib.optionals (is_darwin) [ qmk ];
 
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
@@ -51,8 +64,12 @@ in {
       "sw" = "switch";
     };
     extraConfig = {
-      merge = { conflictstyle = "diff3"; };
-      pull = { rebase = true; };
+      merge = {
+        conflictstyle = "diff3";
+      };
+      pull = {
+        rebase = true;
+      };
       mergetool.prompt = "false";
       core.editor = "vim";
     };
@@ -65,6 +82,7 @@ in {
     shellAbbrs = {
       ls = "eza";
       cat = "bat";
+      vim = "nvim";
     };
     plugins = with pkgs.fishPlugins; [
       {
@@ -80,11 +98,13 @@ in {
         src = done.src;
       }
     ];
-    shellInit = lib.optionalString is_darwin ''
-      eval "$(/opt/homebrew/bin/brew shellenv)"
-    '' + ''
-      fish_vi_key_bindings
-    '';
+    shellInit =
+      lib.optionalString is_darwin ''
+        eval "$(/opt/homebrew/bin/brew shellenv)"
+      ''
+      + ''
+        fish_vi_key_bindings
+      '';
   };
 
   # This is quite broken.
@@ -93,18 +113,19 @@ in {
     # We cheated here. This is to prevent doom-emacs compiling for forever on pi.
     # enable = with_display;
     enable = false;
-    doomPrivateDir =
-      ./doom.d; # Directory containing your config.el, init.el and packages.el files
-    emacsPackage = if pkgs.stdenv.hostPlatform.isDarwin then
-      pkgs.emacs-macport
-    else
-      pkgs.emacs;
+    doomPrivateDir = ./doom.d; # Directory containing your config.el, init.el and packages.el files
+    emacsPackage = if pkgs.stdenv.hostPlatform.isDarwin then pkgs.emacs-macport else pkgs.emacs;
   };
 
   programs.neovim = {
     enable = true;
     viAlias = true;
     vimAlias = true;
+  };
+  home.file = {
+    ".config/nvim" = {
+      source = config.lib.file.mkOutOfStoreSymlink ./nvim;
+    };
   };
 
   programs.direnv = {
@@ -123,11 +144,11 @@ in {
         extraOptions = lib.optionalAttrs (!usually_headless) {
           # On NixOS, it's in its usual location.
           # On Darwin, it's from some random place AppStore puts.
-          IdentityAgent = if is_darwin then
-            ''
-              "~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"''
-          else
-            "~/.1password/agent.sock";
+          IdentityAgent =
+            if is_darwin then
+              ''"~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"''
+            else
+              "~/.1password/agent.sock";
         };
       };
       # Hardcoding the local ip here instead of using Tailscale ones.
