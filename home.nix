@@ -44,7 +44,7 @@ in
       tailscale
       atool
       unzip
-      lunarvim
+      # lunarvim
       # Nix specific
       nil
       nixfmt-rfc-style
