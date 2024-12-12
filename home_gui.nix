@@ -22,7 +22,7 @@ in
       # Fonts
       comic-mono
       jetbrains-mono
-      (nerdfonts.override { fonts = [ "Meslo" ]; })
+      nerd-fonts.meslo-lg
       # Apps
       obsidian
       discord
@@ -38,7 +38,7 @@ in
       name = "Meslo";
       size = 16;
     };
-    theme = "Catppuccin-Macchiato";
+    # theme = "Catppuccin-Macchiato";
     settings = {
       background_opacity = "0.8";
       background_blur = 64;
@@ -74,6 +74,8 @@ in
         # Fun
         hoovercj.vscode-power-mode
         tonybaloney.vscode-pets
+        # Markdown
+        streetsidesoftware.code-spell-checker
       ])
       ++ (with vscode_pinned_extensions; [
         ms-python.python

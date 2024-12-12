@@ -47,6 +47,8 @@ in
       # Nix specific
       nil
       nixfmt-rfc-style
+      # Python
+      uv
     ]
     ++ lib.optionals (!is_darwin) [ podman ]
     ++ lib.optionals (is_darwin) [ qmk ];
@@ -82,7 +84,6 @@ in
     shellAbbrs = {
       ls = "eza";
       cat = "bat";
-      vim = "nvim";
     };
     plugins = with pkgs.fishPlugins; [
       {
