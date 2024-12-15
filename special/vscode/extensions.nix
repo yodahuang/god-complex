@@ -24,14 +24,14 @@ merge
           "github"."copilot" = vscode-utils.extensionFromVscodeMarketplace {
             name = "copilot";
             publisher = "github";
-            version = "1.239.1166";
-            sha256 = "0y37a51klfmk8lkgpshhamxf5igb8khgnb61x34fsl1xvxl41cnv";
+            version = "1.252.0";
+            sha256 = "0i610aly3slv9akjv0gsm1vf8s94zwncdkrgzz4nv73cw3h6lp5x";
           };
           "github"."copilot-chat" = vscode-utils.extensionFromVscodeMarketplace {
             name = "copilot-chat";
             publisher = "github";
-            version = "0.22.2024100702";
-            sha256 = "0iii9zw1nr88pvx0diadycj8319h03piqbnkqy9vip3kgh99rxwz";
+            version = "0.24.2024121201";
+            sha256 = "14cs1ncbv0fib65m1iv6njl892p09fmamjkfyxrsjqgks2hisz5z";
           };
         }
         (
@@ -39,8 +39,8 @@ merge
             "ms-python"."python" = vscode-utils.extensionFromVscodeMarketplace {
               name = "python";
               publisher = "ms-python";
-              version = "2024.17.2024101501";
-              sha256 = "1y54nbfvp2d3lc5wccwnv6093wc177gljbi4b01xm3nwd5cmpsrs";
+              version = "2024.23.2024121301";
+              sha256 = "0rmqilxg8wd8nzskny10k6z903x30mwjix9anbyjg5kc23436li5";
               arch = "linux-x64";
             };
           }
@@ -51,8 +51,8 @@ merge
           "ms-python"."python" = vscode-utils.extensionFromVscodeMarketplace {
             name = "python";
             publisher = "ms-python";
-            version = "2024.17.2024101501";
-            sha256 = "0i0p8k2r45gz9balv602y7scxxakh69wz5agw243qlrk7va8sgzr";
+            version = "2024.23.2024121301";
+            sha256 = "0wl66ylvfd35zj42akg6vlmrb9z9xnqiarha0w9cjzhcxbslzawl";
             arch = "linux-arm64";
           };
         }
@@ -63,8 +63,8 @@ merge
         "ms-python"."python" = vscode-utils.extensionFromVscodeMarketplace {
           name = "python";
           publisher = "ms-python";
-          version = "2024.17.2024101501";
-          sha256 = "1p18s02c0dk4dx5i8f9aj3ppyvk1c9z9w9jvynia23dsndj9zplr";
+          version = "2024.23.2024121301";
+          sha256 = "1fb0zfg0l6x38rbdaa3k07znc2jj4i1g99rqpc5ka60hn1qz5sma";
           arch = "darwin-x64";
         };
       }
@@ -75,8 +75,8 @@ merge
       "ms-python"."python" = vscode-utils.extensionFromVscodeMarketplace {
         name = "python";
         publisher = "ms-python";
-        version = "2024.17.2024101501";
-        sha256 = "1pmwirklgxc4g4w8zjpjakjyz45ih2wcrmslg00g2xwrzlgccr6l";
+        version = "2024.23.2024121301";
+        sha256 = "1sazzalri80rawispqc52f4v5gjzqrhamfclajmqq0d58i7ap0bp";
         arch = "darwin-arm64";
       };
     }
