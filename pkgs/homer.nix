@@ -25,7 +25,7 @@ let
     pname = "homer";
     version = "24.10.2";
     url = "https://github.com/bastienwirtz/${pname}/releases/download/v${version}/${pname}.zip";
-    hash = "sha256-KUEqrjO9LAoigZsQGLy5JrtsXx+HDXaz4Y4Vpba0uNw=";
+    hash = "sha256-V4E/KLOzfiCMwdQrXzab2VzjuB0TYpocoYhdUVt4g78=";
     stripRoot = false;
 
     passthru = {
