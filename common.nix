@@ -20,15 +20,7 @@
   programs.fish.enable = true;
 
   nixpkgs.config = {
-    allowUnfreePredicate = pkg:
-      builtins.elem (lib.getName pkg) [
-        "obsidian"
-        "1password-cli"
-        "vscode"
-        "vscode-extension-github-copilot"
-        "vscode-extension-ms-vscode-remote-remote-ssh"
-        "discord"
-      ];
+    allowUnfree = true;
     # https://github.com/NixOS/nixpkgs/issues/273611
     permittedInsecurePackages =
       pkgs.lib.optional (pkgs.obsidian.version == "1.5.3") "electron-25.9.0";

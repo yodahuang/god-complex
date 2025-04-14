@@ -1,13 +1,22 @@
-{ pkgs, lib, ... }: {
+{ pkgs, lib, ... }:
+{
 
-  users.users.yanda = { home = "/Users/yanda"; };
+  users.users.yanda = {
+    home = "/Users/yanda";
+  };
 
-  nix.settings.trusted-users = ["root" "yanda"];
+  nix.settings.trusted-users = [
+    "root"
+    "yanda"
+  ];
 
-  # Auto upgrade nix package and the daemon service.
-  services.nix-daemon.enable = true;
+  nixpkgs.hostPlatform = "aarch64-darwin";
 
-  environment.shells = with pkgs; [ bashInteractive zsh fish ];
+  environment.shells = with pkgs; [
+    bashInteractive
+    zsh
+    fish
+  ];
 
   system = {
     # Used for backwards compatibility, please read the changelog before changing.
@@ -59,6 +68,8 @@
       "downie"
       "notion"
       "cursor"
+      "ghostty"
+      "anki"
     ];
     # These app IDs are from using the mas CLI app
     # mas = mac app store

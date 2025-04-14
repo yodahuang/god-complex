@@ -3,7 +3,6 @@
   pkgs,
   lib,
   flake-inputs,
-  is_darwin,
   ...
 }:
 let
@@ -12,6 +11,7 @@ let
     pkgs = pkgs;
     lib = lib;
   };
+  is_darwin = pkgs.stdenv.isDarwin;
 in
 {
   fonts.fontconfig.enable = true;
@@ -140,5 +140,12 @@ in
         default = "Kagi";
       };
     };
+  };
+
+  programs.ghostty = {
+    # https://github.com/NixOS/nixpkgs/issues/388984
+    enable = !is_darwin;
+    enableFishIntegration = true;
+    installBatSyntax = true;
   };
 }

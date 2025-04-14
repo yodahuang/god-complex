@@ -3,19 +3,19 @@
   pkgs,
   lib,
   flake-inputs,
-  is_darwin,
   with_display,
   usually_headless,
   ...
 }:
 let
   ips = import ./hosts/ips.nix;
+  is_darwin = pkgs.stdenv.isDarwin;
 in
 {
   imports = [
     flake-inputs.nix-doom-emacs.hmModule
     flake-inputs.vscode-server.homeModules.default
-  ] ++ lib.optionals (with_display) [ ./home_gui.nix ];
+  ] ++ lib.optionals with_display [ ./home_gui.nix ];
 
   # This value determines the Home Manager release that your
   # configuration is compatible with. This helps avoid breakage
@@ -25,7 +25,7 @@ in
   # You can update Home Manager without changing this value. See
   # the Home Manager release notes for a list of state version
   # changes in each release.
-  home.stateVersion = "23.05";
+  home.stateVersion = "24.11";
 
   # manual building is failing for me
   manual.manpages.enable = false;
@@ -44,15 +44,15 @@ in
       tailscale
       atool
       unzip
-      # lunarvim
       # Nix specific
       nil
       nixfmt-rfc-style
+      nixd
       # Python
       uv
     ]
     ++ lib.optionals (!is_darwin) [ podman ]
-    ++ lib.optionals (is_darwin) [ qmk ];
+    ++ lib.optionals is_darwin [ qmk ];
 
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;

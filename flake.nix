@@ -4,7 +4,7 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
-    darwin.url = "github:lnl7/nix-darwin";
+    darwin.url = "github:nix-darwin/nix-darwin/master";
     darwin.inputs.nixpkgs.follows = "nixpkgs";
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
@@ -17,13 +17,29 @@
     agenix.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs = inputs@{ self, darwin, nixpkgs, home-manager, nix-doom-emacs, nur
-    , vscode-server, nixos-hardware, nix-vscode-extensions, agenix, ... }:
+  outputs =
+    inputs@{
+      self,
+      darwin,
+      nixpkgs,
+      home-manager,
+      nix-doom-emacs,
+      nur,
+      nixos-hardware,
+      nix-vscode-extensions,
+      agenix,
+      ...
+    }:
     let
       # A helper function to build the home-manager configuration.
       make_home_manager_config =
-        { is_darwin, with_display, usually_headless, ... }: {
-          nixpkgs.overlays = [ nur.overlay ];
+        {
+          with_display,
+          usually_headless,
+          ...
+        }:
+        {
+          nixpkgs.overlays = [ nur.overlays.default ];
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
           home-manager.users.yanda = import ./home.nix;
@@ -31,10 +47,11 @@
           # https://discourse.nixos.org/t/adding-doom-emacs-using-home-manager/27742/2
           home-manager.extraSpecialArgs = {
             flake-inputs = inputs;
-            inherit is_darwin with_display usually_headless;
+            inherit with_display usually_headless;
           };
         };
-    in {
+    in
+    {
       darwinConfigurations."Studio" = darwin.lib.darwinSystem {
         system = "aarch64-darwin";
         modules = [
@@ -42,7 +59,6 @@
           ./common.nix
           home-manager.darwinModules.home-manager
           (make_home_manager_config {
-            is_darwin = true;
             with_display = true;
             usually_headless = false;
           })
@@ -59,7 +75,6 @@
           ./nixos/nvidia.nix
           home-manager.nixosModules.home-manager
           (make_home_manager_config {
-            is_darwin = false;
             with_display = true;
             usually_headless = false;
           })
@@ -78,7 +93,6 @@
           ./common.nix
           home-manager.nixosModules.home-manager
           (make_home_manager_config {
-            is_darwin = false;
             with_display = false;
             usually_headless = true;
           })
@@ -95,7 +109,6 @@
           nixos-hardware.nixosModules.microsoft-surface-common
           home-manager.nixosModules.home-manager
           (make_home_manager_config {
-            is_darwin = false;
             with_display = true;
             usually_headless = false;
           })
