@@ -48,6 +48,7 @@ in
       nil
       nixfmt-rfc-style
       nixd
+      alejandra
       # Python
       uv
     ]

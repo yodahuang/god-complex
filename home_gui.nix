@@ -4,20 +4,19 @@
   lib,
   flake-inputs,
   ...
-}:
-let
-  vscode_extensions = flake-inputs.nix-vscode-extensions.extensions.${pkgs.system}.vscode-marketplace;
-  vscode_pinned_extensions = (import ./special/vscode/extensions.nix) {
-    pkgs = pkgs;
-    lib = lib;
+}: let
+  pkgs-ext = import flake-inputs.nixpkgs {
+    inherit (pkgs) system;
+    config.allowUnfree = true;
+    overlays = [flake-inputs.nix-vscode-extensions.overlays.default];
   };
+  vscode_marketplace = (pkgs-ext.forVSCodeVersion "1.99.1").vscode-marketplace;
+  vscode_marketplace_release = pkgs-ext.vscode-marketplace-release;
   is_darwin = pkgs.stdenv.isDarwin;
-in
-{
+in {
   fonts.fontconfig.enable = true;
 
-  home.packages =
-    with pkgs;
+  home.packages = with pkgs;
     [
       # Fonts
       comic-mono
@@ -46,18 +45,14 @@ in
   };
 
   programs.vscode = {
-    enable = false;
-    extensions =
-      with pkgs.vscode-extensions;
+    enable = true;
+    extensions = with vscode_marketplace;
       [
-        # Look
-        catppuccin.catppuccin-vsc-icons
-        catppuccin.catppuccin-vsc
-      ]
-      ++ (with vscode_extensions; [
         # Look
         sainnhe.gruvbox-material
         jonathanharty.gruvbox-material-icon-theme
+        catppuccin.catppuccin-vsc-icons
+        catppuccin.catppuccin-vsc
         # General
         ms-vscode-remote.remote-ssh
         asvetliakov.vscode-neovim
@@ -70,15 +65,16 @@ in
         tamasfe.even-better-toml
         rust-lang.rust-analyzer
         ms-python.vscode-pylance
+        ms-python.python
         charliermarsh.ruff
         # Fun
         hoovercj.vscode-power-mode
         tonybaloney.vscode-pets
         # Markdown
         streetsidesoftware.code-spell-checker
-      ])
-      ++ (with vscode_pinned_extensions; [
-        ms-python.python
+      ]
+      ++ (with vscode_marketplace_release; [
+        # CoPilot
         github.copilot-chat
         github.copilot
       ]);
@@ -88,7 +84,7 @@ in
       "nix.serverSettings" = {
         nil = {
           formatting = {
-            command = [ "nixfmt" ];
+            command = ["alejandra" "--quiet" "--"];
           };
         };
       };
@@ -134,7 +130,7 @@ in
         force = true;
         engines = {
           "Kagi" = {
-            urls = [ { template = "https://kagi.com/search?q={searchTerms}"; } ];
+            urls = [{template = "https://kagi.com/search?q={searchTerms}";}];
           };
         };
         default = "Kagi";
