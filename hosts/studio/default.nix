@@ -1,6 +1,8 @@
-{ pkgs, lib, ... }:
 {
-
+  pkgs,
+  lib,
+  ...
+}: {
   users.users.yanda = {
     home = "/Users/yanda";
   };
@@ -62,7 +64,6 @@
       "godot"
       "whisky"
       "pdfsam-basic"
-      "zed"
       "prusaslicer"
       "signal"
       "downie"

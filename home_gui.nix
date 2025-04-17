@@ -46,7 +46,7 @@ in {
 
   programs.vscode = {
     enable = true;
-    extensions = with vscode_marketplace;
+    profiles.default.extensions = with vscode_marketplace;
       [
         # Look
         sainnhe.gruvbox-material
@@ -78,7 +78,7 @@ in {
         github.copilot-chat
         github.copilot
       ]);
-    userSettings = {
+    profiles.default.userSettings = {
       "nix.enableLanguageServer" = true;
       "nix.serverPath" = "nil";
       "nix.serverSettings" = {
@@ -138,10 +138,59 @@ in {
     };
   };
 
+  programs.zed-editor = {
+    enable = true;
+    extensions = ["html" "toml" "git-firefly" "nix"];
+    userSettings = {
+      assistant = {
+        default_model = {
+          provider = "copilot_chat";
+          model = "claude-3-7-sonnet";
+        };
+        version = "2";
+      };
+      theme = "One Dark";
+      vim_mode = true;
+      ui_font_size = 16;
+      buffer_font_size = 16;
+      lsp = {
+        nil = {
+          initialization_options = {
+            formatting = {
+              command = ["alejandra" "--quiet" "--"];
+            };
+          };
+        };
+        rust-analyzer = {
+          binary = {
+            path_lookup = true;
+          };
+        };
+        nix = {
+          binary = {
+            path_lookup = true;
+          };
+        };
+      };
+    };
+  };
+
   programs.ghostty = {
     # https://github.com/NixOS/nixpkgs/issues/388984
-    enable = !is_darwin;
+    enable = true;
+    # On Darwin this need to be from brew.
+    package =
+      if is_darwin
+      then pkgs.writeShellScriptBin "ghostty" "" # Creates a "ghostty" executable that does nothing
+      else pkgs.ghostty;
     enableFishIntegration = true;
     installBatSyntax = true;
+    settings = {
+      font-family = "Comic Code";
+      font-size = 16;
+      theme = "tokyonight";
+      background-opacity = 0.8;
+      background-blur-radius = 20;
+    };
   };
 }
