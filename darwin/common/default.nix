@@ -1,5 +1,8 @@
-{ pkgs, lib, ... }:
 {
+  pkgs,
+  lib,
+  ...
+}: {
   users.users.yanda = {
     home = "/Users/yanda";
   };
@@ -31,11 +34,13 @@
   # Import extra Homebrew packages from darwin/packages.nix
   homebrew = let
     pkg = import ../packages.nix;
-  in {
-    enable = true;
-    onActivation = {
-      upgrade = true;
-      cleanup = "zap";
-    };
-  } // (pkg.homebrew or {});
+  in
+    {
+      enable = true;
+      onActivation = {
+        upgrade = true;
+        cleanup = "zap";
+      };
+    }
+    // (pkg.homebrew or {});
 }

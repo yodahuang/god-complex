@@ -6,16 +6,16 @@
   with_display,
   usually_headless,
   ...
-}:
-let
+}: let
   ips = import ./hosts/ips.nix;
   is_darwin = pkgs.stdenv.isDarwin;
-in
-{
-  imports = [
-    flake-inputs.nix-doom-emacs.hmModule
-    flake-inputs.vscode-server.homeModules.default
-  ] ++ lib.optionals with_display [ ./home_gui.nix ];
+in {
+  imports =
+    [
+      flake-inputs.nix-doom-emacs.hmModule
+      flake-inputs.vscode-server.homeModules.default
+    ]
+    ++ lib.optionals with_display [./home_gui.nix];
 
   # This value determines the Home Manager release that your
   # configuration is compatible with. This helps avoid breakage
@@ -30,9 +30,9 @@ in
   # manual building is failing for me
   manual.manpages.enable = false;
 
-  home.packages =
-    with pkgs;
+  home.packages = with pkgs;
     [
+      lefthook
       # Common util
       neofetch
       bat
@@ -52,8 +52,8 @@ in
       # Python
       uv
     ]
-    ++ lib.optionals (!is_darwin) [ podman ]
-    ++ lib.optionals is_darwin [ qmk ];
+    ++ lib.optionals (!is_darwin) [podman]
+    ++ lib.optionals is_darwin [qmk];
 
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
@@ -117,7 +117,10 @@ in
     # enable = with_display;
     enable = false;
     doomPrivateDir = ./doom.d; # Directory containing your config.el, init.el and packages.el files
-    emacsPackage = if pkgs.stdenv.hostPlatform.isDarwin then pkgs.emacs-macport else pkgs.emacs;
+    emacsPackage =
+      if pkgs.stdenv.hostPlatform.isDarwin
+      then pkgs.emacs-macport
+      else pkgs.emacs;
   };
 
   programs.neovim = {
@@ -148,10 +151,9 @@ in
           # On NixOS, it's in its usual location.
           # On Darwin, it's from some random place AppStore puts.
           IdentityAgent =
-            if is_darwin then
-              ''"~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"''
-            else
-              "~/.1password/agent.sock";
+            if is_darwin
+            then ''"~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"''
+            else "~/.1password/agent.sock";
         };
       };
       # Hardcoding the local ip here instead of using Tailscale ones.

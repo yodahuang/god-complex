@@ -1,11 +1,13 @@
 # Edit this configuration file to define what should be installed on
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
-
-{ config, pkgs, ... }:
-
 {
-  imports = [ # Include the results of the hardware scan.
+  config,
+  pkgs,
+  ...
+}: {
+  imports = [
+    # Include the results of the hardware scan.
     ./hardware-configuration.nix
   ];
 
@@ -16,9 +18,9 @@
   services.xserver.desktopManager.budgie.enable = true;
 
   # Add myself to it as this is the build machine.
-  nix.settings.trusted-users = [ "root" "yanda" ];
+  nix.settings.trusted-users = ["root" "yanda"];
 
-  boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
+  boot.binfmt.emulatedSystems = ["aarch64-linux"];
 
   programs.steam = {
     enable = true;
@@ -28,11 +30,10 @@
       true; # Open ports in the firewall for Source Dedicated Server
   };
 
-  environment.systemPackages = with pkgs; [ protontricks ];
+  environment.systemPackages = with pkgs; [protontricks];
 
   i18n.inputMethod = {
     enabled = "fcitx5";
-    fcitx5.addons = with pkgs; [ fcitx5-rime fcitx5-gtk ];
+    fcitx5.addons = with pkgs; [fcitx5-rime fcitx5-gtk];
   };
-
 }

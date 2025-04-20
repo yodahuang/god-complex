@@ -1,7 +1,12 @@
-{ config, pkgs, lib, ... }:
-let ips = import ../ips.nix;
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}: let
+  ips = import ../ips.nix;
 in {
-  imports = [ ./hardware-configuration.nix ./caddy.nix ./adguard_home.nix ];
+  imports = [./hardware-configuration.nix ./caddy.nix ./adguard_home.nix];
 
   # Use uboot.
   boot.loader.grub.enable = false;
@@ -24,7 +29,7 @@ in {
   users.users.yanda = {
     isNormalUser = true;
     description = "Yanda";
-    extraGroups = [ "networkmanager" "wheel" ];
+    extraGroups = ["networkmanager" "wheel"];
   };
 
   system.stateVersion = "23.05";
@@ -55,5 +60,4 @@ in {
 
   # Sescrets
   age.secrets.cloudflare.file = ../../secrets/cloudflare.age;
-
 }

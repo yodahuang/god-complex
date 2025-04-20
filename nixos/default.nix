@@ -1,7 +1,8 @@
-{ config, pkgs, ... }:
-
 {
-
+  config,
+  pkgs,
+  ...
+}: {
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
@@ -65,11 +66,10 @@
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.yanda = {
     isNormalUser = true;
-    extraGroups = [ "networkmanager" "wheel" ];
-    packages = with pkgs;
-      [
-        # firefox
-      ];
+    extraGroups = ["networkmanager" "wheel"];
+    packages = with pkgs; [
+      # firefox
+    ];
   };
 
   # Enable automatic login for the user.
@@ -89,7 +89,7 @@
 
   programs._1password-gui = {
     enable = true;
-    polkitPolicyOwners = [ "yanda" ];
+    polkitPolicyOwners = ["yanda"];
   };
 
   # For remote build.
@@ -119,5 +119,4 @@
   # Before changing this value read the documentation for this option
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
   system.stateVersion = "23.05"; # Did you read the comment?
-
 }

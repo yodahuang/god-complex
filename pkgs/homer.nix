@@ -6,9 +6,7 @@
   writeTextFile,
   runCommandLocal,
   symlinkJoin,
-}:
-
-let
+}: let
   homer_icons = fetchFromGitHub {
     owner = "NX211";
     repo = "homer-icons";
@@ -29,15 +27,13 @@ let
     stripRoot = false;
 
     passthru = {
-      withAssets =
-        {
-          name ? null,
-          config,
-          extraAssets ? [ ],
-        }:
-        let
-          nameSuffix = lib.optionalString (name != null) "-${name}";
-        in
+      withAssets = {
+        name ? null,
+        config,
+        extraAssets ? [],
+      }: let
+        nameSuffix = lib.optionalString (name != null) "-${name}";
+      in
         symlinkJoin {
           name = "homer-root${nameSuffix}";
           paths =
@@ -50,7 +46,7 @@ let
                 destination = "/assets/config.yml";
               })
               # Homer icon.
-              (runCommandLocal "homer-icons${nameSuffix}" { } ''
+              (runCommandLocal "homer-icons${nameSuffix}" {} ''
                 mkdir -p $out/assets/
                 ln -s ${homer_icons} $out/assets/homer-icons
               '')
@@ -59,27 +55,28 @@ let
                 let
                   theme_assets = "${homer_v2_theme}/assets";
                 in
-                # Copy the important ones.
-                runCommandLocal "homer-theme${nameSuffix}" { } (
-                  builtins.concatStringsSep "\n" (
-                    [ "mkdir -p $out/assets/" ]
-                    ++ (map (filename: "ln -s ${theme_assets}/${filename} $out/assets") [
-                      "fonts"
-                      "custom.css"
-                      "wallpaper-light.jpeg"
-                      "wallpaper.jpeg"
-                    ])
+                  # Copy the important ones.
+                  runCommandLocal "homer-theme${nameSuffix}" {} (
+                    builtins.concatStringsSep "\n" (
+                      ["mkdir -p $out/assets/"]
+                      ++ (map (filename: "ln -s ${theme_assets}/${filename} $out/assets") [
+                        "fonts"
+                        "custom.css"
+                        "wallpaper-light.jpeg"
+                        "wallpaper.jpeg"
+                      ])
+                    )
                   )
-                )
               )
             ]
-            ++ lib.optional (extraAssets != [ ]) (
-              runCommandLocal "homer-assets${nameSuffix}" { } (
+            ++ lib.optional (extraAssets != []) (
+              runCommandLocal "homer-assets${nameSuffix}" {} (
                 builtins.concatStringsSep "\n" (
                   map (asset: ''
                     mkdir -p $out/assets/${dirOf asset}
                     ln -s ${asset} $out/assets/${asset}
-                  '') extraAssets
+                  '')
+                  extraAssets
                 )
               )
             );
@@ -87,4 +84,4 @@ let
     };
   };
 in
-homer
+  homer

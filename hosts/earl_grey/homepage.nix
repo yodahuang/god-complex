@@ -1,5 +1,4 @@
-{ pkgs, ... }:
-
+{pkgs, ...}:
 pkgs.homer.withAssets {
   name = "homelab";
   config = {
@@ -7,7 +6,7 @@ pkgs.homer.withAssets {
     subtitle = "Hey hey";
     logo = "logo.png";
     # These colors and stuff are from https://github.com/walkxcode/homer-theme/blob/88f17f2eaaffe6466c3d940c6f15b41a6e255bd2/assets/config.yml
-    stylesheet = [ "assets/custom.css" ];
+    stylesheet = ["assets/custom.css"];
     columns = "3";
     theme = "default";
     colors = {
@@ -140,8 +139,9 @@ pkgs.homer.withAssets {
     ];
   };
   extraAssets = [
-    /* Any extra assets (such as icons) to include.
-       /* These can be referenced through "assets/" in the Homer configuration.
+    /*
+    Any extra assets (such as icons) to include.
+    /* These can be referenced through "assets/" in the Homer configuration.
     */
   ];
 }

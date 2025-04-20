@@ -1,7 +1,11 @@
-{ config, pkgs, lib, ... }:
-let
-  homePage = pkgs.callPackage ./homepage.nix { };
-  meowdy = pkgs.callPackage ../../pkgs/meowdy.nix { };
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}: let
+  homePage = pkgs.callPackage ./homepage.nix {};
+  meowdy = pkgs.callPackage ../../pkgs/meowdy.nix {};
   ips = import ../ips.nix;
   # TODO: Duplicate here.
   ADGUARD_PORT = 1080;
@@ -9,25 +13,26 @@ let
   make_hostnames = name: "http://${name}.home, ${name}.int.yanda.rocks";
   # From my custom format to Caddyfile
   transform_to_virtual_hosts = hosts:
-    lib.listToAttrs (map (name:
-      let hostnames = make_hostnames name;
-      in {
-        name = hostnames;
-        value = {
-          logFormat =
-            "output file ${config.services.caddy.logDir}/access-${name}.log";
-          extraConfig = hosts.${name}.extraConfig;
-        };
-      }) (lib.attrNames hosts));
+    lib.listToAttrs (map (name: let
+      hostnames = make_hostnames name;
+    in {
+      name = hostnames;
+      value = {
+        logFormat = "output file ${config.services.caddy.logDir}/access-${name}.log";
+        extraConfig = hosts.${name}.extraConfig;
+      };
+    }) (lib.attrNames hosts));
 in {
   services.caddy = {
     enable = true;
     package = meowdy.override {
-      externalPlugins = [{
-        name = "cloudflare-dns";
-        repo = "github.com/caddy-dns/cloudflare";
-        version = "bfe272c8525b6dd8248fcdddb460fd6accfc4e84";
-      }];
+      externalPlugins = [
+        {
+          name = "cloudflare-dns";
+          repo = "github.com/caddy-dns/cloudflare";
+          version = "bfe272c8525b6dd8248fcdddb460fd6accfc4e84";
+        }
+      ];
       vendorHash = "sha256-mwIsWJYKuEZpOU38qZOG1LEh4QpK4EO0/8l4UGsroU8=";
     };
     logFormat = ''
