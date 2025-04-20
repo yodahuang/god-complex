@@ -1,4 +1,5 @@
 {
+  config,
   pkgs,
   lib,
   ...
@@ -31,9 +32,13 @@
     };
   };
 
-  # Import extra Homebrew packages from darwin/packages.nix
+  # Homebrew profile selection via argument
   homebrew = let
-    pkg = import ../packages.nix;
+    profiles = import ../packages.nix;
+    profile =
+      if config.homebrewProfile == "full"
+      then profiles.homebrewFull
+      else profiles.homebrewLite;
   in
     {
       enable = true;
@@ -42,5 +47,5 @@
         cleanup = "zap";
       };
     }
-    // (pkg.homebrew or {});
+    // profile;
 }

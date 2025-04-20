@@ -3,5 +3,8 @@
   lib,
   ...
 }: {
-  imports = [./common/default.nix];
+  imports = [
+    ./common/options.nix
+    ./common/default.nix
+  ];
 }

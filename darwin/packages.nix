@@ -1,45 +1,47 @@
-{
-  homebrew = {
-    brews = [
-      "mas"
-      # As of June 2023, the nix-installed have some issue with QEMU
-      # https://github.com/NixOS/nixpkgs/issues/169118
-      "podman"
-      "gopeed"
-    ];
-    casks = [
-      "raycast"
-      "arc"
-      "firefox"
-      "1password"
-      "1password-cli"
-      "warp"
-      "logseq"
-      "hey"
-      "resilio-sync"
-      "calibre"
-      "mos"
-      "rectangle"
-      "dash"
-      "steam"
-      "balenaetcher"
-      "godot"
-      "whisky"
-      "pdfsam-basic"
-      "prusaslicer"
-      "signal"
-      "downie"
-      "notion"
-      "cursor"
-      "windsurf"
-      "ghostty"
-      "anki"
-    ];
-    masApps = {
-      "tailscale" = 1475387142;
-      "Things 3" = 904280696;
-      "Structured" = 1499198946;
-      # "Klack" = 2143728525;
-    };
+let
+  brewsLite = [
+    "mas"
+    # As of June 2023, the nix-installed have some issue with QEMU
+    # https://github.com/NixOS/nixpkgs/issues/169118
+    "gopeed"
+  ];
+  brewsFull = brewsLite ++ ["podman"];
+
+  masAppsLite = {
+    "tailscale" = 1475387142;
+    "Things 3" = 904280696;
+    "Structured" = 1499198946;
+    # "Klack" = 2143728525;
+  };
+  masAppsFull = masAppsLite // {};
+
+  casksLite = [
+    "raycast"
+    "arc"
+    "1password"
+    "1password-cli"
+    "logseq"
+    "hey"
+    "resilio-sync"
+    "calibre"
+    "dash"
+    "pdfsam-basic"
+    "prusaslicer"
+    "cursor"
+    "windsurf"
+    "ghostty"
+    "anki"
+  ];
+  casksFull = casksLite ++ ["godot" "firefox" "balenaetcher" "steam" "signal" "downie" "notion" "whisky"];
+in {
+  homebrewLite = {
+    brews = brewsLite;
+    casks = casksLite;
+    masApps = masAppsLite;
+  };
+  homebrewFull = {
+    brews = brewsFull;
+    casks = casksFull;
+    masApps = masAppsFull;
   };
 }
