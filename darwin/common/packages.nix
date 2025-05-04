@@ -31,6 +31,7 @@ let
     "windsurf"
     "ghostty"
     "anki"
+    "appcleaner"
   ];
   casksFull = casksLite ++ ["godot" "firefox" "balenaetcher" "steam" "signal" "downie" "notion" "whisky"];
 in {

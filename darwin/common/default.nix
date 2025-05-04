@@ -34,7 +34,7 @@
 
   # Homebrew profile selection via argument
   homebrew = let
-    profiles = import ../packages.nix;
+    profiles = import ./packages.nix;
     profile =
       if config.homebrewProfile == "full"
       then profiles.homebrewFull
