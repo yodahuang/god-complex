@@ -140,7 +140,7 @@ in {
 
   programs.zed-editor = {
     enable = true;
-    extensions = ["html" "toml" "git-firefly" "nix"];
+    extensions = ["html" "toml" "git-firefly" "nix" "catppuccin-blur"];
     userSettings = {
       assistant = {
         default_model = {
@@ -149,7 +149,7 @@ in {
         };
         version = "2";
       };
-      theme = "One Dark";
+      theme = "Catppuccin Macchiato (Blur)";
       vim_mode = true;
       ui_font_size = 16;
       buffer_font_size = 16;

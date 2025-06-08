@@ -30,6 +30,7 @@
       };
       NSGlobalDomain.ApplePressAndHoldEnabled = false;
     };
+    primaryUser = "yanda";
   };
 
   # Homebrew profile selection via argument
