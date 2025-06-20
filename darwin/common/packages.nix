@@ -34,6 +34,8 @@ let
     "anki"
     "appcleaner"
     "iina"
+    "clash-verge-rev"
+    "notion"
   ];
   casksExtra = ["godot" "firefox" "balenaetcher" "steam" "signal" "downie" "notion" "whisky" "macwhisper" "lm-studio" "typeless" "crossover"];
   casksFull = casksLite ++ casksExtra;
