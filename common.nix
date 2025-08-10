@@ -36,8 +36,9 @@
 
   nix.buildMachines = [
     {
-      hostName = "rig";
-      systems = ["x86_64-linux" "aarch64-linux"];
+      hostName = "studio";
+      sshUser = "yanda";
+      systems = ["aarch64-linux"];
       protocol = "ssh-ng";
       maxJobs = 1;
       speedFactor = 2;
@@ -47,5 +48,7 @@
   ];
   nix.distributedBuilds = true;
   # optional, useful when the builder has a faster internet connection than yours
-  nix.extraOptions = "	builders-use-substitutes = true\n";
+  nix.settings = {
+    builders-use-substitutes = true;
+  };
 }
