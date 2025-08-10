@@ -74,11 +74,6 @@ in {
           reverse_proxy ${ips.nas}:32400
         '';
       };
-      "ethernet-switch" = {
-        extraConfig = ''
-          reverse_proxy ${ips.ethernet_switch}
-        '';
-      };
       "power" = {
         extraConfig = ''
           reverse_proxy ${ips.nas}:9999

@@ -2,7 +2,9 @@
   config,
   pkgs,
   ...
-}: {
+}: let
+  ips = import ../hosts/ips.nix;
+in {
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
@@ -92,13 +94,13 @@
     polkitPolicyOwners = ["yanda"];
   };
 
-  # For remote build.
-  # Remember to copy the identify file there.
+  # ssh access to remote machine.
+  # Don't forget to generate the file and copy the pub key to rig.
   programs.ssh.extraConfig = ''
     Host rig
       IdentityFile /root/.ssh/id_ed25519
       User yanda
-      HostName 192.168.4.72
+      HostName ${ips.rig}
   '';
 
   # List services that you want to enable:

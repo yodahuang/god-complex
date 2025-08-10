@@ -49,15 +49,6 @@ in {
   #   };
   # };
 
-  # ssh access to remote machine.
-  # Don't forget to generate the file and copy the pub key to rig.
-  programs.ssh.extraConfig = ''
-    Host rig
-      IdentityFile /root/.ssh/id_ed25519
-      User yanda
-      HostName ${ips.rig}
-  '';
-
   # Sescrets
   age.secrets.cloudflare.file = ../../secrets/cloudflare.age;
 }
