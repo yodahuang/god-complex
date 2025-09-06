@@ -18,7 +18,7 @@
   ];
 
   services.virby = {
-    enable = true;
+    enable = false;
     onDemand.enable = true;
     onDemand.ttl = 30; # Idle timeout in minutes
     speedFactor = 3;

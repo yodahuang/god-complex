@@ -34,7 +34,7 @@ in {
     [
       lefthook
       # Common util
-      neofetch
+      # neofetch
       bat
       ripgrep
       eza
