@@ -60,14 +60,16 @@ in {
 
   programs.git = {
     enable = true;
-    userName = "Yanda Huang";
-    userEmail = "realyanda@hey.com";
-    aliases = {
-      "co" = "checkout";
-      "st" = "status";
-      "sw" = "switch";
-    };
-    extraConfig = {
+    settings = {
+      user = {
+        email = "realyanda@hey.com";
+        name = "Yanda Huang";
+      };
+      alias = {
+        co = "checkout";
+        st = "status";
+        sw = "switch";
+      };
       merge = {
         conflictstyle = "diff3";
       };
@@ -78,7 +80,11 @@ in {
       core.editor = "vim";
     };
     lfs.enable = true;
-    delta.enable = true;
+  };
+
+  programs.delta = {
+    enable = true;
+    enableGitIntegration = true;
   };
 
   programs.fish = {
@@ -145,6 +151,7 @@ in {
 
   programs.ssh = {
     enable = true;
+    enableDefaultConfig = false;
     matchBlocks = {
       "*" = {
         extraOptions = lib.optionalAttrs (!usually_headless) {

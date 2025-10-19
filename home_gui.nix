@@ -10,7 +10,7 @@
     config.allowUnfree = true;
     overlays = [flake-inputs.nix-vscode-extensions.overlays.default];
   };
-  vscode_marketplace = (pkgs-ext.forVSCodeVersion "1.103.2").vscode-marketplace;
+  vscode_marketplace = (pkgs-ext.forVSCodeVersion "1.105.0").vscode-marketplace;
   vscode_marketplace_release = pkgs-ext.vscode-marketplace-release;
   is_darwin = pkgs.stdenv.isDarwin;
 in {
@@ -58,7 +58,7 @@ in {
         asvetliakov.vscode-neovim
         eamodio.gitlens
         # Tools
-        mkhl.direnv
+        # mkhl.direnv
         # Languages
         jnoortheen.nix-ide
         mattn.lisp
@@ -67,6 +67,7 @@ in {
         ms-python.vscode-pylance
         ms-python.python
         charliermarsh.ruff
+        ms-toolsai.jupyter
         # Fun
         hoovercj.vscode-power-mode
         tonybaloney.vscode-pets
@@ -88,7 +89,7 @@ in {
           };
         };
       };
-      "workbench.iconTheme" = "catppuccin-frappe";
+      "workbench.iconTheme" = "catppuccin-macchiato";
       "workbench.colorTheme" = "Catppuccin Macchiato";
       "editor.formatOnSave" = true;
       "editor.inlineSuggest.enabled" = true;
@@ -111,6 +112,7 @@ in {
           "source.organizeImports" = "explicit";
         };
       };
+      "vscode-neovim.neovimClean" = true;
     };
   };
 
@@ -142,10 +144,13 @@ in {
     enable = true;
     extensions = ["html" "toml" "git-firefly" "nix" "catppuccin-blur"];
     userSettings = {
+      features = {
+        edit_prediction_provider = "copilot";
+      };
       assistant = {
         default_model = {
           provider = "copilot_chat";
-          model = "claude-3-7-sonnet";
+          model = "claude-sonnet-4-5";
         };
         version = "2";
       };

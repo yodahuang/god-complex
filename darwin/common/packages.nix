@@ -32,8 +32,9 @@ let
     "ghostty"
     "anki"
     "appcleaner"
+    "iina"
   ];
-  casksFull = casksLite ++ ["godot" "firefox" "balenaetcher" "steam" "signal" "downie" "notion" "whisky"];
+  casksFull = casksLite ++ ["godot" "firefox" "balenaetcher" "steam" "signal" "downie" "notion" "whisky" "macwhisper" "lm-studio"];
 in {
   homebrewLite = {
     brews = brewsLite;
