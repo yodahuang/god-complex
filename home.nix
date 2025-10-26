@@ -33,8 +33,6 @@ in {
   home.packages = with pkgs;
     [
       lefthook
-      # Common util
-      # neofetch
       bat
       ripgrep
       eza
@@ -134,9 +132,13 @@ in {
     viAlias = true;
     vimAlias = true;
   };
-  home.file = {
-    ".config/nvim" = {
-      source = config.lib.file.mkOutOfStoreSymlink ./nvim;
+
+  xdg.configFile = {
+    "nvim/lua" = {
+      source = config.lib.file.mkOutOfStoreSymlink ./nvim/lua;
+    };
+    "nvim/init.lua" = {
+      source = config.lib.file.mkOutOfStoreSymlink ./nvim/init.lua;
     };
   };
 

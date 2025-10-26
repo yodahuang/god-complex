@@ -21,7 +21,7 @@ let
     "1password"
     "1password-cli"
     "logseq"
-    "hey"
+    "hey-desktop"
     "resilio-sync"
     "calibre"
     "dash"
