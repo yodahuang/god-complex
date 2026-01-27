@@ -49,6 +49,8 @@ in {
       alejandra
       # Python
       uv
+      # Vibing
+      claude-code
     ]
     ++ lib.optionals (!is_darwin) [podman]
     ++ lib.optionals is_darwin [qmk];

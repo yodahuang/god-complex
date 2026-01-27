@@ -18,6 +18,7 @@ let
   casksLite = [
     "raycast"
     "arc"
+    "thebrowsercompany-dia"
     "1password"
     "1password-cli"
     "logseq"

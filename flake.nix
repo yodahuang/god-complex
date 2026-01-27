@@ -15,10 +15,6 @@
     nix-vscode-extensions.url = "github:nix-community/nix-vscode-extensions";
     agenix.url = "github:ryantm/agenix";
     agenix.inputs.nixpkgs.follows = "nixpkgs";
-    virby = {
-      url = "github:quinneden/virby-nix-darwin";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
   };
 
   outputs = inputs @ {
@@ -31,7 +27,6 @@
     nixos-hardware,
     nix-vscode-extensions,
     agenix,
-    virby,
     ...
   }: let
     # A helper function to build the home-manager configuration.
@@ -62,7 +57,6 @@
           with_display = true;
           usually_headless = false;
         })
-        virby.darwinModules.default
       ];
       specialArgs.flake-inputs = inputs;
     };
