@@ -35,7 +35,7 @@ let
     "appcleaner"
     "iina"
   ];
-  casksExtra = ["godot" "firefox" "balenaetcher" "steam" "signal" "downie" "notion" "whisky" "macwhisper" "lm-studio" "typeless"];
+  casksExtra = ["godot" "firefox" "balenaetcher" "steam" "signal" "downie" "notion" "whisky" "macwhisper" "lm-studio" "typeless" "crossover"];
   casksFull = casksLite ++ casksExtra;
 in {
   homebrewLite = {

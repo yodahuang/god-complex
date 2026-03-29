@@ -10,7 +10,7 @@
     config.allowUnfree = true;
     overlays = [flake-inputs.nix-vscode-extensions.overlays.default];
   };
-  vscode_marketplace = (pkgs-ext.forVSCodeVersion "1.108.2").vscode-marketplace;
+  vscode_marketplace = (pkgs-ext.forVSCodeVersion "1.109.5").vscode-marketplace;
   vscode_marketplace_release = pkgs-ext.vscode-marketplace-release;
   is_darwin = pkgs.stdenv.isDarwin;
 in {
@@ -53,6 +53,7 @@ in {
         jonathanharty.gruvbox-material-icon-theme
         catppuccin.catppuccin-vsc-icons
         catppuccin.catppuccin-vsc
+        azemoh.one-monokai
         # General
         ms-vscode-remote.remote-ssh
         asvetliakov.vscode-neovim
@@ -76,7 +77,7 @@ in {
       ]
       ++ (with vscode_marketplace_release; [
         # CoPilot
-        github.copilot-chat
+        # github.copilot-chat
         github.copilot
       ]);
     profiles.default.userSettings = {
@@ -90,7 +91,7 @@ in {
         };
       };
       "workbench.iconTheme" = "catppuccin-macchiato";
-      "workbench.colorTheme" = "Catppuccin Macchiato";
+      "workbench.colorTheme" = "One Monokai";
       "editor.formatOnSave" = true;
       "editor.inlineSuggest.enabled" = true;
       "editor.fontFamily" = "'Comic Mono','Droid Sans Mono', 'monospace', monosspace";
