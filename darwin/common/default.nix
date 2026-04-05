@@ -29,7 +29,17 @@
         ShowPathbar = true;
       };
       NSGlobalDomain.ApplePressAndHoldEnabled = false;
+      CustomUserPreferences = {
+        NSGlobalDomain.NSQuitAlwaysKeepsWindows = false;
+        "com.apple.loginwindow" = {
+          TALLogoutSavesState = false;
+          LoginwindowLaunchesRelaunchApps = false;
+        };
+      };
     };
+    activationScripts.noResume.text = ''
+      rm -rf /Users/yanda/Library/Saved\ Application\ State/*
+    '';
     primaryUser = "yanda";
   };
 

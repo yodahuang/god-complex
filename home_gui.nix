@@ -28,7 +28,6 @@ in {
     ]
     ++ lib.optionals (!is_darwin) [
       logseq
-      ventoy
     ];
 
   programs.kitty = {

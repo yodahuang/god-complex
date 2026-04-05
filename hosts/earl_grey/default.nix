@@ -6,7 +6,7 @@
 }: let
   ips = import ../ips.nix;
 in {
-  imports = [./hardware-configuration.nix ./caddy.nix ./adguard_home.nix];
+  imports = [./hardware-configuration.nix ./caddy.nix ./adguard_home.nix ./chocolate-bar.nix];
 
   # Use uboot.
   boot.loader.grub.enable = false;
@@ -33,6 +33,11 @@ in {
   };
 
   system.stateVersion = "23.05";
+
+  nix.settings.trusted-users = [
+    "root"
+    "yanda"
+  ];
 
   services.openssh.enable = true;
 

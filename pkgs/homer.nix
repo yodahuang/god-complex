@@ -11,7 +11,7 @@
     owner = "NX211";
     repo = "homer-icons";
     rev = "691dc315413a0b644ffbd3b9702f63ebb53a36a5";
-    sha256 = "sha256-rRGdRPkUPPv7pvIkRl9+XT0EfjD8PNrUGwizycG4KrA=";
+    sha256 = "sha256-3NX6/3Gg5/flwao/Gem0k8JOlXor7W17WrevYJ+rGx4=";
   };
   homer_v2_theme = fetchFromGitHub {
     owner = "walkxcode";

@@ -44,13 +44,14 @@ in {
       unzip
       # Nix specific
       nil
-      nixfmt-rfc-style
+      nixfmt
       nixd
       alejandra
       # Python
       uv
       # Vibing
       claude-code
+      codex
     ]
     ++ lib.optionals (!is_darwin) [podman]
     ++ lib.optionals is_darwin [qmk];

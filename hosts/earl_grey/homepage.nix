@@ -134,6 +134,12 @@ pkgs.homer.withAssets {
             subtitle = "Download manager";
             url = "https://sabnzbd.int.yanda.rocks";
           }
+          {
+            name = "Chocolate";
+            icon = "fas fa-table-cells";
+            subtitle = "Vestaboard controller";
+            url = "https://chocolate.int.yanda.rocks";
+          }
         ];
       }
     ];

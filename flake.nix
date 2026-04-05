@@ -15,6 +15,10 @@
     nix-vscode-extensions.url = "github:nix-community/nix-vscode-extensions";
     agenix.url = "github:ryantm/agenix";
     agenix.inputs.nixpkgs.follows = "nixpkgs";
+    deploy-rs.url = "github:serokell/deploy-rs";
+    deploy-rs.inputs.nixpkgs.follows = "nixpkgs";
+    chocolate-bar.url = "github:yodahuang/chocolate-bar";
+    chocolate-bar.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs = inputs @ {
@@ -27,6 +31,7 @@
     nixos-hardware,
     nix-vscode-extensions,
     agenix,
+    deploy-rs,
     ...
   }: let
     # A helper function to build the home-manager configuration.
@@ -92,6 +97,7 @@
 
     nixosConfigurations."EarlGrey" = nixpkgs.lib.nixosSystem {
       system = "aarch64-linux";
+      specialArgs.flake-inputs = inputs;
       modules = [
         {
           nixpkgs.overlays = [
@@ -123,6 +129,18 @@
         })
       ];
     };
+
+    deploy.nodes.EarlGrey = {
+      hostname = "EarlGrey";
+      sshUser = "yanda";
+      user = "root";
+      interactiveSudo = true;
+      profiles.system.path =
+        deploy-rs.lib.aarch64-linux.activate.nixos
+        self.nixosConfigurations.EarlGrey;
+    };
+
+    checks = builtins.mapAttrs (system: deployLib: deployLib.deployChecks self.deploy) deploy-rs.lib;
 
     # Expose the package set, including overlays, for convenience.
     darwinPackages = self.darwinConfigurations."Studio".pkgs;

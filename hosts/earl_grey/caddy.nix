@@ -5,7 +5,6 @@
   ...
 }: let
   homePage = pkgs.callPackage ./homepage.nix {};
-  meowdy = pkgs.callPackage ../../pkgs/meowdy.nix {};
   ips = import ../ips.nix;
   # TODO: Duplicate here.
   ADGUARD_PORT = 1080;
@@ -25,15 +24,11 @@
 in {
   services.caddy = {
     enable = true;
-    package = meowdy.override {
-      externalPlugins = [
-        {
-          name = "cloudflare-dns";
-          repo = "github.com/caddy-dns/cloudflare";
-          version = "bfe272c8525b6dd8248fcdddb460fd6accfc4e84";
-        }
+    package = pkgs.caddy.withPlugins {
+      plugins = [
+        "github.com/caddy-dns/cloudflare@v0.0.0-20250407183951-bbf79111721a"
       ];
-      vendorHash = "sha256-mwIsWJYKuEZpOU38qZOG1LEh4QpK4EO0/8l4UGsroU8=";
+      hash = "sha256-wvW/VlBOsxbKPAieGUUNHaXzwowlXSZIlw8DITwPB7c=";
     };
     logFormat = ''
       level INFO
@@ -112,6 +107,11 @@ in {
       "jellyfin" = {
         extraConfig = ''
           reverse_proxy ${ips.nas}:8096
+        '';
+      };
+      "chocolate" = {
+        extraConfig = ''
+          reverse_proxy localhost:8000
         '';
       };
     };

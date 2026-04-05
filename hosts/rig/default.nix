@@ -15,7 +15,7 @@
 
   # Enable the Budgie Desktop environment.
   services.xserver.displayManager.lightdm.enable = true;
-  services.xserver.desktopManager.budgie.enable = true;
+  services.desktopManager.budgie.enable = true;
 
   # Add myself to it as this is the build machine.
   nix.settings.trusted-users = ["root" "yanda"];
@@ -33,7 +33,8 @@
   environment.systemPackages = with pkgs; [protontricks];
 
   i18n.inputMethod = {
-    enabled = "fcitx5";
+    enable = true;
+    type = "fcitx5";
     fcitx5.addons = with pkgs; [fcitx5-rime fcitx5-gtk];
   };
 }
