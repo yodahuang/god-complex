@@ -49,7 +49,10 @@ in {
       alejandra
       # Python
       uv
-      # Vibing
+    ]
+    ++ lib.optionals (!usually_headless) [
+      # These are useful on interactive machines, but add large npm-backed fetches
+      # that are unnecessary for headless server deployments.
       claude-code
       codex
     ]

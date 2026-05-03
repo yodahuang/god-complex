@@ -11,6 +11,7 @@
   nix = {
     settings = {
       experimental-features = "nix-command flakes";
+      download-buffer-size = 134217728;
       substituters = ["https://nix-community.cachix.org" "https://devenv.cachix.org" "https://cache.nixos.org/"];
       trusted-public-keys = [
         "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
