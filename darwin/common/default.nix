@@ -43,20 +43,26 @@
     primaryUser = "yanda";
   };
 
-  # Homebrew profile selection via argument
+  # Homebrew packages are split into common + host-specific segments
   homebrew = let
-    profiles = import ./packages.nix;
-    profile =
-      if config.homebrewProfile == "full"
-      then profiles.homebrewFull
-      else profiles.homebrewLite;
-  in
-    {
-      enable = true;
-      onActivation = {
-        upgrade = true;
-        cleanup = "zap";
+    packages = import ./packages.nix;
+    hostName = lib.toLower (config.networking.hostName or "");
+    hostPackages =
+      if hostName != "" && lib.hasAttr hostName packages.hosts
+      then packages.hosts.${hostName}
+      else {
+        brews = [];
+        casks = [];
+        masApps = {};
       };
-    }
-    // profile;
+  in {
+    enable = true;
+    onActivation = {
+      upgrade = true;
+      cleanup = "zap";
+    };
+    brews = packages.common.brews ++ (hostPackages.brews or []);
+    casks = packages.common.casks ++ (hostPackages.casks or []);
+    masApps = packages.common.masApps // (hostPackages.masApps or {});
+  };
 }

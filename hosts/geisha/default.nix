@@ -6,5 +6,5 @@
   imports = [../../darwin/core.nix];
   # Add host-specific config here
 
-  homebrewProfile = "lite";
+  networking.hostName = "geisha";
 }

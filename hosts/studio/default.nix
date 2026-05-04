@@ -5,7 +5,7 @@
 }: {
   imports = [../../darwin/core.nix];
 
-  homebrewProfile = "full";
+  networking.hostName = "studio";
 
   nix.linux-builder = {
     enable = true;

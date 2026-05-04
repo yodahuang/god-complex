@@ -1,21 +1,19 @@
 let
-  brewsLite = [
+  commonBrews = [
     "mas"
     # As of June 2023, the nix-installed have some issue with QEMU
     # https://github.com/NixOS/nixpkgs/issues/169118
     "gopeed"
   ];
-  brewsFull = brewsLite ++ ["podman"];
 
-  masAppsLite = {
+  commonMasApps = {
     "tailscale" = 1475387142;
     "Things 3" = 904280696;
     "Structured" = 1499198946;
     # "Klack" = 2143728525;
   };
-  masAppsFull = masAppsLite // {};
 
-  casksLite = [
+  commonCasks = [
     "raycast"
     "arc"
     "thebrowsercompany-dia"
@@ -37,17 +35,55 @@ let
     "clash-verge-rev"
     "notion"
   ];
-  casksExtra = ["godot" "firefox" "balenaetcher" "steam" "signal" "downie" "notion" "whisky" "macwhisper" "lm-studio" "typeless" "crossover"];
-  casksFull = casksLite ++ casksExtra;
-in {
-  homebrewLite = {
-    brews = brewsLite;
-    casks = casksLite;
-    masApps = masAppsLite;
+
+  hostCasks = {
+    studio = [
+      "godot"
+      "firefox"
+      "balenaetcher"
+      "steam"
+      "signal"
+      "downie"
+      "notion"
+      "whisky"
+      "macwhisper"
+      "lm-studio"
+      "typeless"
+      "crossover"
+    ];
+    geisha = [
+      "microsoft-office"
+    ];
   };
-  homebrewFull = {
-    brews = brewsFull;
-    casks = casksFull;
-    masApps = masAppsFull;
+
+  hostBrews = {
+    studio = [
+      "podman"
+    ];
+    geisha = [];
+  };
+
+  hostMasApps = {
+    studio = {};
+    geisha = {};
+  };
+in {
+  common = {
+    brews = commonBrews;
+    casks = commonCasks;
+    masApps = commonMasApps;
+  };
+
+  hosts = {
+    studio = {
+      brews = hostBrews.studio;
+      casks = hostCasks.studio;
+      masApps = hostMasApps.studio;
+    };
+    geisha = {
+      brews = hostBrews.geisha;
+      casks = hostCasks.geisha;
+      masApps = hostMasApps.geisha;
+    };
   };
 }
