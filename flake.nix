@@ -24,6 +24,8 @@
     deploy-rs.inputs.nixpkgs.follows = "nixpkgs";
     chocolate-bar.url = "github:yodahuang/chocolate-bar";
     chocolate-bar.inputs.nixpkgs.follows = "nixpkgs";
+    claude-code-nix.url = "github:sadjow/claude-code-nix";
+    claude-code-nix.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs = inputs @ {
@@ -45,7 +47,10 @@
       usually_headless,
       ...
     }: {
-      nixpkgs.overlays = [nur.overlays.default];
+      nixpkgs.overlays = [
+        nur.overlays.default
+        inputs.claude-code-nix.overlays.default
+      ];
       home-manager.useGlobalPkgs = true;
       home-manager.useUserPackages = true;
       home-manager.users.yanda = import ./home.nix;
@@ -56,8 +61,7 @@
         inherit with_display usually_headless;
       };
     };
-  in {
-    darwinConfigurations."Studio" = darwin.lib.darwinSystem {
+    studioDarwin = darwin.lib.darwinSystem {
       system = "aarch64-darwin";
       modules = [
         ./hosts/studio/default.nix
@@ -70,8 +74,7 @@
       ];
       specialArgs.flake-inputs = inputs;
     };
-
-    darwinConfigurations."Geisha" = darwin.lib.darwinSystem {
+    geishaDarwin = darwin.lib.darwinSystem {
       system = "aarch64-darwin";
       modules = [
         ./hosts/geisha/default.nix
@@ -83,6 +86,13 @@
         })
       ];
       specialArgs.flake-inputs = inputs;
+    };
+  in {
+    darwinConfigurations = {
+      studio = studioDarwin;
+      Studio = studioDarwin;
+      geisha = geishaDarwin;
+      Geisha = geishaDarwin;
     };
 
     nixosConfigurations."Rig" = nixpkgs.lib.nixosSystem {
@@ -148,6 +158,6 @@
     checks = builtins.mapAttrs (system: deployLib: deployLib.deployChecks self.deploy) deploy-rs.lib;
 
     # Expose the package set, including overlays, for convenience.
-    darwinPackages = self.darwinConfigurations."Studio".pkgs;
+    darwinPackages = self.darwinConfigurations.studio.pkgs;
   };
 }

@@ -50,6 +50,7 @@ let
       "lm-studio"
       "typeless"
       "crossover"
+      "zoom"
     ];
     geisha = [
       "microsoft-office"

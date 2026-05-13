@@ -10,7 +10,7 @@
     config.allowUnfree = true;
     overlays = [flake-inputs.nix-vscode-extensions.overlays.default];
   };
-  vscode_marketplace = (pkgs-ext.forVSCodeVersion "1.109.5").vscode-marketplace;
+  vscode_marketplace = (pkgs-ext.forVSCodeVersion pkgs.vscode.version).vscode-marketplace;
   vscode_marketplace_release = pkgs-ext.vscode-marketplace-release;
   is_darwin = pkgs.stdenv.isDarwin;
 in {
