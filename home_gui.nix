@@ -8,7 +8,19 @@
   pkgs-ext = import flake-inputs.nixpkgs {
     inherit (pkgs) system;
     config.allowUnfree = true;
-    overlays = [flake-inputs.nix-vscode-extensions.overlays.default];
+    overlays = [
+      (final: prev: {
+        python3 = prev.python3.override {
+          packageOverrides = _pyFinal: pyPrev: {
+            jedi-language-server = pyPrev.jedi-language-server.overridePythonAttrs (old: {
+              # jedi-language-server 0.46.0 has not relaxed its metadata for jedi 0.20 yet.
+              pythonRelaxDeps = (old.pythonRelaxDeps or []) ++ ["jedi"];
+            });
+          };
+        };
+      })
+      flake-inputs.nix-vscode-extensions.overlays.default
+    ];
   };
   vscode_marketplace = (pkgs-ext.forVSCodeVersion pkgs.vscode.version).vscode-marketplace;
   vscode_marketplace_release = pkgs-ext.vscode-marketplace-release;
@@ -76,7 +88,6 @@ in {
       ]
       ++ (with vscode_marketplace_release; [
         # CoPilot
-        # github.copilot-chat
         github.copilot
       ]);
     profiles.default.userSettings = {

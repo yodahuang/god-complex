@@ -49,6 +49,8 @@ in {
       alejandra
       # Python
       uv
+      # PDF for coding agents
+      poppler-utils
     ]
     ++ lib.optionals (!usually_headless) [
       # These are useful on interactive machines, but add large npm-backed fetches
