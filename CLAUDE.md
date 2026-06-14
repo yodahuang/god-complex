@@ -5,6 +5,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Common Commands
 
 ```bash
+# Preferred: apply via nh (wrapper around darwin-rebuild/nixos-rebuild with
+# nicer diffs/output). The maintainer uses nh day-to-day.
+nh darwin switch . -H studio
+nh os switch .            # on a NixOS host
+
 # Apply macOS (darwin) configuration
 darwin-rebuild switch --flake .#studio
 darwin-rebuild switch --flake .#geisha

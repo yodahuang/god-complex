@@ -2,6 +2,13 @@
 
 [This](https://old.reddit.com/r/NixOS/comments/kauf1m/dealing_with_post_nixflake_god_complex/).
 
+## Reusable bits
+
+- [`macos-default-apps`](modules/macos-default-apps.md) — Home Manager module for
+  setting default applications on macOS declaratively (including for `.nix`/`.rs`
+  and other extensions macOS normally won't let you set). Exposed as
+  `homeManagerModules.default`.
+
 ## Setting this up a a fresh Nix machine
 
 ## Git Hooks

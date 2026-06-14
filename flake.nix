@@ -13,7 +13,7 @@
     nur.url = "github:nix-community/NUR";
     nur.inputs.nixpkgs.follows = "nixpkgs";
     vscode-server.url = "github:nix-community/nixos-vscode-server";
-    vscode-server.inputs.nixpkgs.follows = "nixpkgs";
+    vscode-server.flake = false;
     nix-vscode-extensions.url = "github:nix-community/nix-vscode-extensions";
     nix-vscode-extensions.inputs.nixpkgs.follows = "nixpkgs";
     agenix.url = "github:ryantm/agenix";
@@ -88,6 +88,14 @@
       specialArgs.flake-inputs = inputs;
     };
   in {
+    # Reusable Home Manager module for declarative macOS default-app
+    # associations. Consume with:
+    #   imports = [ inputs.<this>.homeManagerModules.default ];
+    homeManagerModules = {
+      macos-default-apps = import ./modules/macos-default-apps.nix;
+      default = self.homeManagerModules.macos-default-apps;
+    };
+
     darwinConfigurations = {
       studio = studioDarwin;
       Studio = studioDarwin;
@@ -155,7 +163,7 @@
         self.nixosConfigurations.EarlGrey;
     };
 
-    checks = builtins.mapAttrs (system: deployLib: deployLib.deployChecks self.deploy) deploy-rs.lib;
+    checks.aarch64-linux = deploy-rs.lib.aarch64-linux.deployChecks self.deploy;
 
     # Expose the package set, including overlays, for convenience.
     darwinPackages = self.darwinConfigurations.studio.pkgs;

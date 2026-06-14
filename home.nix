@@ -13,7 +13,10 @@ in {
   imports =
     [
       flake-inputs.nix-doom-emacs.hmModule
-      flake-inputs.vscode-server.homeModules.default
+      (flake-inputs.vscode-server + "/modules/vscode-server/home.nix")
+      # macOS-only effect; self-guards via pkgs.stdenv.isDarwin, so it's a
+      # no-op on the Linux hosts that share this config.
+      ./home_darwin.nix
     ]
     ++ lib.optionals with_display [./home_gui.nix];
 
@@ -47,6 +50,7 @@ in {
       nixfmt
       nixd
       alejandra
+      nh
       # Python
       uv
       # PDF for coding agents
@@ -139,6 +143,8 @@ in {
     enable = true;
     viAlias = true;
     vimAlias = true;
+    withPython3 = false;
+    withRuby = false;
   };
 
   xdg.configFile = {
@@ -162,9 +168,9 @@ in {
   programs.ssh = {
     enable = true;
     enableDefaultConfig = false;
-    matchBlocks = {
-      "*" = {
-        extraOptions = lib.optionalAttrs (!usually_headless) {
+    settings =
+      lib.optionalAttrs (!usually_headless) {
+        "*" = {
           # On NixOS, it's in its usual location.
           # On Darwin, it's from some random place AppStore puts.
           IdentityAgent =
@@ -172,29 +178,30 @@ in {
             then ''"~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"''
             else "~/.1password/agent.sock";
         };
+      }
+      // {
+        # Hardcoding the local ip here instead of using Tailscale ones.
+        "octo" = {
+          HostName = ips.octo;
+          User = "pi";
+          ForwardAgent = true;
+        };
+        "earl_grey" = {
+          HostName = ips.earl_grey;
+          User = "yanda";
+          ForwardAgent = true;
+        };
+        "nas" = {
+          HostName = ips.nas;
+          User = "yanda-admin";
+          ForwardAgent = true;
+        };
+        "rig" = {
+          HostName = ips.rig;
+          User = "yanda";
+          ForwardAgent = true;
+        };
       };
-      # Hardcoding the local ip here instead of using Tailscale ones.
-      "octo" = {
-        hostname = ips.octo;
-        user = "pi";
-        forwardAgent = true;
-      };
-      "earl_grey" = {
-        hostname = ips.earl_grey;
-        user = "yanda";
-        forwardAgent = true;
-      };
-      "nas" = {
-        hostname = ips.nas;
-        user = "yanda-admin";
-        forwardAgent = true;
-      };
-      "rig" = {
-        hostname = ips.rig;
-        user = "yanda";
-        forwardAgent = true;
-      };
-    };
   };
 
   services.vscode-server.enable = true;
