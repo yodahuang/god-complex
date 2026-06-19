@@ -136,11 +136,19 @@
   associationScript = a: let
     purge = lib.optionalString (a.appPath != null) ''
       cur=${lib.escapeShellArg a.appPath}
-      base=$(basename "$cur")
+      # Unregister every Launch Services registration for this bundle id except
+      # the current store path. This clears dead version copies AND stray
+      # registrations elsewhere (e.g. leftover mac-app-util trampolines in
+      # ~/Applications) that would otherwise shadow the real app and break the
+      # default with a broken/old version.
       ${lsregister} -dump 2>/dev/null \
-        | awk -v b=${lib.escapeShellArg a.bundleId} '/^-+$/{x=""} {x=x"\n"$0} index($0,b){print x; x=""}' \
-        | grep -oE "/nix/store/[^ ]*/$base" | sort -u \
-        | while read -r p; do [ "$p" = "$cur" ] || ${lsregister} -u "$p" 2>/dev/null || true; done
+        | awk -v b=${lib.escapeShellArg a.bundleId} '
+            /^-+$/ { if (hit && path != "") print path; path=""; hit=0; next }
+            /^[[:space:]]*path:/ { l=$0; sub(/^[[:space:]]*path:[[:space:]]*/, "", l); sub(/[[:space:]]*\([0-9a-fx]+\)[[:space:]]*$/, "", l); path=l }
+            index($0, b) { hit=1 }
+            END { if (hit && path != "") print path }
+          ' \
+        | while IFS= read -r p; do [ "$p" = "$cur" ] || ${lsregister} -u "$p" 2>/dev/null || true; done
       ${lsregister} -f "$cur" 2>/dev/null || true
     '';
     typeCmds = map (t: duti t a.bundleId) a.types;

@@ -107,6 +107,10 @@ If `mdls` reports a `dyn.…` UTI, that extension belongs in `extensions`
   shows a one-time "Use <App>?" dialog you must click. This is imposed by macOS
   and cannot be bypassed by any tool. Subsequent rebuilds don't re-prompt once
   the handler already matches.
+- **Don't set `public.html`.** On macOS 26 the HTML-document default is tied to
+  the *default web browser*, so the confirmation dialog for it can silently flip
+  your http/https handler (i.e. hijack your browser) to the app. Leave HTML out
+  of `types` unless you really mean it.
 - **`.ts` and other extensions with built-in system UTIs.** If macOS already
   ships a UTI for an extension (e.g. `.ts` → `public.mpeg-2-transport-stream`),
   a custom exported UTI won't override it. Set the existing UTI in `types`

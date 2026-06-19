@@ -28,7 +28,9 @@
           "public.perl-script"
           "public.ruby-script"
           "public.css"
-          "public.html"
+          # NOTE: deliberately NOT setting public.html — on macOS 26 changing
+          # the HTML-document default is tied to the default web browser, so the
+          # confirmation dialog can hijack http/https into Zed.
           "public.c-source"
           "public.c-plus-plus-source"
           "public.c-header"

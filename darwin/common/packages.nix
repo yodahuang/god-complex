@@ -51,6 +51,7 @@ let
       "typeless"
       "crossover"
       "zoom"
+      "codex-app"
     ];
     geisha = [
       "microsoft-office"
