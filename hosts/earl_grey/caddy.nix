@@ -28,7 +28,7 @@ in {
       plugins = [
         "github.com/caddy-dns/cloudflare@v0.0.0-20250407183951-bbf79111721a"
       ];
-      hash = "sha256-wvW/VlBOsxbKPAieGUUNHaXzwowlXSZIlw8DITwPB7c=";
+      hash = "sha256-9OVSC/D7Ib0GFQdD/qQmtLu9L6EJc/TNYNDbQl4dJ9U=";
     };
     logFormat = ''
       level INFO
@@ -86,7 +86,7 @@ in {
       };
       "homebridge" = {
         extraConfig = ''
-          reverse_proxy ${ips.octo}:8581
+          reverse_proxy localhost:8581
         '';
       };
       "octoprint" = {

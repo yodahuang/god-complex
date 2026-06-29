@@ -6,7 +6,7 @@
 }: let
   ips = import ../ips.nix;
 in {
-  imports = [./hardware-configuration.nix ./caddy.nix ./adguard_home.nix ./chocolate-bar.nix];
+  imports = [./hardware-configuration.nix ./caddy.nix ./adguard_home.nix ./chocolate-bar.nix ./homebridge.nix];
 
   # Use uboot.
   boot.loader.grub.enable = false;
@@ -40,6 +40,11 @@ in {
   ];
 
   services.openssh.enable = true;
+
+  # yanda deploys via deploy-rs over a 1Password-agent SSH key, then escalates
+  # to root to activate. Passwordless sudo avoids a typed sudo password on the
+  # deploy channel (which deploy-rs warns is less secure than keys).
+  security.sudo.wheelNeedsPassword = false;
 
   services.tailscale = {
     enable = true;
