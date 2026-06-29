@@ -133,7 +133,7 @@ in {
     profiles.default = {
       id = 0;
       name = "Default";
-      extensions = with pkgs.nur.repos.rycee.firefox-addons; [
+      extensions.packages = with pkgs.nur.repos.rycee.firefox-addons; [
         darkreader
         onepassword-password-manager
         ublock-origin
