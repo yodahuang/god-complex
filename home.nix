@@ -163,7 +163,14 @@ in {
 
   programs.zoxide.enable = true;
 
-  programs.atuin.enable = true;
+  programs.atuin = {
+    enable = true;
+    # Use nucleo
+    daemon.enable = true;
+    settings = {
+      search_mode = "daemon-fuzzy";
+    };
+  };
 
   programs.ssh = {
     enable = true;

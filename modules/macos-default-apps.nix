@@ -182,7 +182,13 @@ in {
     home.packages = [pkgs.duti];
 
     home.activation.macosDefaultApps = lib.hm.dag.entryAfter ["writeBoundary"] (''
-        export PATH="/usr/bin:/bin:/usr/sbin:/sbin:$PATH"
+        # Append (do not prepend) the system paths. This block only needs
+        # /usr/bin for bare `awk`; codesign/lsregister/duti are absolute. The
+        # export leaks into later activation steps that run in the same shell —
+        # notably home-manager's `setupLaunchAgents`, which calls `readlink -m`
+        # (a GNU coreutils flag). Prepending /usr/bin shadows GNU readlink with
+        # BSD readlink, breaking launchd agent installation (e.g. atuin daemon).
+        export PATH="$PATH:/usr/bin:/bin:/usr/sbin:/sbin"
       ''
       + lib.optionalString hasExporter ''
         # Install + ad-hoc sign + register the UTI exporter. Signing in place

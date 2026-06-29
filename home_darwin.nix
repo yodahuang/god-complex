@@ -3,10 +3,20 @@
 # as this flake's homeManagerModules.default for others to consume).
 {
   config,
+  lib,
   pkgs,
   ...
 }: {
   imports = [./modules/macos-default-apps.nix];
+
+  # The atuin daemon's launchd agent defaults to the `user` domain, but
+  # `launchctl bootstrap user/$UID` fails with EIO on this machine, leaving the
+  # daemon unstarted (so the shell errors "failed to connect to local atuin
+  # daemon"). The `gui` (Aqua session) domain bootstraps cleanly here, so pin
+  # it. Guarded to darwin + daemon-enabled so it's a no-op on the Linux hosts
+  # that share this config.
+  launchd.agents.atuin-daemon.domain =
+    lib.mkIf (pkgs.stdenv.hostPlatform.isDarwin && config.programs.atuin.daemon.enable) "gui";
 
   targets.darwin.defaultApps = {
     enable = config.programs.zed-editor.enable;
