@@ -21,6 +21,11 @@
     fish
   ];
 
+  # HEY CLI — upstream ships no Nix package, so we build it ourselves.
+  environment.systemPackages = [
+    (pkgs.callPackage ../../pkgs/hey-cli.nix {})
+  ];
+
   system = {
     stateVersion = 5;
     defaults = {
@@ -59,7 +64,13 @@
     enable = true;
     onActivation = {
       upgrade = true;
-      cleanup = "zap";
+      # Was "zap". Homebrew >=5.1 (commit bc44e3d) removed the
+      # `--force-cleanup` flag that nix-darwin still emits for
+      # cleanup = "uninstall"/"zap", so activation fails with
+      # `Error: invalid option: --force-cleanup`. "none" drops the flag.
+      # Revert to "zap" once nix-darwin supports the new `trust` model.
+      # Manual cleanup meanwhile: `brew bundle --cleanup --force --global`.
+      cleanup = "none";
     };
     brews = packages.common.brews ++ (hostPackages.brews or []);
     casks = packages.common.casks ++ (hostPackages.casks or []);
