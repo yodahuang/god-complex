@@ -3,6 +3,12 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    # QEMU 11.0 (current unstable) crash-loops the darwin linux-builder: its new
+    # SME2-over-HVF vCPU init asserts (HV_SYS_REG_SMCR_EL1, sysreg.c.inc) on
+    # macOS 26.5.x SME-capable Apple Silicon, and no -cpu flag avoids it. Pin
+    # QEMU to 25.11's 10.1.5 (pre-SME2-HVF) for the builder only; see
+    # hosts/studio/default.nix. Independent of nixpkgs (keeps its own deps).
+    nixpkgs-qemu.url = "github:NixOS/nixpkgs/nixos-25.11";
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
     darwin.url = "github:nix-darwin/nix-darwin/master";
     darwin.inputs.nixpkgs.follows = "nixpkgs";
@@ -50,7 +56,24 @@
       nixpkgs.overlays = [
         nur.overlays.default
         inputs.claude-code-nix.overlays.default
+        # afdko 5.0.1's subprocess-based test suite fails on
+        # aarch64-darwin, which breaks jetbrains-mono (now built from
+        # source via gftools -> afdko). Skip its checks until fixed
+        # upstream. See nixpkgs jetbrains-mono / afdko on darwin.
+        (_final: prev: {
+          pythonPackagesExtensions =
+            prev.pythonPackagesExtensions
+            ++ [
+              (_pyFinal: pyPrev: {
+                afdko = pyPrev.afdko.overridePythonAttrs (_: {
+                  doCheck = false;
+                  doInstallCheck = false;
+                });
+              })
+            ];
+        })
       ];
+      home-manager.backupFileExtension = "bak";
       home-manager.useGlobalPkgs = true;
       home-manager.useUserPackages = true;
       home-manager.users.yanda = import ./home.nix;
@@ -157,7 +180,9 @@
       hostname = "EarlGrey";
       sshUser = "yanda";
       user = "root";
-      interactiveSudo = true;
+      # SSH auth is key-based (1Password agent); yanda has passwordless sudo on
+      # the Pi (security.sudo.wheelNeedsPassword = false in hosts/earl_grey),
+      # so no interactive sudo password is needed.
       profiles.system.path =
         deploy-rs.lib.aarch64-linux.activate.nixos
         self.nixosConfigurations.EarlGrey;
