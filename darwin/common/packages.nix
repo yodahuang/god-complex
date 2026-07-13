@@ -27,7 +27,6 @@ let
     "pdfsam-basic"
     "prusaslicer"
     "cursor"
-    "windsurf"
     "ghostty"
     "anki"
     "appcleaner"
