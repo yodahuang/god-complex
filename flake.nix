@@ -56,22 +56,6 @@
       nixpkgs.overlays = [
         nur.overlays.default
         inputs.claude-code-nix.overlays.default
-        # afdko 5.0.1's subprocess-based test suite fails on
-        # aarch64-darwin, which breaks jetbrains-mono (now built from
-        # source via gftools -> afdko). Skip its checks until fixed
-        # upstream. See nixpkgs jetbrains-mono / afdko on darwin.
-        (_final: prev: {
-          pythonPackagesExtensions =
-            prev.pythonPackagesExtensions
-            ++ [
-              (_pyFinal: pyPrev: {
-                afdko = pyPrev.afdko.overridePythonAttrs (_: {
-                  doCheck = false;
-                  doInstallCheck = false;
-                });
-              })
-            ];
-        })
       ];
       home-manager.backupFileExtension = "bak";
       home-manager.useGlobalPkgs = true;

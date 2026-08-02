@@ -25,6 +25,7 @@
   vscode_marketplace = (pkgs-ext.forVSCodeVersion pkgs.vscode.version).vscode-marketplace;
   vscode_marketplace_release = pkgs-ext.vscode-marketplace-release;
   is_darwin = pkgs.stdenv.isDarwin;
+  jetbrains-mono = pkgs.callPackage ./pkgs/jetbrains-mono.nix {};
 in {
   fonts.fontconfig.enable = true;
 

@@ -28,6 +28,34 @@
   codex-mcp-config = (pkgs.formats.toml {}).generate "config.toml" {
     mcp_servers = agent-mcp-servers;
   };
+  # ~/.codex/config.toml also holds state the Codex app writes itself (e.g. the
+  # currently selected model), so it can't be a plain home.file symlink into
+  # the (read-only) Nix store -- that would make the whole file read-only and
+  # break in-app model switching. Instead, merge just the mcp_servers table
+  # into a real, writable file and leave any other keys alone.
+  codex-config-merge = pkgs.writeText "codex-config-merge.py" ''
+    import pathlib
+    import sys
+
+    import tomlkit
+
+    target = pathlib.Path(sys.argv[1])
+    mcp_source = pathlib.Path(sys.argv[2])
+
+    if target.is_symlink() or not target.exists():
+        doc = tomlkit.document()
+    else:
+        doc = tomlkit.parse(target.read_text())
+
+    mcp_doc = tomlkit.parse(mcp_source.read_text())
+    doc["mcp_servers"] = mcp_doc["mcp_servers"]
+
+    if target.is_symlink():
+        target.unlink()
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_text(tomlkit.dumps(doc))
+  '';
+  codex-config-merge-python = pkgs.python3.withPackages (ps: [ps.tomlkit]);
   agent-skills = {
     hey = hey-cli.src + "/skills/hey";
     make-paper-notes = ./skills/make-paper-notes;
@@ -111,9 +139,12 @@ in {
     skills = agent-skills;
   };
 
-  home.file.".codex/config.toml" = lib.mkIf is_darwin {
-    source = codex-mcp-config;
-  };
+  home.activation.codexMcpConfig = lib.mkIf is_darwin (
+    lib.hm.dag.entryAfter ["writeBoundary"] ''
+      run ${codex-config-merge-python}/bin/python3 ${codex-config-merge} \
+        "$HOME/.codex/config.toml" ${codex-mcp-config}
+    ''
+  );
 
   programs.claude-code = lib.mkIf is_darwin {
     enable = true;
