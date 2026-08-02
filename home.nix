@@ -9,9 +9,33 @@
 }: let
   ips = import ./hosts/ips.nix;
   is_darwin = pkgs.stdenv.isDarwin;
+  hey-cli = pkgs.callPackage ./pkgs/hey-cli.nix {};
+  wanderlog-mcp = pkgs.callPackage ./pkgs/wanderlog-mcp.nix {};
+  wanderlog-mcp-with-cookie = pkgs.writeShellScriptBin "wanderlog-mcp-with-cookie" ''
+    export WANDERLOG_COOKIE="$(<${config.age.secrets.wanderlog-cookie.path})"
+    exec ${lib.getExe wanderlog-mcp}
+  '';
+  agent-mcp-servers = {
+    context7 = {
+      command = "${pkgs.nodejs_22}/bin/npx";
+      args = ["--yes" "@upstash/context7-mcp"];
+    };
+    wanderlog = {
+      command = lib.getExe wanderlog-mcp-with-cookie;
+      args = [];
+    };
+  };
+  codex-mcp-config = (pkgs.formats.toml {}).generate "config.toml" {
+    mcp_servers = agent-mcp-servers;
+  };
+  agent-skills = {
+    hey = hey-cli.src + "/skills/hey";
+    make-paper-notes = ./skills/make-paper-notes;
+  };
 in {
   imports =
     [
+      flake-inputs.agenix.homeManagerModules.default
       flake-inputs.nix-doom-emacs.hmModule
       (flake-inputs.vscode-server + "/modules/vscode-server/home.nix")
       # macOS-only effect; self-guards via pkgs.stdenv.isDarwin, so it's a
@@ -59,14 +83,43 @@ in {
     ++ lib.optionals (!usually_headless) [
       # These are useful on interactive machines, but add large npm-backed fetches
       # that are unnecessary for headless server deployments.
-      claude-code
-      codex
     ]
     ++ lib.optionals (!is_darwin) [podman]
     ++ lib.optionals is_darwin [qmk];
 
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
+
+  age = lib.mkIf is_darwin {
+    identityPaths = ["/Users/yanda/.ssh/id_manjaro_ed25519"];
+    secrets.wanderlog-cookie.file = ./secrets/wanderlog-cookie.age;
+  };
+
+  programs.mcp = lib.mkIf is_darwin {
+    enable = true;
+    servers = agent-mcp-servers;
+  };
+
+  # The ChatGPT desktop app supplies the actual Codex binary. Use a no-op package
+  # so Home Manager can own Codex's configuration without replacing that app.
+  programs.codex = lib.mkIf is_darwin {
+    enable = true;
+    package = pkgs.writeShellScriptBin "codex" "";
+    # Home Manager currently writes config.yaml for this integration, while the
+    # Codex app reads config.toml. Manage that native file below instead.
+    enableMcpIntegration = false;
+    skills = agent-skills;
+  };
+
+  home.file.".codex/config.toml" = lib.mkIf is_darwin {
+    source = codex-mcp-config;
+  };
+
+  programs.claude-code = lib.mkIf is_darwin {
+    enable = true;
+    enableMcpIntegration = true;
+    skills = agent-skills;
+  };
 
   programs.git = {
     enable = true;

@@ -22,6 +22,13 @@ buildGoModule rec {
 
   subPackages = ["cmd/hey"];
 
+  # Expose the upstream embedded agent skill as a normal package output so
+  # Home Manager can install it for any supported coding agent.
+  postInstall = ''
+    mkdir -p $out/share/agent-skills
+    cp -r skills/hey $out/share/agent-skills/hey
+  '';
+
   # Mirror the Makefile's ldflags so `hey --version` reports something useful.
   ldflags = [
     "-s"

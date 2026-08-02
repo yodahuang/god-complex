@@ -5,4 +5,5 @@ let
 in {
   "cloudflare.age".publicKeys = [yanda earl_grey];
   "chocolate-bar.age".publicKeys = [yanda earl_grey];
+  "wanderlog-cookie.age".publicKeys = [yanda];
 }
