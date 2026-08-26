@@ -29,8 +29,16 @@
     hermes-agent.url = "github:NousResearch/hermes-agent";
     deploy-rs.url = "github:serokell/deploy-rs";
     deploy-rs.inputs.nixpkgs.follows = "nixpkgs";
+    # chocolate-bar supports the ARM systems used here. Restrict bun2nix's
+    # flake-parts system matrix so checks do not evaluate unsupported
+    # x86_64-darwin outputs from nixpkgs 26.11.
+    chocolate-bar-systems = {
+      url = "path:./systems/chocolate-bar";
+      flake = false;
+    };
     chocolate-bar.url = "github:yodahuang/chocolate-bar";
     chocolate-bar.inputs.nixpkgs.follows = "nixpkgs";
+    chocolate-bar.inputs.bun2nix.inputs.systems.follows = "chocolate-bar-systems";
     claude-code-nix.url = "github:sadjow/claude-code-nix";
     claude-code-nix.inputs.nixpkgs.follows = "nixpkgs";
   };
