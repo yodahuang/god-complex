@@ -33,7 +33,9 @@
     allowUnfree = true;
     # https://github.com/NixOS/nixpkgs/issues/273611
     permittedInsecurePackages =
-      pkgs.lib.optional (pkgs.obsidian.version == "1.5.3") "electron-25.9.0";
+      pkgs.lib.optional (pkgs.obsidian.version == "1.5.3") "electron-25.9.0"
+      # Temporary: Logseq 0.10.15 currently depends on EOL Electron 39.
+      ++ pkgs.lib.optional (pkgs.logseq.version == "0.10.15") "electron-39.8.10";
   };
 
   users.users.yanda = {
