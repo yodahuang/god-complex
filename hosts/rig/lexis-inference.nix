@@ -26,6 +26,7 @@
     fi
     cp ${./lexis-inference/pyproject.toml} "$out/pyproject.toml"
     cp ${./lexis-inference/uv.lock} "$out/uv.lock"
+    cp ${./lexis-inference/benchmark_dots.py} "$out/benchmark_dots.py"
   '';
 
   installScript = pkgs.writeShellScript "lexis-inference-install" ''
@@ -51,6 +52,10 @@
       --no-dev \
       --link-mode copy \
       --python "$venv/bin/python"
+  '';
+
+  benchmarkScript = pkgs.writeShellScriptBin "lexis-inference-benchmark" ''
+    exec ${virtualEnvironment}/bin/python ${runtimeProject}/benchmark_dots.py "$@"
   '';
 
   commonEnvironment = {
@@ -92,6 +97,7 @@ in {
   };
 
   environment.systemPackages = [
+    benchmarkScript
     pkgs.ffmpeg
     pkgs.python312
     pkgs.uv
