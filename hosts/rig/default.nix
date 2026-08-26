@@ -9,6 +9,7 @@
   imports = [
     # Include the results of the hardware scan.
     ./hardware-configuration.nix
+    ./lexis-inference.nix
   ];
 
   networking.hostName = "Rig"; # Define your hostname.

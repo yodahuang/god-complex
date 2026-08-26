@@ -503,6 +503,22 @@
         "type": "github"
       }
     },
+    "lexis": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1786122577,
+        "narHash": "sha256-M/cWWdlz2sfaVDdzAeSpTHQB+VQ4ZHCusOuybZVDqTw=",
+        "owner": "yodahuang",
+        "repo": "Lexis",
+        "rev": "f076e062d639abe601ef018ab7cc67ee5ed8a59b",
+        "type": "github"
+      },
+      "original": {
+        "owner": "yodahuang",
+        "repo": "Lexis",
+        "type": "github"
+      }
+    },
     "nix-doom-emacs": {
       "inputs": {
         "doom-emacs": "doom-emacs",
@@ -942,6 +958,7 @@
         "deploy-rs": "deploy-rs",
         "hermes-agent": "hermes-agent",
         "home-manager": "home-manager",
+        "lexis": "lexis",
         "nix-doom-emacs": "nix-doom-emacs",
         "nix-vscode-extensions": "nix-vscode-extensions",
         "nixos-hardware": "nixos-hardware",

@@ -41,6 +41,13 @@
     chocolate-bar.inputs.bun2nix.inputs.systems.follows = "chocolate-bar-systems";
     claude-code-nix.url = "github:sadjow/claude-code-nix";
     claude-code-nix.inputs.nixpkgs.follows = "nixpkgs";
+    # The Rig service installs the gateway from this pinned source tree into
+    # its locked uv environment. Keep this input non-flake so the inference
+    # package is copied without evaluating Lexis' desktop/trainer outputs.
+    lexis = {
+      url = "github:yodahuang/Lexis";
+      flake = false;
+    };
   };
 
   outputs = inputs @ {
@@ -123,6 +130,7 @@
 
     nixosConfigurations."Rig" = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
+      specialArgs.flake-inputs = inputs;
       modules = [
         ./hosts/rig/default.nix
         ./common.nix
