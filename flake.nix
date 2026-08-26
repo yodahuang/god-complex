@@ -26,6 +26,7 @@
     agenix.inputs.darwin.follows = "darwin";
     agenix.inputs.home-manager.follows = "home-manager";
     agenix.inputs.nixpkgs.follows = "nixpkgs";
+    hermes-agent.url = "github:NousResearch/hermes-agent";
     deploy-rs.url = "github:serokell/deploy-rs";
     deploy-rs.inputs.nixpkgs.follows = "nixpkgs";
     chocolate-bar.url = "github:yodahuang/chocolate-bar";
@@ -51,6 +52,7 @@
     make_home_manager_config = {
       with_display,
       usually_headless,
+      enable_hermes ? false,
       ...
     }: {
       nixpkgs.overlays = [
@@ -65,7 +67,7 @@
       # https://discourse.nixos.org/t/adding-doom-emacs-using-home-manager/27742/2
       home-manager.extraSpecialArgs = {
         flake-inputs = inputs;
-        inherit with_display usually_headless;
+        inherit with_display usually_headless enable_hermes;
       };
     };
     studioDarwin = darwin.lib.darwinSystem {
@@ -77,6 +79,7 @@
         (make_home_manager_config {
           with_display = true;
           usually_headless = false;
+          enable_hermes = true;
         })
       ];
       specialArgs.flake-inputs = inputs;

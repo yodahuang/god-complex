@@ -18,12 +18,33 @@
   launchd.agents.atuin-daemon.domain =
     lib.mkIf (pkgs.stdenv.hostPlatform.isDarwin && config.programs.atuin.daemon.enable) "gui";
 
+  # The daemon binds its unix socket directly and never unlinks a stale one
+  # left behind by an unclean shutdown (e.g. macOS killing it on reboot before
+  # it can clean up). On Linux this is a non-issue because home-manager wires
+  # the daemon through systemd socket-activation, which owns the socket file
+  # itself; launchd has no equivalent, so a leftover ~/.local/share/atuin/daemon.sock
+  # makes every subsequent start hit "Address already in use"
+  # (atuin-daemon/src/server.rs) and launchd's KeepAlive.Crashed just retries
+  # the same doomed bind forever. Remove the socket before exec'ing so a fresh
+  # boot always gets a clean bind.
+  launchd.agents.atuin-daemon.config.ProgramArguments = lib.mkIf (pkgs.stdenv.hostPlatform.isDarwin && config.programs.atuin.daemon.enable) (
+    lib.mkForce [
+      "/bin/sh"
+      "-c"
+      "rm -f '${config.programs.atuin.settings.daemon.socket_path}' && exec ${lib.getExe config.programs.atuin.package} daemon start"
+    ]
+  );
+
   targets.darwin.defaultApps = {
     enable = config.programs.zed-editor.enable;
     associations = [
       {
         bundleId = "dev.zed.Zed";
-        appPath = "${config.programs.zed-editor.package}/Applications/Zed.app";
+        # Zed itself comes from the Homebrew cask (see home_gui.nix — building
+        # it via nixpkgs' zed-editor compiles Rust from source), so point
+        # straight at /Applications rather than deriving from the (now null)
+        # programs.zed-editor.package.
+        appPath = "/Applications/Zed.app";
 
         # Real, system-provided UTIs Zed should own.
         types = [

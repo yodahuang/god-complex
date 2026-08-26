@@ -5,15 +5,28 @@
   flake-inputs,
   with_display,
   usually_headless,
+  enable_hermes ? false,
   ...
 }: let
   ips = import ./hosts/ips.nix;
   is_darwin = pkgs.stdenv.isDarwin;
+  hermes-package = flake-inputs.hermes-agent.packages.${pkgs.system}.minimal;
   hey-cli = pkgs.callPackage ./pkgs/hey-cli.nix {};
   wanderlog-mcp = pkgs.callPackage ./pkgs/wanderlog-mcp.nix {};
   wanderlog-mcp-with-cookie = pkgs.writeShellScriptBin "wanderlog-mcp-with-cookie" ''
     export WANDERLOG_COOKIE="$(<${config.age.secrets.wanderlog-cookie.path})"
-    exec ${lib.getExe wanderlog-mcp}
+
+    local_root="/Users/yanda/Projects/wanderlog-mcp"
+    if [ -f "$local_root/node_modules/tsx/dist/cli.mjs" ]; then
+      printf '%s\n' "[wanderlog] using local checkout" >&2
+      cd "$local_root"
+      exec ${pkgs.nodejs_22}/bin/node \
+        "$local_root/node_modules/tsx/dist/cli.mjs" \
+        "$local_root/src/index.ts" "$@"
+    fi
+
+    printf '%s\n' "[wanderlog] local checkout unavailable; using Nix package" >&2
+    exec ${lib.getExe wanderlog-mcp} "$@"
   '';
   agent-mcp-servers = {
     context7 = {
@@ -113,7 +126,8 @@ in {
       # that are unnecessary for headless server deployments.
     ]
     ++ lib.optionals (!is_darwin) [podman]
-    ++ lib.optionals is_darwin [qmk];
+    ++ lib.optionals is_darwin [qmk]
+    ++ lib.optionals (is_darwin && enable_hermes) [hermes-package];
 
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;

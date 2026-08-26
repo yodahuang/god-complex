@@ -154,6 +154,11 @@ in {
 
   programs.zed-editor = {
     enable = true;
+    # nixpkgs' zed-editor is a from-source Rust build (no vendor prebuilt in
+    # nixpkgs) — huge compile, huge /nix/store growth. Get the actual app from
+    # the Homebrew cask (darwin/common/packages.nix) instead and just let this
+    # module manage settings/extensions/keymaps.
+    package = lib.mkIf is_darwin null;
     extensions = ["html" "toml" "git-firefly" "nix" "catppuccin-blur"];
     userSettings = {
       features = {

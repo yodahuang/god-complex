@@ -27,6 +27,7 @@ let
     "pdfsam-basic"
     "prusaslicer"
     "cursor"
+    "zed"
     "ghostty"
     "anki"
     "appcleaner"
@@ -51,6 +52,7 @@ let
       "crossover"
       "zoom"
       "codex-app"
+      "orbstack"
     ];
     geisha = [
       "microsoft-office"
@@ -58,9 +60,7 @@ let
   };
 
   hostBrews = {
-    studio = [
-      "podman"
-    ];
+    studio = [];
     geisha = [];
   };
 
