@@ -58,6 +58,18 @@
     exec ${virtualEnvironment}/bin/python ${runtimeProject}/benchmark_dots.py "$@"
   '';
 
+  runtimePreflight = pkgs.writeShellScript "lexis-inference-runtime-preflight" ''
+        set -euo pipefail
+        exec ${virtualEnvironment}/bin/python -c '
+    import sys
+    print(f"python={sys.executable}", flush=True)
+    import torch
+    print(f"torch={torch.__version__} cuda_build={torch.version.cuda} cuda_available={torch.cuda.is_available()}", flush=True)
+    import dots_tts
+    print(f"dots_tts={dots_tts.__file__}", flush=True)
+    '
+  '';
+
   commonEnvironment = {
     HOME = stateDirectory;
     PYTHONUNBUFFERED = "1";
@@ -66,6 +78,12 @@
     HF_HOME = "${stateDirectory}/models";
     HF_HUB_CACHE = "${stateDirectory}/models/hub";
     HF_HUB_DISABLE_TELEMETRY = "1";
+    # PyPI's CUDA wheels expect both the host NVIDIA driver and the C++ runtime
+    # to be discoverable by the dynamic loader. NixOS exposes these through
+    # generated paths rather than a global /usr/lib/ldconfig entry.
+    LD_LIBRARY_PATH =
+      (lib.makeLibraryPath [pkgs.stdenv.cc.cc.lib pkgs.zlib])
+      + ":/run/opengl-driver/lib";
     LEXIS_INFERENCE_HOST = "0.0.0.0";
     LEXIS_INFERENCE_PORT = "8765";
     LEXIS_INFERENCE_MODEL = modelId;
@@ -99,7 +117,6 @@ in {
   environment.systemPackages = [
     benchmarkScript
     pkgs.ffmpeg
-    pkgs.python312
     pkgs.uv
   ];
 
@@ -145,11 +162,10 @@ in {
       User = serviceUser;
       Group = serviceGroup;
       ExecStart = "${virtualEnvironment}/bin/lexis-inference";
+      ExecStartPre = runtimePreflight;
       WorkingDirectory = stateDirectory;
       Restart = "on-failure";
       RestartSec = 10;
-      StartLimitIntervalSec = 300;
-      StartLimitBurst = 3;
       TimeoutStartSec = "20min";
       TimeoutStopSec = 30;
       KillMode = "control-group";
@@ -161,6 +177,10 @@ in {
       PrivateTmp = true;
       NoNewPrivileges = true;
       RestrictAddressFamilies = ["AF_UNIX" "AF_INET" "AF_INET6"];
+    };
+    unitConfig = {
+      StartLimitIntervalSec = "300s";
+      StartLimitBurst = 3;
     };
   };
 }
