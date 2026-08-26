@@ -210,7 +210,7 @@ in {
     settings = {
       font-family = "Comic Code";
       font-size = 16;
-      theme = "tokyonight";
+      theme = "TokyoNight";
       background-opacity = 0.8;
       background-blur-radius = 20;
     };
