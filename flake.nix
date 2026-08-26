@@ -197,9 +197,8 @@
       user = "root";
       # Build the x86_64-linux system on Rig instead of on the deployment host.
       remoteBuild = true;
-      # Rig's sudo policy requires a password; let deploy-rs request it via
-      # the local terminal during activation.
-      interactiveSudo = true;
+      # Rig's sudo policy grants yanda a narrow NOPASSWD rule for activation.
+      interactiveSudo = false;
       profiles.system.path =
         deploy-rs.lib.x86_64-linux.activate.nixos
         self.nixosConfigurations.Rig;

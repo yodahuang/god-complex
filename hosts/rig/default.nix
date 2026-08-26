@@ -21,6 +21,26 @@
   # Add myself to it as this is the build machine.
   nix.settings.trusted-users = ["root" "yanda"];
 
+  # deploy-rs only needs root for its immutable system activation and its
+  # temporary rollback canary cleanup. Keep passwordless sudo limited to those
+  # two commands instead of disabling the password for every wheel command.
+  security.sudo.extraRules = [
+    {
+      users = ["yanda"];
+      runAs = "root";
+      commands = [
+        {
+          command = "/nix/store/*-activatable-nixos-system-*/activate-rs";
+          options = ["NOPASSWD"];
+        }
+        {
+          command = "/run/current-system/sw/bin/rm /tmp/deploy-rs-canary-*";
+          options = ["NOPASSWD"];
+        }
+      ];
+    }
+  ];
+
   boot.binfmt.emulatedSystems = ["aarch64-linux"];
 
   programs.steam = {
