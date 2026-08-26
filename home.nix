@@ -273,40 +273,41 @@ in {
   programs.ssh = {
     enable = true;
     enableDefaultConfig = false;
-    settings =
-      lib.optionalAttrs (!usually_headless) {
-        "*" = {
-          # On NixOS, it's in its usual location.
-          # On Darwin, it's from some random place AppStore puts.
-          IdentityAgent =
-            if is_darwin
-            then ''"~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"''
-            else "~/.1password/agent.sock";
-        };
+    # Use the local 1Password agent for local sessions, but let SSH sessions
+    # use the forwarded agent from the originating machine.
+    extraConfig = lib.optionalString (!usually_headless) ''
+      Match host * exec "test -z $SSH_CONNECTION"
+        IdentityAgent ${
+        if is_darwin
+        then ''"~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"''
+        else "~/.1password/agent.sock"
       }
-      // {
-        # Hardcoding the local ip here instead of using Tailscale ones.
-        "octo" = {
-          HostName = ips.octo;
-          User = "pi";
-          ForwardAgent = true;
-        };
-        "earl_grey" = {
-          HostName = ips.earl_grey;
-          User = "yanda";
-          ForwardAgent = true;
-        };
-        "nas" = {
-          HostName = ips.nas;
-          User = "yanda-admin";
-          ForwardAgent = true;
-        };
-        "rig" = {
-          HostName = ips.rig;
-          User = "yanda";
-          ForwardAgent = true;
-        };
+      Match all
+    '';
+    settings = {
+      "*" = {};
+      # Hardcoding the local ip here instead of using Tailscale ones.
+      "octo" = {
+        HostName = ips.octo;
+        User = "pi";
+        ForwardAgent = true;
       };
+      "earl_grey" = {
+        HostName = ips.earl_grey;
+        User = "yanda";
+        ForwardAgent = true;
+      };
+      "nas" = {
+        HostName = ips.nas;
+        User = "yanda-admin";
+        ForwardAgent = true;
+      };
+      "rig" = {
+        HostName = ips.rig;
+        User = "yanda";
+        ForwardAgent = true;
+      };
+    };
   };
 
   services.vscode-server.enable = true;
