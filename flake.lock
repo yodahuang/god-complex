@@ -527,11 +527,11 @@
     "lexis": {
       "flake": false,
       "locked": {
-        "lastModified": 1787790277,
-        "narHash": "sha256-vEn/KO89DKoB08PrRyOSzoT3v9xtfhOj2LId9THdNt0=",
+        "lastModified": 1787792593,
+        "narHash": "sha256-i4OS4VVwk6l6wNMt2bpJxWd2/MdHyCrpeyH3mpm3lDw=",
         "owner": "yodahuang",
         "repo": "Lexis",
-        "rev": "20080beffe0442ef4f33572b435ad428222a7a98",
+        "rev": "007164ab93e0bd2fac52a0563680aa20680c59a4",
         "type": "github"
       },
       "original": {
