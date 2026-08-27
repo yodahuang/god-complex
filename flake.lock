@@ -27,6 +27,27 @@
         "type": "github"
       }
     },
+    "audio-cpp": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1787779538,
+        "narHash": "sha256-gcNwCq9cR2Hw6SYTZlH+7U1e7KC1X5wdj4xlwdo6eKc=",
+        "owner": "0xShug0",
+        "repo": "audio.cpp",
+        "rev": "db21cbdd60f3d2ff62114bc863781ff8073ac39b",
+        "type": "github"
+      },
+      "original": {
+        "owner": "0xShug0",
+        "repo": "audio.cpp",
+        "rev": "db21cbdd60f3d2ff62114bc863781ff8073ac39b",
+        "type": "github"
+      }
+    },
     "bun2nix": {
       "inputs": {
         "flake-parts": "flake-parts",
@@ -506,11 +527,11 @@
     "lexis": {
       "flake": false,
       "locked": {
-        "lastModified": 1787733763,
-        "narHash": "sha256-Zz+FAnvo3r9yLwEPCwkvt2i3iHOvgYhdA19StyY5f4U=",
+        "lastModified": 1787790277,
+        "narHash": "sha256-vEn/KO89DKoB08PrRyOSzoT3v9xtfhOj2LId9THdNt0=",
         "owner": "yodahuang",
         "repo": "Lexis",
-        "rev": "170290aaeb0d5346f4c40076341a74d03b72985c",
+        "rev": "20080beffe0442ef4f33572b435ad428222a7a98",
         "type": "github"
       },
       "original": {
@@ -951,6 +972,7 @@
     "root": {
       "inputs": {
         "agenix": "agenix",
+        "audio-cpp": "audio-cpp",
         "chocolate-bar": "chocolate-bar",
         "chocolate-bar-systems": "chocolate-bar-systems",
         "claude-code-nix": "claude-code-nix",

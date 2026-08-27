@@ -9,8 +9,18 @@
   serviceGroup = serviceUser;
   stateDirectory = "/var/lib/lexis-inference";
   virtualEnvironment = "${stateDirectory}/venv";
-  modelRevision = "c28105adc8228143392b4e346994ff613ee48a06";
+  modelRevision = "audio-cpp-mf-q8_0-sha256-062c5e040e0ec9a2d31dc1209d70233ed2bb132e9ead5cea84af420644079053";
   modelId = "dots-studio/dots.tts-mf";
+  audioCppModelId = "dots-tts-mf";
+  audioCppModelPath = "${stateDirectory}/models/dots-tts-mf-q8_0.gguf";
+  audioCppModelUrl = "https://huggingface.co/audio-cpp/audio.cpp-gguf/resolve/4d501e4c45a311bb84b82389dc6e61f559e23570/DotTTS-MF-GGUF/dots-tts-mf-q8_0.gguf?download=true";
+  audioCppModelSha256 = "062c5e040e0ec9a2d31dc1209d70233ed2bb132e9ead5cea84af420644079053";
+  audioCpp =
+    (flake-inputs.audio-cpp.packages.${pkgs.system}.cuda.override {
+      models = ["dots_tts"];
+    }).overrideAttrs (old: {
+      cmakeFlags = old.cmakeFlags ++ ["-DCMAKE_CUDA_ARCHITECTURES=75-real"];
+    });
 
   # Keep the gateway source in Lexis, but make the complete runtime project
   # (including this repository's lockfile) a single immutable Nix input.  The
@@ -19,8 +29,8 @@
   runtimeProject = pkgs.runCommand "lexis-rig-inference-project" {} ''
     mkdir -p "$out/lexis-inference"
     cp -R ${flake-inputs.lexis}/inference/. "$out/lexis-inference/"
-    if [ ! -f "$out/lexis-inference/src/lexis_inference/dots_backend.py" ]; then
-      echo "The pinned Lexis input does not contain the CUDA Dots backend" >&2
+    if [ ! -f "$out/lexis-inference/src/lexis_inference/audio_cpp_backend.py" ]; then
+      echo "The pinned Lexis input does not contain the Audio.cpp backend" >&2
       echo "Update the flake.lock Lexis revision before activating Rig" >&2
       exit 1
     fi
@@ -40,12 +50,32 @@
     export UV_PROJECT_ENVIRONMENT="$venv"
 
     install -d -m 0750 -o ${serviceUser} -g ${serviceGroup} "$state"
+    install -d -m 0750 -o ${serviceUser} -g ${serviceGroup} "$state/models"
+
+    model=${lib.escapeShellArg audioCppModelPath}
+    model_url=${lib.escapeShellArg audioCppModelUrl}
+    model_sha256=${lib.escapeShellArg audioCppModelSha256}
+    if [ -f "$model" ] && ! printf '%s  %s\n' "$model_sha256" "$model" | ${pkgs.coreutils}/bin/sha256sum --check --status -; then
+      echo "Removing a corrupt Audio.cpp model at $model" >&2
+      rm -f "$model"
+    fi
+    if [ ! -f "$model" ]; then
+      partial="$model.partial"
+      rm -f "$partial"
+      trap 'rm -f "$partial"' EXIT
+      ${pkgs.curl}/bin/curl --fail --location --retry 5 --retry-all-errors \
+        --output "$partial" "$model_url"
+      printf '%s  %s\n' "$model_sha256" "$partial" | ${pkgs.coreutils}/bin/sha256sum --check --status -
+      mv "$partial" "$model"
+      chmod 0640 "$model"
+      trap - EXIT
+    fi
     if [ ! -x "$venv/bin/python" ]; then
       ${pkgs.uv}/bin/uv venv --python ${pkgs.python312}/bin/python3.12 "$venv"
     fi
 
     # --locked makes a changed dependency graph fail loudly instead of
-    # silently solving a new CUDA/PyTorch environment during service startup.
+    # silently solving a new gateway environment during service startup.
     ${pkgs.uv}/bin/uv sync \
       --project ${runtimeProject} \
       --locked \
@@ -63,11 +93,14 @@
         exec ${virtualEnvironment}/bin/python -c '
     import sys
     print(f"python={sys.executable}", flush=True)
-    import torch
-    print(f"torch={torch.__version__} cuda_build={torch.version.cuda} cuda_available={torch.cuda.is_available()}", flush=True)
-    import dots_tts
-    print(f"dots_tts={dots_tts.__file__}", flush=True)
+    import lexis_inference.audio_cpp_backend
+    print("audio_cpp_backend=ok", flush=True)
     '
+  '';
+
+  audioCppPreflight = pkgs.writeShellScript "lexis-audio-cpp-preflight" ''
+    set -euo pipefail
+    exec ${audioCpp}/bin/audiocpp_server --list-devices
   '';
 
   commonEnvironment = {
@@ -89,21 +122,24 @@
     LEXIS_INFERENCE_MODEL = modelId;
     LEXIS_INFERENCE_MODEL_REVISION = modelRevision;
     LEXIS_INFERENCE_REFERENCE_DIR = "${stateDirectory}/references";
-    LEXIS_INFERENCE_WORKER_FACTORY = "lexis_inference.dots_backend:factory";
+    LEXIS_INFERENCE_WORKER_FACTORY = "lexis_inference.audio_cpp_backend:factory";
     LEXIS_INFERENCE_WORKER_TIMEOUT_SECONDS = "180";
     LEXIS_INFERENCE_WORKER_STARTUP_TIMEOUT_SECONDS = "900";
     LEXIS_INFERENCE_MAX_REFERENCE_BYTES = "16777216";
     LEXIS_INFERENCE_MAX_AUDIO_BYTES = "16777216";
-    LEXIS_DOTS_MODEL = modelId;
-    LEXIS_DOTS_MODEL_REVISION = modelRevision;
-    LEXIS_DOTS_CACHE_DIR = "${stateDirectory}/models";
-    LEXIS_DOTS_PRECISION = "float16";
-    LEXIS_DOTS_OPTIMIZE = "false";
-    LEXIS_DOTS_MAX_GENERATE_LENGTH = "500";
-    LEXIS_DOTS_MAX_SEQUENCE_LENGTH = "2048";
-    LEXIS_DOTS_VOCODER_MERGE_STEPS = "4";
-    LEXIS_DOTS_OPUS_BITRATE = "64k";
-    LEXIS_DOTS_FFMPEG = "${pkgs.ffmpeg}/bin/ffmpeg";
+    LEXIS_AUDIO_CPP_URL = "http://127.0.0.1:18080";
+    LEXIS_AUDIO_CPP_MODEL_ID = audioCppModelId;
+    LEXIS_AUDIO_CPP_MODEL_PATH = audioCppModelPath;
+    LEXIS_AUDIO_CPP_BINARY = "${audioCpp}/bin/audiocpp_server";
+    LEXIS_AUDIO_CPP_HOST = "127.0.0.1";
+    LEXIS_AUDIO_CPP_PORT = "18080";
+    LEXIS_AUDIO_CPP_DEVICE = "0";
+    LEXIS_AUDIO_CPP_THREADS = "1";
+    LEXIS_AUDIO_CPP_SPAWN_SERVER = "true";
+    LEXIS_AUDIO_CPP_REFERENCE_DURATION_SECONDS = "5";
+    LEXIS_AUDIO_CPP_MAX_TOKENS = "500";
+    LEXIS_AUDIO_CPP_FFMPEG = "${pkgs.ffmpeg}/bin/ffmpeg";
+    LEXIS_AUDIO_CPP_OPUS_BITRATE = "64k";
   };
 in {
   users.groups.${serviceGroup} = {};
@@ -116,7 +152,9 @@ in {
 
   environment.systemPackages = [
     benchmarkScript
+    audioCpp
     pkgs.ffmpeg
+    pkgs.curl
     pkgs.uv
   ];
 
@@ -162,7 +200,7 @@ in {
       User = serviceUser;
       Group = serviceGroup;
       ExecStart = "${virtualEnvironment}/bin/lexis-inference";
-      ExecStartPre = runtimePreflight;
+      ExecStartPre = [runtimePreflight audioCppPreflight];
       WorkingDirectory = stateDirectory;
       Restart = "on-failure";
       RestartSec = 10;

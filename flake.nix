@@ -48,6 +48,14 @@
       url = "github:yodahuang/Lexis";
       flake = false;
     };
+    # Pinned native CUDA runtime used by the Rig's Dots MeanFlow worker. The
+    # host module restricts the build to the dots_tts model and SM75 so the
+    # resulting binary matches the RTX 2070 Super instead of shipping a full
+    # framework build.
+    audio-cpp = {
+      url = "github:0xShug0/audio.cpp?rev=db21cbdd60f3d2ff62114bc863781ff8073ac39b";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = inputs @ {
