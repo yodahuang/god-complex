@@ -48,6 +48,11 @@
       url = "github:yodahuang/Lexis";
       flake = false;
     };
+    # Filesystem-backed static site hosting for the Earl Grey LAN.
+    static-sites = {
+      url = "path:/Users/yanda/Documents/ChatGPT/static-server";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     # Pinned native CUDA runtime used by the Rig's Dots MeanFlow worker. The
     # host module restricts the build to the dots_tts model and SM75 so the
     # resulting binary matches the RTX 2070 Super instead of shipping a full

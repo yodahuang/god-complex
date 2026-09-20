@@ -1,10 +1,12 @@
 {
   config,
+  flake-inputs,
   pkgs,
   lib,
   ...
 }: let
   homePage = pkgs.callPackage ./homepage.nix {};
+  staticSitesUi = flake-inputs.static-sites.packages.${pkgs.system}.default;
   ips = import ../ips.nix;
   # TODO: Duplicate here.
   ADGUARD_PORT = 1080;
@@ -28,7 +30,7 @@ in {
       plugins = [
         "github.com/caddy-dns/cloudflare@v0.0.0-20250407183951-bbf79111721a"
       ];
-      hash = "sha256-9OVSC/D7Ib0GFQdD/qQmtLu9L6EJc/TNYNDbQl4dJ9U=";
+      hash = "sha256-GEM8c8x42iYkDtG1pG4IqTIc9qEgSVOa0cGejn5UT4U=";
     };
     logFormat = ''
       level INFO
@@ -41,6 +43,43 @@ in {
       "my" = {
         extraConfig = ''
           root * ${homePage}
+          file_server
+        '';
+      };
+      "pages" = {
+        extraConfig = ''
+          request_body {
+            max_size 250MB
+          }
+
+          redir /admin /admin/ 308
+          redir /api /api/ 308
+
+          handle_path /api/* {
+            reverse_proxy 127.0.0.1:5000
+          }
+
+          handle_path /admin/* {
+            root * ${staticSitesUi}
+            file_server
+          }
+
+          encode gzip zstd
+          root * /var/lib/static-sites
+
+          @hidden {
+            path_regexp static_sites_hidden (^|/)\\.
+          }
+          respond @hidden 404
+
+          @spa_missing {
+            not file
+            not path /api*
+            not path /admin*
+            path_regexp static_site ^/([^/]+)(?:/.*)?$
+          }
+          rewrite @spa_missing /{re.static_site.1}/index.html
+
           file_server
         '';
       };

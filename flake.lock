@@ -987,6 +987,7 @@
         "nixpkgs": "nixpkgs_3",
         "nixpkgs-qemu": "nixpkgs-qemu",
         "nur": "nur",
+        "static-sites": "static-sites",
         "vscode-server": "vscode-server"
       }
     },
@@ -1020,6 +1021,23 @@
         "owner": "sensorflo",
         "repo": "sln-mode",
         "type": "github"
+      }
+    },
+    "static-sites": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1789883438,
+        "narHash": "sha256-yIo+8cQ8zk4Ix8ueU077srDmbGH4Wf3aG9QLgJV9R64=",
+        "path": "/Users/yanda/Documents/ChatGPT/static-server",
+        "type": "path"
+      },
+      "original": {
+        "path": "/Users/yanda/Documents/ChatGPT/static-server",
+        "type": "path"
       }
     },
     "systems": {

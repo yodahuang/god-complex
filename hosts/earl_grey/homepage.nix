@@ -140,6 +140,12 @@ pkgs.homer.withAssets {
             subtitle = "Vestaboard controller";
             url = "https://chocolate.int.yanda.rocks";
           }
+          {
+            name = "Static Sites";
+            icon = "fas fa-globe";
+            subtitle = "Upload and manage family sites";
+            url = "https://pages.int.yanda.rocks/admin/";
+          }
         ];
       }
     ];

@@ -72,6 +72,7 @@
   agent-skills = {
     hey = hey-cli.src + "/skills/hey";
     make-paper-notes = ./skills/make-paper-notes;
+    static-sites-ops = flake-inputs.static-sites + "/skills/static-sites-ops";
   };
 in {
   imports =

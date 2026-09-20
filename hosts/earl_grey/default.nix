@@ -6,7 +6,7 @@
 }: let
   ips = import ../ips.nix;
 in {
-  imports = [./hardware-configuration.nix ./caddy.nix ./adguard_home.nix ./chocolate-bar.nix ./homebridge.nix];
+  imports = [./hardware-configuration.nix ./caddy.nix ./adguard_home.nix ./chocolate-bar.nix ./homebridge.nix ./static-sites.nix];
 
   # Use uboot.
   boot.loader.grub.enable = false;
