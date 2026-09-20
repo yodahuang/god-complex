@@ -48,7 +48,22 @@
       url = "github:yodahuang/Lexis";
       flake = false;
     };
-    # Filesystem-backed static site hosting for the Earl Grey LAN.
+    # The Pixiv semantic service and the Rig manager are developed together
+    # while this deployment is being brought up. Keep the source as a non-flake
+    # input so the NixOS module and Python manager are copied into the remote
+    # build closure without adding another application flake.
+    pixiv-viewer = {
+      url = "path:/Users/yanda/Projects/pixiv-viewer";
+      flake = false;
+    };
+    # The Rig operations UI is a standalone application with its own release
+    # lifecycle. Keep it separate from the Pixiv reader source tree.
+    rig-control-plane = {
+      url = "path:/Users/yanda/Projects/rig-control-plane";
+      flake = false;
+    };
+    # Local development input for the filesystem-backed static-sites service.
+    # Replace this with the published repository URL before sharing the flake.
     static-sites = {
       url = "path:/Users/yanda/Documents/ChatGPT/static-server";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -76,6 +91,11 @@
     deploy-rs,
     ...
   }: let
+    homelabInventory = import ./homelab/inventory.nix;
+    homelabLib = import ./homelab/lib.nix {lib = nixpkgs.lib;};
+    homelabManifest = homelabLib.manifest (homelabLib.validate homelabInventory);
+    homelabTests = import ./homelab/tests.nix {lib = nixpkgs.lib;};
+
     # A helper function to build the home-manager configuration.
     make_home_manager_config = {
       with_display,
@@ -126,6 +146,10 @@
       specialArgs.flake-inputs = inputs;
     };
   in {
+    # Secret-free, normalized intent for the future UniFi/Tailscale/Cloudflare
+    # reconciler. Observed addresses are deliberately not part of this output.
+    inherit homelabManifest;
+
     # Reusable Home Manager module for declarative macOS default-app
     # associations. Consume with:
     #   imports = [ inputs.<this>.homeManagerModules.default ];
@@ -149,6 +173,7 @@
         ./common.nix
         ./nixos/default.nix
         ./nixos/nvidia.nix
+        agenix.nixosModules.default
         home-manager.nixosModules.home-manager
         (make_home_manager_config {
           with_display = true;
@@ -212,12 +237,32 @@
       remoteBuild = true;
       # Rig's sudo policy grants yanda a narrow NOPASSWD rule for activation.
       interactiveSudo = false;
+      sshOpts = [
+        "-o"
+        "IdentitiesOnly=yes"
+        "-o"
+        "IdentityAgent=none"
+        "-i"
+        "/Users/yanda/.ssh/id_manjaro_ed25519"
+      ];
       profiles.system.path =
         deploy-rs.lib.x86_64-linux.activate.nixos
         self.nixosConfigurations.Rig;
     };
 
-    checks.aarch64-linux = deploy-rs.lib.aarch64-linux.deployChecks self.deploy;
+    checks.aarch64-linux =
+      (deploy-rs.lib.aarch64-linux.deployChecks self.deploy)
+      // {
+        homelab-inventory = assert homelabTests.all;
+          nixpkgs.legacyPackages.aarch64-linux.runCommand "homelab-inventory-check" {} ''
+            touch $out
+          '';
+      };
+
+    packages.aarch64-darwin.homelab-manifest =
+      nixpkgs.legacyPackages.aarch64-darwin.writeText
+      "homelab-inventory.json"
+      (builtins.toJSON homelabManifest);
 
     # Expose the package set, including overlays, for convenience.
     darwinPackages = self.darwinConfigurations.studio.pkgs;

@@ -3,13 +3,15 @@
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 {
   config,
+  flake-inputs,
   pkgs,
   ...
 }: {
   imports = [
     # Include the results of the hardware scan.
     ./hardware-configuration.nix
-    ./lexis-inference.nix
+    (flake-inputs.rig-control-plane + "/deploy/nix/rigplane.nix")
+    ./rigplane.nix
   ];
 
   networking.hostName = "Rig"; # Define your hostname.
