@@ -98,12 +98,6 @@ pkgs.homer.withAssets {
             logo = "assets/homer-icons/png/adguardhome.png";
             url = "https://adguard.int.yanda.rocks";
           }
-          {
-            name = "Ethernet Switch";
-            icon = "fas fa-ethernet";
-            subtitle = "TP-Link switch";
-            url = "https://ethernet-switch.int.yanda.rocks";
-          }
         ];
       }
       {
@@ -115,6 +109,12 @@ pkgs.homer.withAssets {
             logo = "assets/homer-icons/png/synology.png";
             subtitle = "One NAS to host them all";
             url = "https://nas.int.yanda.rocks";
+          }
+          {
+            name = "Notifiarr";
+            icon = "fas fa-bell";
+            subtitle = "Notification settings";
+            url = "http://192.168.1.168:5454/";
           }
           {
             name = "Paperless";
