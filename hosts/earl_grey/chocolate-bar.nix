@@ -18,7 +18,7 @@ in {
       ExecStart = "${chocolate-bar}/bin/chocolate-bar";
       # VESTA_RW_KEY=...
       EnvironmentFile = config.age.secrets.chocolate-bar.path;
-      Restart = "always";
+      Restart = "on-failure";
       RestartSec = 10;
       DynamicUser = true;
     };
