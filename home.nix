@@ -9,6 +9,10 @@
   ...
 }: let
   ips = import ./hosts/ips.nix;
+  homelabInventory = import ./homelab/inventory.nix;
+  homelab = import ./homelab/lib.nix {inherit lib;};
+  validatedHomelabInventory = homelab.validate homelabInventory;
+  homelabManifest = homelab.manifest validatedHomelabInventory;
   is_darwin = pkgs.stdenv.isDarwin;
   hermes-package = flake-inputs.hermes-agent.packages.${pkgs.system}.minimal;
   hey-cli = pkgs.callPackage ./pkgs/hey-cli.nix {};
@@ -69,6 +73,22 @@
     target.write_text(tomlkit.dumps(doc))
   '';
   codex-config-merge-python = pkgs.python3.withPackages (ps: [ps.tomlkit]);
+  homelabTofuPlan = import ./homelab/tofu-command.nix {
+    inherit pkgs;
+    desiredManifest = homelabManifest;
+    apiKeyPath = config.age.secrets."unifi-api-key".path;
+    cloudflareEnvPath = config.age.secrets.cloudflare.path;
+    name = "homelab-tofu-plan";
+    operation = "plan";
+  };
+  homelabTofuApply = import ./homelab/tofu-command.nix {
+    inherit pkgs;
+    desiredManifest = homelabManifest;
+    apiKeyPath = config.age.secrets."unifi-api-key".path;
+    cloudflareEnvPath = config.age.secrets.cloudflare.path;
+    name = "homelab-tofu-apply";
+    operation = "apply";
+  };
   agent-skills = {
     hey = hey-cli.src + "/skills/hey";
     make-paper-notes = ./skills/make-paper-notes;
@@ -122,6 +142,7 @@ in {
       # PDF for coding agents
       poppler-utils
     ]
+    ++ lib.optionals is_darwin [homelabTofuPlan homelabTofuApply opentofu]
     ++ lib.optionals (!usually_headless) [
       # These are useful on interactive machines, but add large npm-backed fetches
       # that are unnecessary for headless server deployments.
@@ -135,7 +156,11 @@ in {
 
   age = lib.mkIf is_darwin {
     identityPaths = ["/Users/yanda/.ssh/id_manjaro_ed25519"];
-    secrets.wanderlog-cookie.file = ./secrets/wanderlog-cookie.age;
+    secrets = {
+      wanderlog-cookie.file = ./secrets/wanderlog-cookie.age;
+      "unifi-api-key".file = ./secrets/unifi-api-key.age;
+      cloudflare.file = ./secrets/cloudflare.age;
+    };
   };
 
   programs.mcp = lib.mkIf is_darwin {

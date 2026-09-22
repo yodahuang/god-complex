@@ -146,8 +146,8 @@
       specialArgs.flake-inputs = inputs;
     };
   in {
-    # Secret-free, normalized intent for the future UniFi/Tailscale/Cloudflare
-    # reconciler. Observed addresses are deliberately not part of this output.
+    # Secret-free, normalized intent consumed by the OpenTofu plan. Observed
+    # addresses are deliberately not part of this output.
     inherit homelabManifest;
 
     # Reusable Home Manager module for declarative macOS default-app
@@ -173,6 +173,7 @@
         ./common.nix
         ./nixos/default.nix
         ./nixos/nvidia.nix
+        ./nixos/tailscale.nix
         agenix.nixosModules.default
         home-manager.nixosModules.home-manager
         (make_home_manager_config {
@@ -193,6 +194,7 @@
         }
         ./hosts/earl_grey/default.nix
         ./common.nix
+        ./nixos/tailscale.nix
         home-manager.nixosModules.home-manager
         (make_home_manager_config {
           with_display = false;

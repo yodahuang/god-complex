@@ -3,9 +3,7 @@
   pkgs,
   lib,
   ...
-}: let
-  ips = import ../ips.nix;
-in {
+}: {
   imports = [./hardware-configuration.nix ./caddy.nix ./adguard_home.nix ./chocolate-bar.nix ./homebridge.nix ./static-sites.nix];
 
   # Use uboot.
@@ -46,10 +44,7 @@ in {
   # deploy channel (which deploy-rs warns is less secure than keys).
   security.sudo.wheelNeedsPassword = false;
 
-  services.tailscale = {
-    enable = true;
-    useRoutingFeatures = "server";
-  };
+  services.tailscale.useRoutingFeatures = "server";
 
   # Cross compilation doesn't seem to work.
   # nixpkgs = {

@@ -7,6 +7,7 @@ in {
   "cloudflare.age".publicKeys = [yanda earl_grey];
   "chocolate-bar.age".publicKeys = [yanda earl_grey];
   "wanderlog-cookie.age".publicKeys = [yanda];
+  "unifi-api-key.age".publicKeys = [yanda];
   "rigplane-agent-token.age".publicKeys = [yanda rig];
   "rigplane-client-token.age".publicKeys = [yanda rig];
 }

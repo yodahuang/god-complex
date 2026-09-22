@@ -1,159 +1,68 @@
-{pkgs, ...}:
-pkgs.homer.withAssets {
-  name = "homelab";
-  config = {
-    title = "Yanda's home dashboard";
-    subtitle = "Hey hey";
-    logo = "logo.png";
-    # These colors and stuff are from https://github.com/walkxcode/homer-theme/blob/88f17f2eaaffe6466c3d940c6f15b41a6e255bd2/assets/config.yml
-    stylesheet = ["assets/custom.css"];
-    columns = "3";
-    theme = "default";
-    colors = {
-      light = {
-        "highlight-primary" = "#fff5f2";
-        "highlight-secondary" = "#fff5f2";
-        "highlight-hover" = "#bebebe";
-        background = "#12152B";
-        "card-background" = "rgba(255, 245, 242, 0.8)";
-        text = "#ffffff";
-        "text-header" = "#fafafa";
-        "text-title" = "#000000";
-        "text-subtitle" = "#111111";
-        "card-shadow" = "rgba(0, 0, 0, 0.5)";
-        link = "#3273dc";
-        "link-hover" = "#2e4053";
-        "background-image" = "../assets/wallpaper-light.jpeg";
+{
+  pkgs,
+  lib,
+  ...
+}: let
+  inventory = import ../../homelab/inventory.nix;
+  homelab = import ../../homelab/lib.nix {inherit lib;};
+  validatedInventory = homelab.validate inventory;
+  servicesById = homelab.serviceById validatedInventory;
+  dashboardItem = serviceId:
+    homelab.dashboardItem validatedInventory servicesById.${serviceId};
+in
+  pkgs.homer.withAssets {
+    name = "homelab";
+    config = {
+      title = "Yanda's home dashboard";
+      subtitle = "Hey hey";
+      logo = "logo.png";
+      # These colors and stuff are from https://github.com/walkxcode/homer-theme/blob/88f17f2eaaffe6466c3d940c6f15b41a6e255bd2/assets/config.yml
+      stylesheet = ["assets/custom.css"];
+      columns = "3";
+      theme = "default";
+      colors = {
+        light = {
+          "highlight-primary" = "#fff5f2";
+          "highlight-secondary" = "#fff5f2";
+          "highlight-hover" = "#bebebe";
+          background = "#12152B";
+          "card-background" = "rgba(255, 245, 242, 0.8)";
+          text = "#ffffff";
+          "text-header" = "#fafafa";
+          "text-title" = "#000000";
+          "text-subtitle" = "#111111";
+          "card-shadow" = "rgba(0, 0, 0, 0.5)";
+          link = "#3273dc";
+          "link-hover" = "#2e4053";
+          "background-image" = "../assets/wallpaper-light.jpeg";
+        };
+        dark = {
+          "highlight-primary" = "#181C3A";
+          "highlight-secondary" = "#181C3A";
+          "highlight-hover" = "#1F2347";
+          background = "#12152B";
+          "card-background" = "rgba(24, 28, 58, 0.8)";
+          text = "#eaeaea";
+          "text-header" = "#7C71DD";
+          "text-title" = "#fafafa";
+          "text-subtitle" = "#8B8D9C";
+          "card-shadow" = "rgba(0, 0, 0, 0.5)";
+          link = "#c1c1c1";
+          "link-hover" = "#fafafa";
+          "background-image" = "../assets/wallpaper.jpeg";
+        };
       };
-      dark = {
-        "highlight-primary" = "#181C3A";
-        "highlight-secondary" = "#181C3A";
-        "highlight-hover" = "#1F2347";
-        background = "#12152B";
-        "card-background" = "rgba(24, 28, 58, 0.8)";
-        text = "#eaeaea";
-        "text-header" = "#7C71DD";
-        "text-title" = "#fafafa";
-        "text-subtitle" = "#8B8D9C";
-        "card-shadow" = "rgba(0, 0, 0, 0.5)";
-        link = "#c1c1c1";
-        "link-hover" = "#fafafa";
-        "background-image" = "../assets/wallpaper.jpeg";
-      };
+      services =
+        map (category: {
+          inherit (category) name icon;
+          items = map dashboardItem category.serviceIds;
+        })
+        validatedInventory.dashboard.categories;
     };
-    services = [
-      {
-        name = "Theatre";
-        icon = "fas fa-couch";
-        items = [
-          {
-            name = "Radarr";
-            logo = "assets/homer-icons/png/radarr.png";
-            subtitle = "Get movies";
-            url = "https://radarr.int.yanda.rocks";
-          }
-          {
-            name = "Sonarr";
-            logo = "assets/homer-icons/png/sonarr.png";
-            url = "https://sonarr.int.yanda.rocks";
-          }
-          {
-            name = "Bazarr";
-            logo = "assets/homer-icons/png/bazarr.png";
-            subtitle = "Get Subtitles";
-            url = "https://bazarr.int.yanda.rocks";
-          }
-          {
-            name = "Plex";
-            logo = "assets/homer-icons/png/plex.png";
-            subtitle = "Movies";
-            url = "https://plex.int.yanda.rocks";
-          }
-          {
-            name = "Jellyfin";
-            logo = "assets/homer-icons/png/jellyfin.png";
-            subtitle = "Vlogs";
-            url = "http://jellyfin.int.yanda.rocks";
-          }
-        ];
-      }
-      {
-        name = "Home management";
-        icon = "fas fa-home";
-        items = [
-          {
-            name = "Home Assistnat";
-            logo = "assets/homer-icons/png/home-assistant.png";
-            subtitle = "One place to store them all";
-            url = "https://home-assistant.int.yanda.rocks";
-          }
-          {
-            name = "HomeBridge";
-            logo = "assets/homer-icons/png/homebridge.png";
-            subtitle = "Username and password are both admin";
-            url = "https://homebridge.int.yanda.rocks";
-          }
-          {
-            name = "AdGuard Home";
-            logo = "assets/homer-icons/png/adguardhome.png";
-            url = "https://adguard.int.yanda.rocks";
-          }
-        ];
-      }
-      {
-        name = "Misc";
-        icon = "fas fa-dumpster";
-        items = [
-          {
-            name = "NAS";
-            logo = "assets/homer-icons/png/synology.png";
-            subtitle = "One NAS to host them all";
-            url = "https://nas.int.yanda.rocks";
-          }
-          {
-            name = "Notifiarr";
-            icon = "fas fa-bell";
-            subtitle = "Notification settings";
-            url = "http://192.168.1.168:5454/";
-          }
-          {
-            name = "Paperless";
-            logo = "assets/homer-icons/png/paperless-ng.png";
-            subtitle = "The (not) paperless docs";
-            url = "https://paperless.int.yanda.rocks";
-          }
-          {
-            name = "OctoPrint";
-            logo = "assets/homer-icons/png/octoprint.png";
-            subtitle = "Control 3D printer with ease";
-            url = "https://octoprint.int.yanda.rocks";
-          }
-          {
-            name = "Sabnzbd";
-            logo = "assets/homer-icons/png/sabnzbd.png";
-            subtitle = "Download manager";
-            url = "https://sabnzbd.int.yanda.rocks";
-          }
-          {
-            name = "Chocolate";
-            icon = "fas fa-table-cells";
-            subtitle = "Vestaboard controller";
-            url = "https://chocolate.int.yanda.rocks";
-          }
-          {
-            name = "Static Sites";
-            icon = "fas fa-globe";
-            subtitle = "Upload and manage family sites";
-            url = "https://pages.int.yanda.rocks/admin/";
-          }
-        ];
-      }
+    extraAssets = [
+      /*
+      Any extra assets (such as icons) to include.
+      /* These can be referenced through "assets/" in the Homer configuration.
+      */
     ];
-  };
-  extraAssets = [
-    /*
-    Any extra assets (such as icons) to include.
-    /* These can be referenced through "assets/" in the Homer configuration.
-    */
-  ];
-}
+  }

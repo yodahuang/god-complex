@@ -1,8 +1,13 @@
 {
   config,
   pkgs,
+  lib,
   ...
 }: let
+  inventory = import ../../homelab/inventory.nix;
+  homelab = import ../../homelab/lib.nix {inherit lib;};
+  validatedInventory = homelab.validate inventory;
+  ingressIPv4 = validatedInventory.nodes.${validatedInventory.meta.ingressNode}.lan.desiredIPv4;
   ADGUARD_PORT = 1080;
 in {
   services.adguardhome = {
@@ -21,7 +26,9 @@ in {
         rewrites = [
           {
             domain = "*.home";
-            answer = "192.168.4.117";
+            # AdGuard is not the household resolver anymore, but keep its
+            # dormant local rewrite aligned with the shared inventory.
+            answer = ingressIPv4;
           }
         ];
       };

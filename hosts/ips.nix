@@ -1,7 +1,4 @@
-{
-  octo = "192.168.4.153"; # To be updated
-  earl_grey = "192.168.1.46";
-  nas = "192.168.1.168";
-  rig = "192.168.1.124";
-  heos = "192.168.1.198";
-}
+let
+  inventory = import ../homelab/inventory.nix;
+in
+  builtins.mapAttrs (_: node: node.lan.desiredIPv4) inventory.nodes

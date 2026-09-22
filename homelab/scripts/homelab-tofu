@@ -1,0 +1,79 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+operation="${HOMELAB_TOFU_OPERATION:-}"
+case "${operation}" in
+  plan|apply)
+    ;;
+  *)
+    printf '%s\n' "HOMELAB_TOFU_OPERATION must be plan or apply" >&2
+    exit 64
+    ;;
+esac
+
+if [[ $# -gt 0 && "${1}" == "--help" ]]; then
+  if [[ "${operation}" == "plan" ]]; then
+    cat <<'EOF'
+Usage: homelab-tofu-plan [OpenTofu plan options]
+
+Runs a read-only OpenTofu plan for the UniFi reservations/local DNS records
+and Cloudflare public DNS record declared by the Nix homelab inventory.
+
+Exit status 0 means no drift, 2 means OpenTofu found proposed changes, and
+any other nonzero status is an error.
+EOF
+  else
+    cat <<'EOF'
+Usage: homelab-tofu-apply [OpenTofu apply options]
+
+Generates a fresh OpenTofu plan and asks for confirmation before changing
+the UniFi and Cloudflare resources declared by the Nix homelab inventory.
+
+Pass -auto-approve only when an unattended apply is intentional.
+EOF
+  fi
+  exit 0
+fi
+
+: "${HOMELAB_MANIFEST_FILE:?HOMELAB_MANIFEST_FILE must point to the Nix manifest}"
+: "${HOMELAB_TOFU_MODULE:?HOMELAB_TOFU_MODULE must point to the OpenTofu module}"
+: "${UNIFI_API_KEY_FILE:?UNIFI_API_KEY_FILE must point to the agenix secret}"
+: "${CLOUDFLARE_ENV_FILE:?CLOUDFLARE_ENV_FILE must point to the agenix environment file}"
+
+umask 077
+state_dir="${HOMELAB_TOFU_STATE_DIR:-${XDG_STATE_HOME:-${HOME}/.local/state}/homelab-tofu}"
+mkdir -p "${state_dir}"
+
+manifest_json="$(<"${HOMELAB_MANIFEST_FILE}")"
+export TF_VAR_manifest_json="${manifest_json}"
+unifi_api_key="$(<"${UNIFI_API_KEY_FILE}")"
+export UNIFI_API_KEY="${unifi_api_key}"
+
+# The existing agenix file is an EnvironmentFile used by Caddy.
+# shellcheck disable=SC1090
+source "${CLOUDFLARE_ENV_FILE}"
+export CLOUDFLARE_API_TOKEN="${CLOUDFLARE_API_TOKEN:-${CF_API_TOKEN:-}}"
+: "${CLOUDFLARE_API_TOKEN:?CF_API_TOKEN must be present in the Cloudflare agenix file}"
+
+export TF_DATA_DIR="${state_dir}/tofu-data"
+
+tofu -chdir="${HOMELAB_TOFU_MODULE}" init \
+  -input=false \
+  -lockfile=readonly \
+  -upgrade=false \
+  -reconfigure
+
+if [[ "${operation}" == "plan" ]]; then
+  tofu -chdir="${HOMELAB_TOFU_MODULE}" plan \
+    -input=false \
+    -detailed-exitcode \
+    -state="${state_dir}/terraform.tfstate" \
+    "$@"
+else
+  # Without -auto-approve, OpenTofu creates a fresh plan and asks for an
+  # explicit confirmation. Do not add -input=false here: that would disable
+  # the confirmation prompt and make a normal apply fail closed.
+  tofu -chdir="${HOMELAB_TOFU_MODULE}" apply \
+    -state="${state_dir}/terraform.tfstate" \
+    "$@"
+fi
