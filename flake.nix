@@ -239,14 +239,8 @@
       remoteBuild = true;
       # Rig's sudo policy grants yanda a narrow NOPASSWD rule for activation.
       interactiveSudo = false;
-      sshOpts = [
-        "-o"
-        "IdentitiesOnly=yes"
-        "-o"
-        "IdentityAgent=none"
-        "-i"
-        "/Users/yanda/.ssh/id_manjaro_ed25519"
-      ];
+      # Authentication is intentionally inherited from the user's OpenSSH
+      # configuration and agent (including 1Password on the deployment host).
       profiles.system.path =
         deploy-rs.lib.x86_64-linux.activate.nixos
         self.nixosConfigurations.Rig;

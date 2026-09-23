@@ -267,6 +267,10 @@ in {
     ${retireLegacyScript}
   '';
 
+  # The coordinator is intentionally reachable only on Rig's private LAN
+  # address. Backend worker ports remain loopback-only.
+  networking.firewall.allowedTCPPorts = lib.mkAfter [7443];
+
   services.rigplane = {
     enable = true;
     package = rigplanePackage;
