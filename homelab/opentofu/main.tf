@@ -41,10 +41,13 @@ data "external" "tailscale" {
 resource "unifi_client" "reservation" {
   for_each = local.reserved_nodes
 
-  mac        = each.value.lan.reservationMac
-  name       = each.value.displayName
-  fixed_ip   = each.value.lan.desiredIPv4
-  network_id = local.manifest.networks[each.value.lan.network].unifiId
+  mac      = each.value.lan.reservationMac
+  name     = each.value.displayName
+  fixed_ip = each.value.lan.desiredIPv4
+  # UniFi rejects a virtual-network override on its default LAN. A client
+  # reservation on that network only needs the fixed IP; retain the override
+  # for any future non-default network.
+  network_id = local.manifest.networks[each.value.lan.network].unifiId == local.manifest.networks.home.unifiId ? null : local.manifest.networks[each.value.lan.network].unifiId
 }
 
 resource "unifi_dns_record" "local" {
