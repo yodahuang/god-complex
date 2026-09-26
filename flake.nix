@@ -3,12 +3,6 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    # QEMU 11.0 (current unstable) crash-loops the darwin linux-builder: its new
-    # SME2-over-HVF vCPU init asserts (HV_SYS_REG_SMCR_EL1, sysreg.c.inc) on
-    # macOS 26.5.x SME-capable Apple Silicon, and no -cpu flag avoids it. Pin
-    # QEMU to 25.11's 10.1.5 (pre-SME2-HVF) for the builder only; see
-    # hosts/studio/default.nix. Independent of nixpkgs (keeps its own deps).
-    nixpkgs-qemu.url = "github:NixOS/nixpkgs/nixos-25.11";
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
     darwin.url = "github:nix-darwin/nix-darwin/master";
     darwin.inputs.nixpkgs.follows = "nixpkgs";

@@ -42,32 +42,30 @@ Symptom: `deploy .#EarlGrey` (or any aarch64-linux build) fails with
 `Failed to find a machine for remote build!` even though `/etc/nix/machines`
 lists the builder. The `org.nixos.linux-builder` launchd daemon is up but
 crash-loops (`launchctl print system/org.nixos.linux-builder` shows a huge
-`runs` count and `last exit code = 134`).
+`runs` count and a non-zero `last exit code`). The QEMU args actually in use
+are in the store path referenced by `/Library/LaunchDaemons/org.nixos.linux-builder.plist`
+→ `linux-builder-start` → `create-builder` → `run-builder` → `run-nixos-vm`.
 
-Cause: QEMU 11.0 (current nixpkgs-unstable) added an SME2-over-HVF vCPU init
-path that hits an unconditional assertion and aborts (`SIGABRT`, exit 134 →
-`HV_SYS_REG_SMCR_EL1` assert in `target/arm/hvf/sysreg.c.inc`; see crash reports
-under `/Library/Logs/DiagnosticReports/qemu-system-aarch64-*.ips`) on macOS
-26.5.x SME-capable Apple Silicon. The builder VM never boots, so Nix can't reach
-it. No `-cpu` flag avoids it (`-cpu host` hits the same assert; `-cpu max,sme=off`
-is rejected under HVF — that property doesn't exist on the host CPU, giving
-`last exit code = 1` instead). There is no released QEMU fix, and 11.0 is the
-current line so bumping nixpkgs does not help. Forcing TCG (`-accel tcg`) avoids
-HVF but is too slow.
+Two distinct failures have been seen:
 
-Fix (applied): pin the builder's QEMU to 25.11's 10.1.5, which predates the
-SME2-HVF code, via a separate `nixpkgs-qemu` flake input + `qemu.package` in
-`nix.linux-builder.config.virtualisation` (see `hosts/studio/default.nix`). HVF
-acceleration is preserved; verified to boot under HVF on macOS 26.5.1. After
-applying:
+1. **`last exit code = 134` (SIGABRT)** — QEMU 11.0's new SME2-over-HVF vCPU
+   init asserts (`HV_SYS_REG_SMCR_EL1` in `target/arm/hvf/sysreg.c.inc`; crash
+   reports under `/Library/Logs/DiagnosticReports/qemu-system-aarch64-*.ips`)
+   on macOS 26.5.x SME-capable Apple Silicon. No `-cpu` flag avoided it.
+2. **`last exit code = 1`** — the old workaround pinned the builder's QEMU to
+   25.11's 10.1.5 via a `nixpkgs-qemu` input, but nixpkgs then started
+   hardcoding `-machine virt-11.0` for aarch64-darwin (`nixos/lib/qemu-common.nix`),
+   which 10.1.5 rejects (`unsupported machine type: "virt-11.0"`). The builder
+   never starts, so Nix can't reach it.
+
+Fix (applied): the pin is gone; use nixpkgs' default QEMU (11.1.1 as of
+2026-09), which boots the builder under HVF on macOS 26.5.x. After applying:
 
 ```bash
 nh darwin switch . -H studio                                  # native; doesn't need the builder
 sudo launchctl kickstart -k system/org.nixos.linux-builder    # restart the VM cleanly
 sudo ssh -i /etc/nix/builder_ed25519 builder@linux-builder 'uname -sm'  # expect: Linux aarch64
 ```
-
-Drop the pin (and the `nixpkgs-qemu` input) once nixpkgs' QEMU ships a fix.
 
 ## Architecture
 
