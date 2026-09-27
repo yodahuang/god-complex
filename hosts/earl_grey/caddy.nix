@@ -55,9 +55,19 @@
     ''
     else if service.caddy.kind == "pages"
     then pagesConfig
-    else ''
-      reverse_proxy ${homelab.backendTarget validatedInventory service}:${toString service.port}
-    '';
+    else let
+      backend = homelab.backendTarget validatedInventory service;
+      upstream = "${backend}:${toString service.port}";
+    in
+      if service.caddy.setHostToBackend or false
+      then ''
+        reverse_proxy ${upstream} {
+          header_up Host ${backend}
+        }
+      ''
+      else ''
+        reverse_proxy ${upstream}
+      '';
 
   transformToVirtualHosts = services:
     lib.listToAttrs (map (service: {

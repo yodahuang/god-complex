@@ -1,0 +1,35 @@
+#compdef homelab
+
+_homelab() {
+  local -a commands
+  commands=(
+    'plan:Show pending OpenTofu changes'
+    'apply:Apply OpenTofu changes'
+    'import:Import an existing object into state'
+    'bump:Update pinned image tags'
+    'manifest:Print the homelab manifest JSON'
+    'help:Show help'
+  )
+
+  if (( CURRENT == 2 )); then
+    _describe 'command' commands
+    return
+  fi
+
+  case "${words[2]}" in
+    bump)
+      _arguments '--dry-run[Show what would change without writing]'
+      ;;
+    import)
+      _values 'OpenTofu address' \
+        dsm_container_project.radarr \
+        dsm_event_task.tailscale_tun \
+        dsm_scheduled_task.tailscale_update \
+        unifi_client.reservation \
+        unifi_dns_record.local \
+        cloudflare_dns_record.public_wildcard
+      ;;
+  esac
+}
+
+_homelab "$@"

@@ -95,3 +95,20 @@ provider "registry.opentofu.org/ubiquiti-community/unifi" {
     "zh:f24fd469d0eb2cb38407dfdae30c5278b059f623b39362c46b0bdcd1d5ec615b",
   ]
 }
+
+provider "registry.terraform.io/batonogov/synology-dsm" {
+  version     = "0.8.1"
+  constraints = "~> 0.8"
+  hashes = [
+    "h1:aTVzciDcKZQqNDOwxyDieoKT0zM+T91STT08FqOXsg0=",
+    "zh:40a70684b6701971487b4985492e2b49242a9ea80b0694afd6e4cffca1873133",
+    "zh:6156951955c52acc137cf34dced9be512ca22dcedfb5e593c430e2f68112d789",
+    "zh:7fa914b3c7b51c0cfb95013f4d8f868868a9bebd0445336a153bcb994ce97ccd",
+    "zh:c4a98ea3131b464445e47ee2eb07527c59afeb74940459ccd71cbdf285db01dc",
+    "zh:d4132e7dba178dfe22a4c21890a617db5e54da64aca90302a79a7aa3c27f93a1",
+    "zh:dc0bfedfa0ee74bde57b96f505bfb2e1254f59ceb1296e794bb6276db1667106",
+    "zh:ebcf764efd3d4a799b2d81a9411526a61195c97d5d6f0bde2d76511dddb85de8",
+    "zh:f809ab383cca0a5f83072981c64208cbd7fa67e986a86ee02dd2c82333221e32",
+    "zh:f94a08fdb17b6521df856ca4f86546a7a2f353780dac413c01064e62354a6ad5",
+  ]
+}

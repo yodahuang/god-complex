@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+usage() {
+  cat <<'EOF'
+Usage: homelab <command> [args]
+
+OpenTofu for the homelab inventory (UniFi reservations + DNS, Cloudflare DNS,
+and the Synology DSM tasks + container projects).
+
+Commands:
+  plan                Show pending changes (read-only)
+  apply               Apply changes (asks for confirmation)
+  import <addr> <id>  Adopt an existing object into OpenTofu state
+  bump [--dry-run]    Update pinned image tags in compose/*.yaml
+  manifest            Print the generated homelab manifest JSON
+  help                Show this help
+
+Examples:
+  homelab plan
+  homelab apply
+  homelab import 'dsm_container_project.radarr' radarr
+  homelab bump --dry-run
+EOF
+}
+
+command="${1:-help}"
+if [ "$#" -gt 0 ]; then
+  shift
+fi
+
+case "${command}" in
+  plan | apply | import)
+    export HOMELAB_TOFU_OPERATION="${command}"
+    exec bash "${HOMELAB_TOFU_LAUNCHER}" "$@"
+    ;;
+  bump)
+    exec python3 "${HOMELAB_BUMP_SCRIPT}" "$@"
+    ;;
+  manifest)
+    exec cat "${HOMELAB_MANIFEST_FILE}"
+    ;;
+  help | --help | -h)
+    usage
+    ;;
+  *)
+    printf 'homelab: unknown command: %s\n\n' "${command}" >&2
+    usage >&2
+    exit 64
+    ;;
+esac

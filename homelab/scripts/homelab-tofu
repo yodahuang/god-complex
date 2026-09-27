@@ -3,31 +3,43 @@ set -euo pipefail
 
 operation="${HOMELAB_TOFU_OPERATION:-}"
 case "${operation}" in
-  plan|apply)
+  plan|apply|import)
     ;;
   *)
-    printf '%s\n' "HOMELAB_TOFU_OPERATION must be plan or apply" >&2
+    printf '%s\n' "HOMELAB_TOFU_OPERATION must be plan, apply, or import" >&2
     exit 64
     ;;
 esac
 
 if [[ $# -gt 0 && "${1}" == "--help" ]]; then
-  if [[ "${operation}" == "plan" ]]; then
+  if [[ "${operation}" == "import" ]]; then
     cat <<'EOF'
-Usage: homelab-tofu-plan [OpenTofu plan options]
+Usage: homelab import <OUTPUT ADDRESS> <RESOURCE ID>
 
-Runs a read-only OpenTofu plan for the UniFi reservations/local DNS records
-and Cloudflare public DNS record declared by the Nix homelab inventory.
+Imports an existing object into the OpenTofu state so it is not recreated,
+for example:
+
+  homelab import 'dsm_container_project.radarr' radarr
+EOF
+    exit 0
+  elif [[ "${operation}" == "plan" ]]; then
+    cat <<'EOF'
+Usage: homelab plan [OpenTofu plan options]
+
+Runs a read-only OpenTofu plan for the UniFi reservations/local DNS records,
+the Cloudflare public DNS record, and the Synology DSM tasks and container
+project declared by the Nix homelab inventory.
 
 Exit status 0 means no drift, 2 means OpenTofu found proposed changes, and
 any other nonzero status is an error.
 EOF
   else
     cat <<'EOF'
-Usage: homelab-tofu-apply [OpenTofu apply options]
+Usage: homelab apply [OpenTofu apply options]
 
-Generates a fresh OpenTofu plan and asks for confirmation before changing
-the UniFi and Cloudflare resources declared by the Nix homelab inventory.
+Generates a fresh OpenTofu plan and asks for confirmation before changing the
+UniFi, Cloudflare, and Synology DSM resources declared by the Nix homelab
+inventory.
 
 Pass -auto-approve only when an unattended apply is intentional.
 EOF
@@ -39,6 +51,7 @@ fi
 : "${HOMELAB_TOFU_MODULE:?HOMELAB_TOFU_MODULE must point to the OpenTofu module}"
 : "${UNIFI_API_KEY_FILE:?UNIFI_API_KEY_FILE must point to the agenix secret}"
 : "${CLOUDFLARE_ENV_FILE:?CLOUDFLARE_ENV_FILE must point to the agenix environment file}"
+: "${SYNOLOGY_ENV_FILE:?SYNOLOGY_ENV_FILE must point to the agenix environment file}"
 
 umask 077
 state_dir="${HOMELAB_TOFU_STATE_DIR:-${XDG_STATE_HOME:-${HOME}/.local/state}/homelab-tofu}"
@@ -55,6 +68,20 @@ source "${CLOUDFLARE_ENV_FILE}"
 export CLOUDFLARE_API_TOKEN="${CLOUDFLARE_API_TOKEN:-${CF_API_TOKEN:-}}"
 : "${CLOUDFLARE_API_TOKEN:?CF_API_TOKEN must be present in the Cloudflare agenix file}"
 
+# DSM credentials for the batonogov/synology-dsm provider. Export the whole
+# EnvironmentFile (SYNOLOGY_DSM_USERNAME, SYNOLOGY_DSM_PASSWORD). The host is
+# derived from the inventory manifest, not the secret.
+set -a
+# shellcheck disable=SC1090
+source "${SYNOLOGY_ENV_FILE}"
+set +a
+: "${SYNOLOGY_DSM_USERNAME:?SYNOLOGY_DSM_USERNAME must be present in the Synology agenix file}"
+: "${SYNOLOGY_DSM_PASSWORD:?SYNOLOGY_DSM_PASSWORD must be present in the Synology agenix file}"
+
+# The provider schema marks these required, so feed them through variables.
+export TF_VAR_dsm_username="${SYNOLOGY_DSM_USERNAME}"
+export TF_VAR_dsm_password="${SYNOLOGY_DSM_PASSWORD}"
+
 export TF_DATA_DIR="${state_dir}/tofu-data"
 
 tofu -chdir="${HOMELAB_TOFU_MODULE}" init \
@@ -63,7 +90,12 @@ tofu -chdir="${HOMELAB_TOFU_MODULE}" init \
   -upgrade=false \
   -reconfigure
 
-if [[ "${operation}" == "plan" ]]; then
+if [[ "${operation}" == "import" ]]; then
+  tofu -chdir="${HOMELAB_TOFU_MODULE}" import \
+    -input=false \
+    -state="${state_dir}/terraform.tfstate" \
+    "$@"
+elif [[ "${operation}" == "plan" ]]; then
   tofu -chdir="${HOMELAB_TOFU_MODULE}" plan \
     -input=false \
     -detailed-exitcode \

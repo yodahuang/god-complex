@@ -14,7 +14,6 @@
   validatedHomelabInventory = homelab.validate homelabInventory;
   homelabManifest = homelab.manifest validatedHomelabInventory;
   is_darwin = pkgs.stdenv.isDarwin;
-  hermes-package = flake-inputs.hermes-agent.packages.${pkgs.system}.minimal;
   hey-cli = pkgs.callPackage ./pkgs/hey-cli.nix {};
   wanderlog-mcp = pkgs.callPackage ./pkgs/wanderlog-mcp.nix {};
   wanderlog-mcp-with-cookie = pkgs.writeShellScriptBin "wanderlog-mcp-with-cookie" ''
@@ -73,21 +72,13 @@
     target.write_text(tomlkit.dumps(doc))
   '';
   codex-config-merge-python = pkgs.python3.withPackages (ps: [ps.tomlkit]);
-  homelabTofuPlan = import ./homelab/tofu-command.nix {
+  # Single entry point: `homelab plan|apply|import|bump|manifest`.
+  homelabCommand = import ./homelab/command.nix {
     inherit pkgs;
     desiredManifest = homelabManifest;
     apiKeyPath = config.age.secrets."unifi-api-key".path;
     cloudflareEnvPath = config.age.secrets.cloudflare.path;
-    name = "homelab-tofu-plan";
-    operation = "plan";
-  };
-  homelabTofuApply = import ./homelab/tofu-command.nix {
-    inherit pkgs;
-    desiredManifest = homelabManifest;
-    apiKeyPath = config.age.secrets."unifi-api-key".path;
-    cloudflareEnvPath = config.age.secrets.cloudflare.path;
-    name = "homelab-tofu-apply";
-    operation = "apply";
+    synologyEnvPath = config.age.secrets.synology.path;
   };
   agent-skills = {
     hey = hey-cli.src + "/skills/hey";
@@ -104,7 +95,8 @@ in {
       # no-op on the Linux hosts that share this config.
       ./home_darwin.nix
     ]
-    ++ lib.optionals with_display [./home_gui.nix];
+    ++ lib.optionals with_display [./home_gui.nix]
+    ++ lib.optionals enable_hermes [./modules/hermes-agent.nix];
 
   # This value determines the Home Manager release that your
   # configuration is compatible with. This helps avoid breakage
@@ -121,6 +113,9 @@ in {
 
   home.packages = with pkgs;
     [
+      # agenix CLI, pinned to the flake input so `agenix -e` matches the
+      # secrets.nix used to encrypt them.
+      flake-inputs.agenix.packages.${pkgs.system}.default
       lefthook
       bat
       ripgrep
@@ -142,14 +137,13 @@ in {
       # PDF for coding agents
       poppler-utils
     ]
-    ++ lib.optionals is_darwin [homelabTofuPlan homelabTofuApply opentofu]
+    ++ lib.optionals is_darwin [homelabCommand opentofu]
     ++ lib.optionals (!usually_headless) [
       # These are useful on interactive machines, but add large npm-backed fetches
       # that are unnecessary for headless server deployments.
     ]
     ++ lib.optionals (!is_darwin) [podman]
-    ++ lib.optionals is_darwin [qmk]
-    ++ lib.optionals (is_darwin && enable_hermes) [hermes-package];
+    ++ lib.optionals is_darwin [qmk];
 
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
@@ -160,6 +154,7 @@ in {
       wanderlog-cookie.file = ./secrets/wanderlog-cookie.age;
       "unifi-api-key".file = ./secrets/unifi-api-key.age;
       cloudflare.file = ./secrets/cloudflare.age;
+      synology.file = ./secrets/synology.age;
     };
   };
 

@@ -4,6 +4,10 @@
     publicDomain = "int.yanda.rocks";
     publicZone = "yanda.rocks";
     ingressNode = "earl_grey";
+    # Node whose DSM OpenTofu talks to (homelab/opentofu/synology.tf).
+    nasNode = "nas";
+    # DSM HTTPS port (DSM's web UI is moved off 5001 here).
+    dsmPort = 4201;
     unifiSite = "default";
   };
 
@@ -35,6 +39,17 @@
       tailscale = {
         enabled = true;
         selector = "EarlGrey";
+      };
+    };
+    studio = {
+      displayName = "Studio";
+      lan = {
+        network = "home";
+        desiredIPv4 = "192.168.1.143";
+        reservationMac = "a4:fc:14:00:c1:b3";
+      };
+      tailscale = {
+        enabled = false;
       };
     };
     nas = {
@@ -95,6 +110,21 @@
       name = "Dashboard";
       node = "earl_grey";
       caddy = {kind = "homepage";};
+    }
+    {
+      id = "hermes";
+      name = "Hermes Agent";
+      node = "studio";
+      port = 9119;
+      caddy = {
+        kind = "reverseProxy";
+        setHostToBackend = true;
+      };
+      dashboard = {
+        category = "Agents";
+        icon = "fas fa-robot";
+        subtitle = "Web console and message bridge";
+      };
     }
     {
       id = "pages";
@@ -293,6 +323,11 @@
         name = "Home management";
         icon = "fas fa-home";
         serviceIds = ["home-assistant" "homebridge" "adguard"];
+      }
+      {
+        name = "Agents";
+        icon = "fas fa-robot";
+        serviceIds = ["hermes"];
       }
       {
         name = "Misc";

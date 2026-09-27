@@ -16,5 +16,10 @@ terraform {
       source  = "ubiquiti-community/unifi"
       version = "~> 0.55"
     }
+
+    dsm = {
+      source  = "registry.terraform.io/batonogov/synology-dsm"
+      version = "~> 0.8"
+    }
   }
 }

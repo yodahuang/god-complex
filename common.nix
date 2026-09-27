@@ -10,7 +10,7 @@
   # Necessary for using flakes on this system.
   nix = {
     settings = {
-      experimental-features = "nix-command flakes";
+      experimental-features = ["nix-command" "flakes"];
       download-buffer-size = 134217728;
       substituters = [
         "https://nix-community.cachix.org"

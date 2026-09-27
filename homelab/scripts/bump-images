@@ -1,0 +1,156 @@
+#!/usr/bin/env python3
+"""Bump pinned image tags in compose files to the newest release on the same
+track, querying the registries directly (no PRs, no external tooling).
+
+For every `image:` line the script derives a pattern from the tag currently in
+use (each run of digits becomes `\\d+`) and asks the registry for tags matching
+that shape, then keeps the highest version. That keeps tracks separate:
+
+  * linuxserver  x.y.z.w-lsN
+  * plain        x.y.z
+  * custom       vX.Y.Z-bilingual.N
+
+so it won't drift onto -ubuntu/-cuda/-alpine variants or a different major.
+
+Usage:
+  homelab/scripts/bump-images [--dry-run] [compose.yaml ...]
+
+With no file arguments it processes every *.yaml under
+homelab/opentofu/compose/.
+"""
+
+from __future__ import annotations
+
+import glob
+import json
+import os
+import re
+import sys
+import urllib.request
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+COMPOSE_DIR = os.environ.get("HOMELAB_COMPOSE_DIR") or os.path.normpath(
+    os.path.join(HERE, "..", "opentofu", "compose")
+)
+
+
+def http_json(url, headers=None):
+    merged = {"User-Agent": "homelab-bump/1.0"}
+    merged.update(headers or {})
+    req = urllib.request.Request(url, headers=merged)
+    with urllib.request.urlopen(req, timeout=30) as response:
+        return json.load(response)
+
+
+def split_image(image):
+    last = image.rsplit("/", 1)[-1]
+    if ":" in last:
+        return image.rsplit(":", 1)
+    return image, "latest"
+
+
+def hub_tags(repo):
+    # Only the most recently updated page: linuxserver repos have hundreds of
+    # tags, and paginating the whole list trips Docker Hub's anonymous rate
+    # limit (HTTP 403). The newest release tag is always near the top.
+    url = (
+        f"https://hub.docker.com/v2/repositories/{repo}/tags"
+        "?page_size=100&ordering=last_updated"
+    )
+    data = http_json(url)
+    return [tag["name"] for tag in data.get("results", [])]
+
+
+def ghcr_tags(repo):
+    token = http_json(
+        f"https://ghcr.io/token?scope=repository:{repo}:pull&service=ghcr.io"
+    )["token"]
+    data = http_json(
+        f"https://ghcr.io/v2/{repo}/tags/list",
+        {"Authorization": f"Bearer {token}"},
+    )
+    return data.get("tags") or []
+
+
+def registry_tags(repo):
+    if repo.startswith("lscr.io/"):
+        return hub_tags(repo[len("lscr.io/") :])
+    if repo.startswith("ghcr.io/"):
+        return ghcr_tags(repo[len("ghcr.io/") :])
+    if repo.startswith("docker.io/"):
+        return hub_tags(repo[len("docker.io/") :])
+    if "/" not in repo:
+        return hub_tags("library/" + repo)
+    return hub_tags(repo)
+
+
+def shape(tag):
+    parts = re.split(r"(\d+)", tag)
+    body = "".join(r"\d+" if part.isdigit() else re.escape(part) for part in parts)
+    return re.compile("^" + body + "$")
+
+
+def version_key(tag):
+    return tuple(int(n) for n in re.findall(r"\d+", tag))
+
+
+def newest(tags, current):
+    pattern = shape(current)
+    candidates = [tag for tag in tags if pattern.match(tag)]
+    if not candidates:
+        return None
+    best = max(candidates, key=version_key)
+    return best if version_key(best) > version_key(current) else None
+
+
+def bump_file(path, dry_run):
+    with open(path) as handle:
+        lines = handle.readlines()
+
+    changes = []
+    for index, line in enumerate(lines):
+        match = re.match(r"^(\s*image:\s*)(\S+)(\s*)$", line)
+        if not match:
+            continue
+        prefix, image, suffix = match.groups()
+        repo, tag = split_image(image)
+        try:
+            tags = registry_tags(repo)
+        except Exception as error:  # noqa: BLE001 - report and keep going
+            print(f"  ! {image}: registry error: {error}", file=sys.stderr)
+            continue
+        new_tag = newest(tags, tag)
+        if new_tag:
+            changes.append((image, f"{repo}:{new_tag}"))
+            lines[index] = f"{prefix}{repo}:{new_tag}{suffix}"
+
+    if changes and not dry_run:
+        with open(path, "w") as handle:
+            handle.writelines(lines)
+    return changes
+
+
+def main():
+    argv = sys.argv[1:]
+    dry_run = "--dry-run" in argv
+    files = [arg for arg in argv if arg != "--dry-run"]
+    if not files:
+        files = sorted(glob.glob(os.path.join(COMPOSE_DIR, "*.yaml")))
+
+    total = 0
+    for path in files:
+        print(f"{path}:")
+        changes = bump_file(path, dry_run)
+        if not changes:
+            print("  up to date")
+        for old, new in changes:
+            print(f"  {old} -> {new}")
+            total += 1
+
+    if dry_run and total:
+        print("\n(dry run; no files changed)")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
