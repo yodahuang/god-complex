@@ -60,11 +60,11 @@ projects:
   the tailnet.
 - a **weekly** `tailscale update` task that re-runs `configure-host` (upgrading
   the package drops the capabilities it sets).
-- the **radarr media stack** (radarr, sabnzbd, bazarr, sonarr, notifiarr) as a
-  Container Manager project. Image tags are pinned in
-  `homelab/opentofu/compose/radarr.yaml`; bump a tag, re-switch, and apply to
-  update. The other stacks (`stashapp`, `portainer-agent`, `paperless-local`,
-  `calibre-web`) are not managed yet.
+- the **radarr media stack** (radarr, sabnzbd, bazarr, sonarr, notifiarr) and
+  **paperless-ngx** as Container Manager projects. Image tags are pinned in
+  `homelab/opentofu/compose/*.yaml`; bump a tag and apply to update. The
+  remaining stacks (`stashapp`, `portainer-agent`, `calibre-web`) are not
+  managed yet.
 
 Credentials live in the `synology` agenix secret (username and password only;
 the host comes from `meta.nasNode`). The `agenix` CLI is installed by Home
@@ -82,8 +82,9 @@ Remove any hand-created copy of the `Tailscale TUN` boot task in DSM first so
 OpenTofu is the only owner. The boot task only fires on restart, so run it once
 from DSM (or reboot) to enable TUN without waiting.
 
-The radarr stack is a **migration**, because Container Manager has to take it
-over from the CLI stack (they would fight over the same ports/names). Once:
+The radarr stack and paperless-ngx are **migrations**, because Container
+Manager has to take them over from the CLI stacks (they would fight over the
+same ports/names). Once, per stack:
 
 ```bash
 ssh nas 'cd /volume1/Tools/radarr && /usr/local/bin/docker-compose down'  # stop the CLI stack
@@ -91,20 +92,29 @@ homelab plan                          # review
 homelab apply                         # Container Manager creates the project
 # verify the containers, then retire the old stack:
 ssh nas 'rm /volume1/Tools/radarr/docker-compose.yml'
-# and drop "radarr" from the stacks list in upgrade.sh
+# and drop the stack from the stacks list in upgrade.sh
 ```
 
-The wrapper points at the live source tree, so edits to the `.tf` files or the
-compose files take effect on the next run — no `nh darwin switch` needed.
+For paperless-ngx the old stack is `/volume1/Tools/paperless-local`; copy its
+`docker-compose.env` to `/volume1/docker/paperless/docker-compose.env` first
+(the compose file references it and it is not in git). Its named volumes
+(`paperless_data`/`paperless_media`/`paperless_redisdata`) are declared by
+explicit name in the compose file, so they are reused as-is.
+
+Run `homelab` from the repo checkout (or set `HOMELAB_REPO`): it then reads the
+live tree, so edits to the `.tf` files or the compose files take effect on the
+next run with no `nh darwin switch`. Run from anywhere else it falls back to the
+read-only `/nix/store` snapshot taken at the last switch.
 
 To update pinned images, `homelab bump` queries the registries
 (Docker Hub and GHCR) directly and rewrites the tags in place, keeping each
 image on its own track (linuxserver `x.y.z.w-lsN`, plain `x.y.z`, etc.):
 
 ```bash
-homelab bump --dry-run   # show what would change
-homelab bump             # rewrite compose/*.yaml
-homelab apply            # Container Manager rebuilds the project
+cd ~/.config/nix-darwin     # or set HOMELAB_REPO to the checkout
+homelab bump --dry-run      # show what would change
+homelab bump                # rewrite compose/*.yaml in the checkout
+homelab apply               # Container Manager rebuilds the project
 ```
 
 Note that a compose change stops and restarts the **whole** project, so a

@@ -1,0 +1,44 @@
+# Paperless-ngx, pinned and managed by OpenTofu as a Synology Container
+# Manager project (see ../synology.tf). This replaced the CLI stack in
+# /volume1/Tools/paperless-local; the named volumes below are declared by
+# explicit name so the existing paperless_data/media/redisdata are reused
+# rather than recreated under a new project prefix.
+#
+# The env file is NOT in git: it holds PAPERLESS_URL and PAPERLESS_SECRET_KEY
+# and lives at /volume1/docker/paperless/docker-compose.env on the NAS. It is
+# read relative to this compose file's directory.
+services:
+  broker:
+    image: docker.io/library/redis:7.4.11
+    restart: unless-stopped
+    volumes:
+      - redisdata:/data
+
+  webserver:
+    image: ghcr.io/paperless-ngx/paperless-ngx:3.2.1
+    restart: unless-stopped
+    depends_on:
+      - broker
+    ports:
+      - 8000:8000
+    healthcheck:
+      test: ["CMD", "curl", "-fs", "-S", "--max-time", "2", "http://localhost:8000"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    volumes:
+      - data:/usr/src/paperless/data
+      - media:/usr/src/paperless/media
+      - /volume1/homes/yanda/paperless/export:/usr/src/paperless/export
+      - /volume1/homes/yanda/paperless/consume:/usr/src/paperless/consume
+    env_file: docker-compose.env
+    environment:
+      PAPERLESS_REDIS: redis://broker:6379
+
+volumes:
+  data:
+    name: paperless_data
+  media:
+    name: paperless_media
+  redisdata:
+    name: paperless_redisdata

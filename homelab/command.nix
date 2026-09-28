@@ -17,7 +17,9 @@
       cloudflare_env_file=${cloudflareEnvPath}
       synology_env_file=${synologyEnvPath}
       export HOMELAB_MANIFEST_FILE=${manifest}
-      # Live source tree, so .tf and compose edits apply without a re-switch.
+      # A pure-flake build copies this tree into the read-only store, so .tf and
+      # compose edits need a re-switch before OpenTofu reads them. `homelab
+      # bump` rewrites the live checkout instead (see scripts/homelab).
       export HOMELAB_TOFU_MODULE=${builtins.toString ./opentofu}
       export HOMELAB_COMPOSE_DIR=${builtins.toString ./opentofu/compose}
       export HOMELAB_TOFU_LAUNCHER=${./scripts/homelab-tofu}

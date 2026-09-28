@@ -76,3 +76,17 @@ resource "dsm_container_project" "radarr" {
   delete_on_destroy = false
   compose_yaml      = file("${path.module}/compose/radarr.yaml")
 }
+
+# Paperless-ngx, pinned and managed as a Container Manager project. It keeps its
+# data in named Docker volumes (declared by explicit name in the compose file),
+# so the existing paperless_data/media/redisdata are reused rather than
+# recreated. The secret env file stays on the NAS at
+# /volume1/docker/paperless/docker-compose.env (not in git). The old CLI stack
+# in /volume1/Tools/paperless-local must be stopped first (same port 8000).
+resource "dsm_container_project" "paperless" {
+  name              = "paperless"
+  share_path        = "/docker/paperless"
+  running           = true
+  delete_on_destroy = false
+  compose_yaml      = file("${path.module}/compose/paperless.yaml")
+}

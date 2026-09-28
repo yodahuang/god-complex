@@ -16,6 +16,10 @@ Commands:
   manifest            Print the generated homelab manifest JSON
   help                Show this help
 
+Run from the repo checkout (or set HOMELAB_REPO) so plan/apply/bump read the
+live tree; otherwise the packaged /nix/store snapshot from the last switch is
+used.
+
 Examples:
   homelab plan
   homelab apply
@@ -23,6 +27,32 @@ Examples:
   homelab bump --dry-run
 EOF
 }
+
+# The packaged HOMELAB_TOFU_MODULE/HOMELAB_COMPOSE_DIR point into the read-only
+# /nix/store snapshot taken at switch time. When run from a checkout (or with
+# HOMELAB_REPO set), prefer the live tree so .tf/compose edits and `bump`
+# rewrites take effect without a re-switch.
+resolve_repo() {
+  if [ -n "${HOMELAB_REPO:-}" ] && [ -d "${HOMELAB_REPO}/homelab/opentofu" ]; then
+    printf '%s' "${HOMELAB_REPO}"
+    return 0
+  fi
+  local search="${PWD}"
+  while [ "${search}" != "/" ]; do
+    if [ -d "${search}/homelab/opentofu" ]; then
+      printf '%s' "${search}"
+      return 0
+    fi
+    search="$(dirname "${search}")"
+  done
+  return 1
+}
+
+if repo="$(resolve_repo)"; then
+  export HOMELAB_REPO="${repo}"
+  export HOMELAB_TOFU_MODULE="${repo}/homelab/opentofu"
+  export HOMELAB_COMPOSE_DIR="${repo}/homelab/opentofu/compose"
+fi
 
 command="${1:-help}"
 if [ "$#" -gt 0 ]; then

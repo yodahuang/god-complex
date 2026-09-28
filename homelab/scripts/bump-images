@@ -3,14 +3,16 @@
 track, querying the registries directly (no PRs, no external tooling).
 
 For every `image:` line the script derives a pattern from the tag currently in
-use (each run of digits becomes `\\d+`) and asks the registry for tags matching
-that shape, then keeps the highest version. That keeps tracks separate:
+use and asks the registry for tags matching that shape, then keeps the highest
+version. The leading version component is held fixed and every later run of
+digits becomes `\\d+`, so a tag stays on its track:
 
-  * linuxserver  x.y.z.w-lsN
-  * plain        x.y.z
-  * custom       vX.Y.Z-bilingual.N
+  * linuxserver  x.y.z.w-lsN   ->  X.\\d+.\\d+.\\d+-ls\\d+
+  * plain        x.y.z         ->  X.\\d+.\\d+
+  * custom       vX.Y.Z-bilingual.N  ->  vX.\\d+.\\d+-bilingual.\\d+
 
-so it won't drift onto -ubuntu/-cuda/-alpine variants or a different major.
+so it won't drift onto -ubuntu/-cuda/-alpine variants, a different major, or a
+newer redis/app major that needs a deliberate review.
 
 Usage:
   homelab/scripts/bump-images [--dry-run] [compose.yaml ...]
@@ -34,12 +36,16 @@ COMPOSE_DIR = os.environ.get("HOMELAB_COMPOSE_DIR") or os.path.normpath(
 )
 
 
-def http_json(url, headers=None):
+def http_get(url, headers=None):
     merged = {"User-Agent": "homelab-bump/1.0"}
     merged.update(headers or {})
     req = urllib.request.Request(url, headers=merged)
     with urllib.request.urlopen(req, timeout=30) as response:
-        return json.load(response)
+        return json.load(response), response.headers
+
+
+def http_json(url, headers=None):
+    return http_get(url, headers)[0]
 
 
 def split_image(image):
@@ -65,11 +71,21 @@ def ghcr_tags(repo):
     token = http_json(
         f"https://ghcr.io/token?scope=repository:{repo}:pull&service=ghcr.io"
     )["token"]
-    data = http_json(
-        f"https://ghcr.io/v2/{repo}/tags/list",
-        {"Authorization": f"Bearer {token}"},
-    )
-    return data.get("tags") or []
+    # GHCR paginates tags/list (100 per page) in lexicographic order, so one
+    # request silently misses newer tags: for paperless-ngx it stops around
+    # "2.9.0" and never sees the 3.x line. Follow the Link header to the end.
+    tags = []
+    url = f"https://ghcr.io/v2/{repo}/tags/list?n=1000"
+    while url:
+        data, headers = http_get(url, {"Authorization": f"Bearer {token}"})
+        tags.extend(data.get("tags") or [])
+        url = None
+        link = headers.get("Link")
+        if link:
+            match = re.search(r'<([^>]+)>;\s*rel="next"', link)
+            if match:
+                url = "https://ghcr.io" + match.group(1)
+    return tags
 
 
 def registry_tags(repo):
@@ -86,7 +102,17 @@ def registry_tags(repo):
 
 def shape(tag):
     parts = re.split(r"(\d+)", tag)
-    body = "".join(r"\d+" if part.isdigit() else re.escape(part) for part in parts)
+    body = ""
+    pinned_major = False
+    for part in parts:
+        if not part.isdigit():
+            body += re.escape(part)
+        elif not pinned_major:
+            # Keep the leading component literal so the major never drifts.
+            body += re.escape(part)
+            pinned_major = True
+        else:
+            body += r"\d+"
     return re.compile("^" + body + "$")
 
 
@@ -133,9 +159,15 @@ def bump_file(path, dry_run):
 def main():
     argv = sys.argv[1:]
     dry_run = "--dry-run" in argv
-    files = [arg for arg in argv if arg != "--dry-run"]
-    if not files:
-        files = sorted(glob.glob(os.path.join(COMPOSE_DIR, "*.yaml")))
+    explicit = [arg for arg in argv if arg != "--dry-run"]
+    files = explicit or sorted(glob.glob(os.path.join(COMPOSE_DIR, "*.yaml")))
+    if files and not explicit and not dry_run and not os.access(COMPOSE_DIR, os.W_OK):
+        print(
+            f"error: {COMPOSE_DIR} is not writable (a /nix/store snapshot); run "
+            "homelab bump from the repo checkout or set HOMELAB_REPO to it",
+            file=sys.stderr,
+        )
+        return 1
 
     total = 0
     for path in files:
