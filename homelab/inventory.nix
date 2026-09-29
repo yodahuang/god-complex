@@ -138,6 +138,56 @@
       };
     }
     {
+      id = "pixiv";
+      name = "Pixiv Viewer";
+      node = "earl_grey";
+      caddy = {
+        kind = "staticSite";
+        site = "pixiv";
+        # Same-origin transports for the PWA. The app rewrites Pixiv API calls
+        # to /pixiv-app-api, /pixiv-oauth and /pixiv-image in development;
+        # production needs the equivalent reverse proxies here. kind selects
+        # the header policy in hosts/earl_grey/caddy.nix.
+        proxies = [
+          {
+            path = "/pixiv-app-api/*";
+            upstream = "https://app-api.pixiv.net";
+            host = "app-api.pixiv.net";
+            kind = "pixivApp";
+          }
+          {
+            path = "/pixiv-oauth/*";
+            upstream = "https://oauth.secure.pixiv.net";
+            host = "oauth.secure.pixiv.net";
+            kind = "pixivApp";
+          }
+          {
+            path = "/pixiv-image/*";
+            upstream = "https://i.pximg.net";
+            host = "i.pximg.net";
+            kind = "pixivImage";
+          }
+        ];
+      };
+      dashboard = {
+        category = "Misc";
+        icon = "fas fa-book-open";
+        subtitle = "Manga reader with AI translation";
+      };
+    }
+    {
+      # Semantic translation service on the Mac Studio. The PWA calls it
+      # through Caddy so the HTTPS bundle never talks plain HTTP.
+      id = "semantic";
+      name = "Semantic Translation";
+      node = "studio";
+      port = 8790;
+      caddy = {
+        kind = "reverseProxy";
+        setHostToBackend = true;
+      };
+    }
+    {
       id = "adguard";
       name = "AdGuard Home";
       node = "earl_grey";
@@ -339,6 +389,7 @@
           "octoprint"
           "sabnzbd"
           "chocolate"
+          "pixiv"
           "pages"
         ];
       }

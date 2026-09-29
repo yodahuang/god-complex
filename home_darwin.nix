@@ -18,6 +18,35 @@
   launchd.agents.atuin-daemon.domain =
     lib.mkIf (pkgs.stdenv.hostPlatform.isDarwin && config.programs.atuin.daemon.enable) "gui";
 
+  # Resident semantic translation service for the Pixiv Viewer PWA. The
+  # service owns its own TOML config (services/semantic_translate/config.local.toml)
+  # and is reached through Caddy as semantic.int.yanda.rocks. KeepAlive keeps it
+  # resident across crashes; the Qwen model loads eagerly at startup.
+  launchd.agents.pixiv-semantic-translate = {
+    enable = pkgs.stdenv.hostPlatform.isDarwin;
+    config = {
+      ProgramArguments = [
+        "${pkgs.uv}/bin/uv"
+        "run"
+        "--project"
+        "services/semantic_translate"
+        "python"
+        "-m"
+        "services.semantic_translate.server"
+      ];
+      WorkingDirectory = "/Users/yanda/Projects/pixiv-viewer";
+      EnvironmentVariables = {
+        HOME = "/Users/yanda";
+        PATH = "/etc/profiles/per-user/yanda/bin:/run/current-system/sw/bin:/usr/bin:/bin:/usr/sbin:/sbin";
+      };
+      RunAtLoad = true;
+      KeepAlive = true;
+      ThrottleInterval = 10;
+      StandardOutPath = "/Users/yanda/Library/Logs/pixiv-semantic-translate.log";
+      StandardErrorPath = "/Users/yanda/Library/Logs/pixiv-semantic-translate.err.log";
+    };
+  };
+
   # The daemon binds its unix socket directly and never unlinks a stale one
   # left behind by an unclean shutdown (e.g. macOS killing it on reboot before
   # it can clean up). On Linux this is a non-issue because home-manager wires

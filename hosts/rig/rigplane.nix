@@ -18,8 +18,9 @@
   stateDirectory = "/var/lib/rigplane";
   configDirectory = "/etc/rigplane";
   configFile = "${configDirectory}/config.toml";
-  textSource = "/var/lib/pixiv-translate/models/Hy-MT2-7B-Q4_K_M.gguf";
-  audioSource = "/var/lib/lexis-inference/models/dots-tts-mf-q8_0.gguf";
+  importDirectory = "${stateDirectory}/model-import";
+  textSource = "${importDirectory}/text/Hy-MT2-7B-Q4_K_M.gguf";
+  audioSource = "${importDirectory}/audio/dots-tts-mf-q8_0.gguf";
   textModel = "${stateDirectory}/models/text/Hy-MT2-7B-Q4_K_M.gguf";
   audioModel = "${stateDirectory}/models/audio/dots-tts-mf-q8_0.gguf";
   template = rigplaneSource + "/deploy/rigplane/config.toml.example";
@@ -107,8 +108,7 @@
       "$config_dir" "$state" "$state/models" "$state/models/text" "$state/models/audio" "$state/references"
     link_or_copy_model "$text_source" "$text_model"
     link_or_copy_model "$audio_source" "$audio_model"
-    "$coreutils/chgrp" pixiv-translate "$text_model"
-    "$coreutils/chgrp" lexis-inference "$audio_model"
+    "$coreutils/chown" rigplane:rigplane "$text_model" "$audio_model"
     "$coreutils/chmod" 0640 "$text_model" "$audio_model"
 
     text_digest=$(sha256_file "$text_source")
@@ -215,14 +215,14 @@ in {
     mode = "0400";
   };
 
-  users.groups.pixiv-translate = {gid = 986;};
-  users.groups.lexis-inference = {gid = 987;};
-
   # These paths must exist before systemd creates the hardened mount namespace
   # for the first-run configuration service.
   systemd.tmpfiles.rules = [
     "d ${configDirectory} 0750 rigplane rigplane -"
     "d ${stateDirectory} 0750 rigplane rigplane -"
+    "d ${importDirectory} 0755 root root -"
+    "d ${importDirectory}/text 0755 root root -"
+    "d ${importDirectory}/audio 0755 root root -"
     "d ${stateDirectory}/models 0750 rigplane rigplane -"
     "d ${stateDirectory}/models/text 0750 rigplane rigplane -"
     "d ${stateDirectory}/models/audio 0750 rigplane rigplane -"
@@ -277,7 +277,7 @@ in {
     configFile = configFile;
     coordinator.enable = true;
     agent.enable = true;
-    extraGroups = ["video" "render" "pixiv-translate" "lexis-inference"];
+    extraGroups = ["video" "render"];
     stateDirectory = stateDirectory;
   };
 

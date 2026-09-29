@@ -4,7 +4,7 @@
   lib,
   ...
 }: {
-  imports = [./hardware-configuration.nix ./caddy.nix ./adguard_home.nix ./chocolate-bar.nix ./homebridge.nix ./static-sites.nix];
+  imports = [./hardware-configuration.nix ./caddy.nix ./adguard_home.nix ./chocolate-bar.nix ./homebridge.nix ./static-sites.nix ./pixiv-viewer.nix];
 
   # Use uboot.
   boot.loader.grub.enable = false;

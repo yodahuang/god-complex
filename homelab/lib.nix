@@ -109,6 +109,20 @@
           (lib.optional (service.node or null == null || !(builtins.hasAttr service.node inventory.nodes)) "service '${service.id}' references unknown node '${toString (service.node or null)}'")
           ++ (lib.optional (service.caddy.kind == "reverseProxy" && (service.port or null) == null) "reverse-proxy service '${service.id}' is missing a port")
           ++ (lib.optional (service.caddy.kind == "reverseProxy" && ((service.port < 1) || (service.port > 65535))) "service '${service.id}' has an invalid port")
+          ++ (lib.optional (service.caddy.kind == "staticSite" && (service.caddy.site or null) == null) "static-site service '${service.id}' is missing a site")
+          ++ (
+            lib.optional
+            (service.caddy.kind == "staticSite" && (service.caddy.site or null) != null && match "^[a-z0-9][a-z0-9-]*$" service.caddy.site == null)
+            "static-site service '${service.id}' has an invalid site name '${toString (service.caddy.site or null)}'"
+          )
+          ++ (lib.concatLists (map (
+              proxy:
+                (lib.optional ((proxy.path or null) == null) "static-site service '${service.id}' proxy is missing a path")
+                ++ (lib.optional ((proxy.upstream or null) == null) "static-site service '${service.id}' proxy is missing an upstream")
+                ++ (lib.optional ((proxy.host or null) == null) "static-site service '${service.id}' proxy is missing a host")
+                ++ (lib.optional (!lib.elem (proxy.kind or null) ["pixivApp" "pixivImage"]) "static-site service '${service.id}' proxy has unknown kind '${toString (proxy.kind or null)}'")
+            )
+            (service.caddy.proxies or [])))
       )
       inventory.services);
 

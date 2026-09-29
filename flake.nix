@@ -35,17 +35,9 @@
     chocolate-bar.inputs.bun2nix.inputs.systems.follows = "chocolate-bar-systems";
     claude-code-nix.url = "github:sadjow/claude-code-nix";
     claude-code-nix.inputs.nixpkgs.follows = "nixpkgs";
-    # The Rig service installs the gateway from this pinned source tree into
-    # its locked uv environment. Keep this input non-flake so the inference
-    # package is copied without evaluating Lexis' desktop/trainer outputs.
-    lexis = {
-      url = "github:yodahuang/Lexis";
-      flake = false;
-    };
-    # The Pixiv semantic service and the Rig manager are developed together
-    # while this deployment is being brought up. Keep the source as a non-flake
-    # input so the NixOS module and Python manager are copied into the remote
-    # build closure without adding another application flake.
+    # The Pixiv reader source is consumed by the static-site deployment while
+    # it is still developed locally. Keep it as a non-flake input so host
+    # modules can reference the source tree without another application flake.
     pixiv-viewer = {
       url = "path:/Users/yanda/Projects/pixiv-viewer";
       flake = false;

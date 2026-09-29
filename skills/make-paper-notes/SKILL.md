@@ -59,6 +59,8 @@ Start by doing two things mentally before putting words down:
 
 The first paragraph orients the reader fast: **what problem the paper tackles, and what its one new idea is.** Not "this paper introduces X, Y, and Z" — that's an abstract, and the user can read the abstract themselves. Lead with substance and a point of view about what *matters*.
 
+For an algorithmic or systems paper, the first screen must also make the method **executable in the reader's head**. State the inputs or supervision, what is trained, what happens at inference, and the one operation that differs from the baseline. Give this concrete procedure before its proof, interpretation, or lineage. For a primarily theoretical paper, give the analogous operational picture: the objects involved, the transformation or claim, the guarantee, and the conditions under which it applies.
+
 But keep the purpose straight: **these are notes the user returns to in order to remember what the paper was about.** The goal is recall, not a verdict. An opening can be pointed and have an opinion, but it should not be a takedown. Caveats and weaknesses have a place (see the spine below) — just not as the thing the note opens on or is organized around.
 
 Useful shapes for the opening:
@@ -75,6 +77,8 @@ If a paper has a clear lineage — it's mostly *A + B* recombined — saying so 
 The note should feel like it was *written*, not assembled. Avoid the instinct to produce rigid sections and fill them in order.
 
 **Section headers are claims or questions, not paper sections.** If your headers read "Architecture / Dataset / Training / Results", you have written a summary of the paper, not a note. Headers should be the things worth *saying* about the paper — "What's actually new", "Why X is doing all the work", "This is really A + B", "What the results lean on". Each section earns its place by making a point.
+
+Build a **causal spine**, not an inventory of correct facts. Each section should answer a question created by the preceding explanation. For an algorithmic paper, a useful shape is concrete procedure → why that procedure has the claimed effect → where its supervision comes from → variants → limits. Introduce an equation, distinction, or terminology only when it resolves something the reader now needs to understand.
 
 ### A default spine for recall
 
@@ -102,12 +106,28 @@ Preserve the user's own phrasing and framing when it's good. These are their not
 These are concrete things that have gone wrong before. Check the draft against this list before saving.
 
 - **Mirroring the paper's structure.** If section headers match the paper's section headers, the note has degenerated into a summary. Drive structure from the *discussion*, not the table of contents.
+- **Operational opacity.** If several paragraphs pass before the reader knows what enters the method, what is learned, and what happens when it is used, rewrite the opening. A high-level slogan is not a substitute for the procedure.
+- **Paper-local scaffolding.** Don't organize the note around transitions such as “Section 4.1 → 4.2,” unexplained equation numbers, or the paper's local order. Restate the conceptual transition so the note remains intelligible with the source closed.
+- **Q&A residue.** Mine the discussion for the reasoning that resolved confusion, but don't preserve its sequence of questions. A confusion should improve the exposition order; it should not automatically become a paragraph, callout, or section.
+- **Orphan facts and distinctions.** A true observation can still damage the note if the reader has no reason to care about it yet. Connect each technical fact to the method's causal story, move it to where that need arises, or cut it.
 - **Trying to be comprehensive.** A note that covers every contribution and every component goes flat — the interesting bits get buried with the routine ones. Cut things that are standard practice in the field (e.g. unicycle dynamics in AV, multi-camera tokenization, choice of optimizer), even if the paper spends a section on them. One sentence acknowledgment is fine; a subsection is not.
 - **Callouts: group, don't hide.** Use callouts to *visually group* supporting detail (derivations, numbers, secondary mechanisms, implementation specifics) under a clear headline — but **default to showing them expanded**. In Obsidian that's `[!note]` (always shown) or `[!note]+` (expanded but collapsible); reserve `-` (collapsed-by-default) for genuinely long reference dumps the reader rarely needs. The point of the grouping is scannability, not concealment: a reader should see the headline *and* the content, and skip by section rather than by expanding. Don't hide the main point in a callout, and don't park raw uncurated tables — callout content still has to be curated prose worth keeping.
 - **Critique creep.** These notes are for *recall*, not review. A pointed observation in passing is fine, but if the note is organized around what's wrong with the paper — or opens on its weaknesses — it has drifted from its purpose. Keep caveats late and proportionate (see the spine). When you do record a limitation, state it neutrally and factually ("the result depends on X pretraining; without it, metric drops to Y") rather than as a verdict ("the framing oversells").
 - **Symmetric treatment of contributions.** Most papers have one genuinely novel thing and several standard things bundled around it. Give the novel thing the most space — it's the headline. Give the standard things one sentence each, or cut them entirely if they're truly inherited.
 - **Equation-first sections.** Don't lead a section with the math. Lead with the claim or the question, then introduce notation only if it carries weight. If the equation can be replaced by a sentence of prose, replace it.
 - **Length creep / reads like the whole paper.** If the note is as long as reading the paper itself, it has failed at its job. A focused note is roughly a thoughtful blog post. When detail piles up, the fix is to **cut or compress** — tighten prose, drop standard-practice components, group related detail under one callout heading. Don't reach for collapsing-to-hide as the length fix; the visible text should already be thin.
+
+### Self-contained recall check
+
+Before saving, read only the opening and section headers. Without consulting the paper, can the reader answer:
+
+- What problem is being solved?
+- What is the new idea?
+- For an algorithmic paper: what are the inputs or supervision, what is trained, and what happens at inference?
+- For a theoretical paper: what objects are transformed or related, what is guaranteed, and under what conditions?
+- Why should the central operation produce the claimed effect?
+
+If not, restructure before polishing details. The note should use what is already in the reader's head, but must not require the paper's section structure to supply its missing logic.
 
 ---
 
