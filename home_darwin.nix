@@ -47,6 +47,39 @@
     };
   };
 
+  # Rigplane node agent for this Mac ("Studio"). It registers with the Rig's
+  # coordinator and serves MLX-VLM deployments (PaddleOCR-VL crop OCR and
+  # Qwen-VL) through the rigplane_native MLX-VLM worker. The agent token lives
+  # only in ~/.config/rigplane/agent-token (0600); the coordinator holds its
+  # digest. Model files are hard-linked into ~/.local/share/rigplane/models.
+  home.file.".config/rigplane/agent.toml".source = ./rigplane/studio-agent.toml;
+  launchd.agents.rigplane-agent = {
+    enable = pkgs.stdenv.hostPlatform.isDarwin;
+    config = {
+      ProgramArguments = [
+        "${pkgs.uv}/bin/uv"
+        "run"
+        "--project"
+        "/Users/yanda/Projects/rig-control-plane"
+        "--extra"
+        "hardware-mlx-vlm"
+        "rigplane-agent"
+        "--config"
+        "/Users/yanda/.config/rigplane/agent.toml"
+      ];
+      WorkingDirectory = "/Users/yanda/Projects/rig-control-plane";
+      EnvironmentVariables = {
+        HOME = "/Users/yanda";
+        PATH = "/etc/profiles/per-user/yanda/bin:/run/current-system/sw/bin:/usr/bin:/bin:/usr/sbin:/sbin";
+      };
+      RunAtLoad = true;
+      KeepAlive = true;
+      ThrottleInterval = 10;
+      StandardOutPath = "/Users/yanda/Library/Logs/rigplane-agent.log";
+      StandardErrorPath = "/Users/yanda/Library/Logs/rigplane-agent.err.log";
+    };
+  };
+
   # The daemon binds its unix socket directly and never unlinks a stale one
   # left behind by an unclean shutdown (e.g. macOS killing it on reboot before
   # it can clean up). On Linux this is a non-issue because home-manager wires

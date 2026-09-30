@@ -1,0 +1,286 @@
+# Studio (Mac) node: MLX-VLM OCR and Qwen-VL, served through Rigplane.
+
+[[auth.principals]]
+id = "agent-studio"
+kind = "agent"
+token_digest = "sha256:704dfee58600b9f756449625806447770935135aefe21bfcf552ed688b4ebfbc"
+scopes = ["agent"]
+node_id = "node_01a04987-5100-7010-8000-000000000010"
+
+[[nodes]]
+id = "node_01a04987-5100-7010-8000-000000000010"
+alias = "Studio"
+labels = { "site" = "studio", "accelerator.family" = "apple-silicon" }
+agent_token_file = "/Users/yanda/.config/rigplane/agent-token"
+
+[[models]]
+model_id = "model_01a04987-5100-7016-8000-000000000016"
+revision = "studio-9c38366cb7f89950"
+alias = "PaddleOCR-VL-1.6"
+display_name = "PaddleOCR-VL 1.6 (0.9B) crop OCR"
+source_license = "apache-2.0"
+operations = ["text.generate", "vision.generate"]
+manifest_digest = "sha256:fd52a28881afd02d5f7031fa416a3139d21d8d356b65c27bc0e136772d239cab"
+trust_remote_code = false
+
+[[models.variants]]
+variant = "mlx-bf16"
+format = "mlx"
+platforms = ["darwin-arm64"]
+quantization = "bf16"
+weights_bytes = 1930459435
+measured_load_peak_bytes = 3221225472
+metadata = {  }
+
+[[models.variants.files]]
+path = "paddleocr-vl-1.6/LICENSE"
+size_bytes = 11376
+digest = "sha256:b8c4d7deccd236af023af1c88c4d4e8f0fc2f41914e0fb23a3ec9678fb5a8456"
+
+[[models.variants.files]]
+path = "paddleocr-vl-1.6/README.md"
+size_bytes = 21424
+digest = "sha256:d6c5b77a660577f6e18021defccd835bdc93a8c6538f5a479d597f3e94288abf"
+
+[[models.variants.files]]
+path = "paddleocr-vl-1.6/added_tokens.json"
+size_bytes = 25381
+digest = "sha256:f59f889088e0fe21c523e7cf121bb6dca3b0bb148cb7159fbb4572c74dfc5644"
+
+[[models.variants.files]]
+path = "paddleocr-vl-1.6/chat_template.jinja"
+size_bytes = 1474
+digest = "sha256:2f27812dab7f333e471884e0c803d807f11953d5453140dfb1aaba234f872bc8"
+
+[[models.variants.files]]
+path = "paddleocr-vl-1.6/config.json"
+size_bytes = 2059
+digest = "sha256:ce7f4565f8b1db78532ad5d1b9ebe55c2139d49bd4cb04778b580a08a598f171"
+
+[[models.variants.files]]
+path = "paddleocr-vl-1.6/configuration_paddleocr_vl.py"
+size_bytes = 8104
+digest = "sha256:753dd93654c3a9c8c85a3eaee1e3092dd12591b0f2dce0305e1abfb7a41ff160"
+
+[[models.variants.files]]
+path = "paddleocr-vl-1.6/generation_config.json"
+size_bytes = 133
+digest = "sha256:a6701d78ab3b4d972307cdec3b69d4c13f46e0d5140514f50ab7d84259324b94"
+
+[[models.variants.files]]
+path = "paddleocr-vl-1.6/image_processing_paddleocr_vl.py"
+size_bytes = 25032
+digest = "sha256:a4fa521b9cb16e207f94b7f2d16427771776dfc634420d319fc4916ee58049ec"
+
+[[models.variants.files]]
+path = "paddleocr-vl-1.6/inference.yml"
+size_bytes = 43
+digest = "sha256:1587aece2d6442366efce34161d5f7d5f67f09ebfbf043168e5fade892c2780e"
+
+[[models.variants.files]]
+path = "paddleocr-vl-1.6/model.safetensors"
+size_bytes = 1917255968
+digest = "sha256:85a479d506a11e724e7285d395c551be69f41dbc16b6342d3cacfb189aed71db"
+
+[[models.variants.files]]
+path = "paddleocr-vl-1.6/modeling_paddleocr_vl.py"
+size_bytes = 103889
+digest = "sha256:c5013dff57ca8b87dc1de64d0fd839a44313de09d230a4fb2d08289d2cad5111"
+
+[[models.variants.files]]
+path = "paddleocr-vl-1.6/preprocessor_config.json"
+size_bytes = 641
+digest = "sha256:111872ab1e8bb7fd040ac5087bfced7ab8f011f02139b088cba294964c3b1d0e"
+
+[[models.variants.files]]
+path = "paddleocr-vl-1.6/processing_paddleocr_vl.py"
+size_bytes = 12253
+digest = "sha256:e29cb1e5f275f2bd3ce051bd5c9983a33894e693b2823a0e13d4c07c8c4f9e13"
+
+[[models.variants.files]]
+path = "paddleocr-vl-1.6/processor_config.json"
+size_bytes = 137
+digest = "sha256:1568858960a9760c54431dae693a6152e601ff55cdf6d2eab97a4a99958faea0"
+
+[[models.variants.files]]
+path = "paddleocr-vl-1.6/special_tokens_map.json"
+size_bytes = 1151
+digest = "sha256:d3a125c03103deb2acaf7730791bdbbf196f620e5a2213b664511ff9b4b25bab"
+
+[[models.variants.files]]
+path = "paddleocr-vl-1.6/tokenizer.json"
+size_bytes = 11189060
+digest = "sha256:c8a215a59183d0d0781adc33bacd3ce6162716f7fd568fb30234a74d69803a7d"
+
+[[models.variants.files]]
+path = "paddleocr-vl-1.6/tokenizer.model"
+size_bytes = 1614363
+digest = "sha256:34ef7db83df785924fb83d7b887b6e822a031c56e15cff40aaf9b982988180df"
+
+[[models.variants.files]]
+path = "paddleocr-vl-1.6/tokenizer_config.json"
+size_bytes = 186947
+digest = "sha256:1f979337347cc0cb72a6282d8a23ed183539aa81a87a906f022aee2bab83c7c5"
+
+[[deployments]]
+deployment_id = "deploy_01a04987-5100-7017-8000-000000000017"
+generation = 1
+alias = "PaddleOCR-VL-1.6"
+operations = ["text.generate", "vision.generate"]
+model_id = "model_01a04987-5100-7016-8000-000000000016"
+model_revision = "studio-9c38366cb7f89950"
+variant_preference = ["mlx-bf16"]
+parameters = { "maxOutputTokens" = 512, "temperature" = 0.0 }
+placement_selector = { "site" = "studio" }
+warm_policy = "keep_warm"
+idle_unload_ms = 0
+queue_id = "queue_default"
+enabled = true
+
+[[deployments.backend_constraints]]
+adapter = "mlx-vlm"
+version_spec = "*"
+os = ["darwin"]
+architectures = ["arm64"]
+accelerator_apis = ["metal"]
+
+[deployments.resource_policy]
+accelerator_required = true
+accelerator_apis = ["metal"]
+min_cpu_millis = 1000
+min_ram_bytes = 0
+base_accelerator_bytes = 3221225472
+per_input_byte_multiplier = 0.0
+context_formula = "none"
+safety_margin_bytes = 536870912
+exclusive_keys = []
+max_concurrency_per_worker = 1
+
+[[models]]
+model_id = "model_01a04987-5100-7018-8000-000000000018"
+revision = "studio-df4aaee7339b38d6"
+alias = "Qwen3.6-35B-A3B"
+display_name = "Qwen3.6 35B-A3B VL (MLX 4-bit)"
+source_license = "apache-2.0"
+operations = ["text.generate", "vision.generate"]
+manifest_digest = "sha256:fdc71f0797f601ab7ad7d32140f100c612b68706ea8dd6b2ceb63cd879a54e66"
+trust_remote_code = false
+
+[[models.variants]]
+variant = "mlx-4bit"
+format = "mlx"
+platforms = ["darwin-arm64"]
+quantization = "4bit"
+weights_bytes = 20429174878
+measured_load_peak_bytes = 23622320128
+metadata = {  }
+
+[[models.variants.files]]
+path = "qwen3.6-35b-a3b-mlx-4bit/chat_template.jinja"
+size_bytes = 7764
+digest = "sha256:e84f32a23fdda27689f868aa4a1a5621f41133e51a48d7f3efcbea2839574259"
+
+[[models.variants.files]]
+path = "qwen3.6-35b-a3b-mlx-4bit/config.json"
+size_bytes = 23591
+digest = "sha256:a822a9e48b0aafbe3144ec37d4fb067e178ed96615ce6e4420b3149893cc5767"
+
+[[models.variants.files]]
+path = "qwen3.6-35b-a3b-mlx-4bit/configuration.json"
+size_bytes = 58
+digest = "sha256:c1b09db419119513247e9b8b912c4b9897106c9b20c6cada7e107d993c5435eb"
+
+[[models.variants.files]]
+path = "qwen3.6-35b-a3b-mlx-4bit/generation_config.json"
+size_bytes = 202
+digest = "sha256:e70c136c1b78ddc1fb0905bac8e733a4dc448d4f852a5dd75143fffc70be550e"
+
+[[models.variants.files]]
+path = "qwen3.6-35b-a3b-mlx-4bit/model-00001-of-00004.safetensors"
+size_bytes = 5288196018
+digest = "sha256:09f3e6ecb0b7af6e6a38bc8169a134c821b0924c2679b2bb8f4426ad38d032b8"
+
+[[models.variants.files]]
+path = "qwen3.6-35b-a3b-mlx-4bit/model-00002-of-00004.safetensors"
+size_bytes = 5368472749
+digest = "sha256:31dcdb1c49eebdb1505bd14e3cb33f9cf900bd2546b638f2464694ae763a033f"
+
+[[models.variants.files]]
+path = "qwen3.6-35b-a3b-mlx-4bit/model-00003-of-00004.safetensors"
+size_bytes = 5368324139
+digest = "sha256:3e66de06a1f03dade16a612a368cfce4a4c9caa4efd7d28185454384082cec03"
+
+[[models.variants.files]]
+path = "qwen3.6-35b-a3b-mlx-4bit/model-00004-of-00004.safetensors"
+size_bytes = 4377211365
+digest = "sha256:a5d0cf03519c26f8b506df6b0ba60526e5c08c8cea22d0c21ce92950e58a5422"
+
+[[models.variants.files]]
+path = "qwen3.6-35b-a3b-mlx-4bit/model.safetensors.index.json"
+size_bytes = 215755
+digest = "sha256:0b28df60e33753a14e816d3b31577ae2c93884c58430a4a6de6ae9ea483842ea"
+
+[[models.variants.files]]
+path = "qwen3.6-35b-a3b-mlx-4bit/preprocessor_config.json"
+size_bytes = 390
+digest = "sha256:27225450ac9c6529872ee1924fcb0962ff5634834f817040f444118116f4e516"
+
+[[models.variants.files]]
+path = "qwen3.6-35b-a3b-mlx-4bit/processor_config.json"
+size_bytes = 1191
+digest = "sha256:d89ef49ce9cd37fbf510158e13c1ef063d9286411c1ec9049932dbe0487143b1"
+
+[[models.variants.files]]
+path = "qwen3.6-35b-a3b-mlx-4bit/tokenizer.json"
+size_bytes = 19989343
+digest = "sha256:87a7830d63fcf43bf241c3c5242e96e62dd3fdc29224ca26fed8ea333db72de4"
+
+[[models.variants.files]]
+path = "qwen3.6-35b-a3b-mlx-4bit/tokenizer_config.json"
+size_bytes = 9169
+digest = "sha256:672488283cdbf3530ecd2e3f90da54f9998cbae6befb5b32877590f72c7a9b2c"
+
+[[models.variants.files]]
+path = "qwen3.6-35b-a3b-mlx-4bit/video_preprocessor_config.json"
+size_bytes = 385
+digest = "sha256:7768af27c1fafa9cc9011c1dc20067e03f8915e03b63504550e11d5066986d13"
+
+[[models.variants.files]]
+path = "qwen3.6-35b-a3b-mlx-4bit/vocab.json"
+size_bytes = 6722759
+digest = "sha256:ce99b4cb2983d118806ce0a8b777a35b093e2000a503ebde25853284c9dfa003"
+
+[[deployments]]
+deployment_id = "deploy_01a04987-5100-7019-8000-000000000019"
+generation = 1
+alias = "Qwen3.6-35B-A3B"
+operations = ["text.generate", "vision.generate"]
+model_id = "model_01a04987-5100-7018-8000-000000000018"
+model_revision = "studio-df4aaee7339b38d6"
+variant_preference = ["mlx-4bit"]
+parameters = { "maxOutputTokens" = 1024, "temperature" = 0.0 }
+placement_selector = { "site" = "studio" }
+warm_policy = "on_demand"
+idle_unload_ms = 600000
+queue_id = "queue_default"
+enabled = true
+
+[[deployments.backend_constraints]]
+adapter = "mlx-vlm"
+version_spec = "*"
+os = ["darwin"]
+architectures = ["arm64"]
+accelerator_apis = ["metal"]
+
+[deployments.resource_policy]
+accelerator_required = true
+accelerator_apis = ["metal"]
+min_cpu_millis = 1000
+min_ram_bytes = 0
+base_accelerator_bytes = 23622320128
+per_input_byte_multiplier = 0.0
+context_formula = "none"
+safety_margin_bytes = 536870912
+exclusive_keys = []
+max_concurrency_per_worker = 1
+

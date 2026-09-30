@@ -1,0 +1,210 @@
+{
+ "paddleocr-vl-1.6": {
+  "root": "/Users/yanda/.cache/huggingface/hub/models--PaddlePaddle--PaddleOCR-VL-1.6/snapshots/c5630abae1d940eafe0697512a0325494b02ab42",
+  "files": [
+   {
+    "path": "LICENSE",
+    "source": "/Users/yanda/.cache/huggingface/hub/models--PaddlePaddle--PaddleOCR-VL-1.6/blobs/0491a00e80b424eb709078b57e35d8b83ffee985",
+    "size_bytes": 11376,
+    "digest": "sha256:b8c4d7deccd236af023af1c88c4d4e8f0fc2f41914e0fb23a3ec9678fb5a8456"
+   },
+   {
+    "path": "README.md",
+    "source": "/Users/yanda/.cache/huggingface/hub/models--PaddlePaddle--PaddleOCR-VL-1.6/blobs/58e9801f72ad5f992f0fc2e397ccf0fb014e5e5f",
+    "size_bytes": 21424,
+    "digest": "sha256:d6c5b77a660577f6e18021defccd835bdc93a8c6538f5a479d597f3e94288abf"
+   },
+   {
+    "path": "added_tokens.json",
+    "source": "/Users/yanda/.cache/huggingface/hub/models--PaddlePaddle--PaddleOCR-VL-1.6/blobs/6a2790e1462ecb007f9b92dfb00f594701462889",
+    "size_bytes": 25381,
+    "digest": "sha256:f59f889088e0fe21c523e7cf121bb6dca3b0bb148cb7159fbb4572c74dfc5644"
+   },
+   {
+    "path": "chat_template.jinja",
+    "source": "/Users/yanda/.cache/huggingface/hub/models--PaddlePaddle--PaddleOCR-VL-1.6/blobs/d8b8c271d7a7245d4937098f53aa372cff3dba70",
+    "size_bytes": 1474,
+    "digest": "sha256:2f27812dab7f333e471884e0c803d807f11953d5453140dfb1aaba234f872bc8"
+   },
+   {
+    "path": "config.json",
+    "source": "/Users/yanda/.cache/huggingface/hub/models--PaddlePaddle--PaddleOCR-VL-1.6/blobs/c54711466ae75457f8e57b909a49dae570bfa5c5",
+    "size_bytes": 2059,
+    "digest": "sha256:ce7f4565f8b1db78532ad5d1b9ebe55c2139d49bd4cb04778b580a08a598f171"
+   },
+   {
+    "path": "configuration_paddleocr_vl.py",
+    "source": "/Users/yanda/.cache/huggingface/hub/models--PaddlePaddle--PaddleOCR-VL-1.6/blobs/a8fd139287293301b287db6dfdaac21d7ad1a236",
+    "size_bytes": 8104,
+    "digest": "sha256:753dd93654c3a9c8c85a3eaee1e3092dd12591b0f2dce0305e1abfb7a41ff160"
+   },
+   {
+    "path": "generation_config.json",
+    "source": "/Users/yanda/.cache/huggingface/hub/models--PaddlePaddle--PaddleOCR-VL-1.6/blobs/ba87d71b9881c1d52f0be4286fb63e381ce3febf",
+    "size_bytes": 133,
+    "digest": "sha256:a6701d78ab3b4d972307cdec3b69d4c13f46e0d5140514f50ab7d84259324b94"
+   },
+   {
+    "path": "image_processing_paddleocr_vl.py",
+    "source": "/Users/yanda/.cache/huggingface/hub/models--PaddlePaddle--PaddleOCR-VL-1.6/blobs/f7e28fd3c1971331581f73d573b9c4a2a4ce7a58",
+    "size_bytes": 25032,
+    "digest": "sha256:a4fa521b9cb16e207f94b7f2d16427771776dfc634420d319fc4916ee58049ec"
+   },
+   {
+    "path": "inference.yml",
+    "source": "/Users/yanda/.cache/huggingface/hub/models--PaddlePaddle--PaddleOCR-VL-1.6/blobs/93f88dfb31b6dbc3f529094ccfe26ddec98fa8ad",
+    "size_bytes": 43,
+    "digest": "sha256:1587aece2d6442366efce34161d5f7d5f67f09ebfbf043168e5fade892c2780e"
+   },
+   {
+    "path": "model.safetensors",
+    "source": "/Users/yanda/.cache/huggingface/hub/blobs/1f/1f0383cd530fb3cbcbe82f8a7feb64a2719c0e08e4a59d311a3de2060d1ca755",
+    "size_bytes": 1917255968,
+    "digest": "sha256:85a479d506a11e724e7285d395c551be69f41dbc16b6342d3cacfb189aed71db"
+   },
+   {
+    "path": "modeling_paddleocr_vl.py",
+    "source": "/Users/yanda/.cache/huggingface/hub/models--PaddlePaddle--PaddleOCR-VL-1.6/blobs/693782514116586458b12cfd911c88d6565f552c",
+    "size_bytes": 103889,
+    "digest": "sha256:c5013dff57ca8b87dc1de64d0fd839a44313de09d230a4fb2d08289d2cad5111"
+   },
+   {
+    "path": "preprocessor_config.json",
+    "source": "/Users/yanda/.cache/huggingface/hub/models--PaddlePaddle--PaddleOCR-VL-1.6/blobs/d873cd63d04d9e6243999759fc30f7752dab3222",
+    "size_bytes": 641,
+    "digest": "sha256:111872ab1e8bb7fd040ac5087bfced7ab8f011f02139b088cba294964c3b1d0e"
+   },
+   {
+    "path": "processing_paddleocr_vl.py",
+    "source": "/Users/yanda/.cache/huggingface/hub/models--PaddlePaddle--PaddleOCR-VL-1.6/blobs/73c3faeff201555fc7b52709848e3c669419dbb1",
+    "size_bytes": 12253,
+    "digest": "sha256:e29cb1e5f275f2bd3ce051bd5c9983a33894e693b2823a0e13d4c07c8c4f9e13"
+   },
+   {
+    "path": "processor_config.json",
+    "source": "/Users/yanda/.cache/huggingface/hub/models--PaddlePaddle--PaddleOCR-VL-1.6/blobs/033053ac4d8b5de2e47884ce85a6b4939cc58e87",
+    "size_bytes": 137,
+    "digest": "sha256:1568858960a9760c54431dae693a6152e601ff55cdf6d2eab97a4a99958faea0"
+   },
+   {
+    "path": "special_tokens_map.json",
+    "source": "/Users/yanda/.cache/huggingface/hub/models--PaddlePaddle--PaddleOCR-VL-1.6/blobs/dcd70aaa8c9987899d7593995546d9c0cfc6a1f3",
+    "size_bytes": 1151,
+    "digest": "sha256:d3a125c03103deb2acaf7730791bdbbf196f620e5a2213b664511ff9b4b25bab"
+   },
+   {
+    "path": "tokenizer.json",
+    "source": "/Users/yanda/.cache/huggingface/hub/blobs/06/0671503fc5d01f50c20977ea2a430ecc5916a84d955e4f2b83b065a9125e9232",
+    "size_bytes": 11189060,
+    "digest": "sha256:c8a215a59183d0d0781adc33bacd3ce6162716f7fd568fb30234a74d69803a7d"
+   },
+   {
+    "path": "tokenizer.model",
+    "source": "/Users/yanda/.cache/huggingface/hub/blobs/04/04cdbddf4dce991c41a4d621aed8da5a59eb516587013929f082ea591cb000ba",
+    "size_bytes": 1614363,
+    "digest": "sha256:34ef7db83df785924fb83d7b887b6e822a031c56e15cff40aaf9b982988180df"
+   },
+   {
+    "path": "tokenizer_config.json",
+    "source": "/Users/yanda/.cache/huggingface/hub/models--PaddlePaddle--PaddleOCR-VL-1.6/blobs/cd9eb7da01a3209f4fb9b3561e04be022cd87764",
+    "size_bytes": 186947,
+    "digest": "sha256:1f979337347cc0cb72a6282d8a23ed183539aa81a87a906f022aee2bab83c7c5"
+   }
+  ]
+ },
+ "qwen3.6-35b-a3b-mlx-4bit": {
+  "root": "/Users/yanda/.lmstudio/models/lmstudio-community/Qwen3.6-35B-A3B-MLX-4bit",
+  "files": [
+   {
+    "path": "chat_template.jinja",
+    "source": "/Users/yanda/.lmstudio/models/lmstudio-community/Qwen3.6-35B-A3B-MLX-4bit/chat_template.jinja",
+    "size_bytes": 7764,
+    "digest": "sha256:e84f32a23fdda27689f868aa4a1a5621f41133e51a48d7f3efcbea2839574259"
+   },
+   {
+    "path": "config.json",
+    "source": "/Users/yanda/.lmstudio/models/lmstudio-community/Qwen3.6-35B-A3B-MLX-4bit/config.json",
+    "size_bytes": 23591,
+    "digest": "sha256:a822a9e48b0aafbe3144ec37d4fb067e178ed96615ce6e4420b3149893cc5767"
+   },
+   {
+    "path": "configuration.json",
+    "source": "/Users/yanda/.lmstudio/models/lmstudio-community/Qwen3.6-35B-A3B-MLX-4bit/configuration.json",
+    "size_bytes": 58,
+    "digest": "sha256:c1b09db419119513247e9b8b912c4b9897106c9b20c6cada7e107d993c5435eb"
+   },
+   {
+    "path": "generation_config.json",
+    "source": "/Users/yanda/.lmstudio/models/lmstudio-community/Qwen3.6-35B-A3B-MLX-4bit/generation_config.json",
+    "size_bytes": 202,
+    "digest": "sha256:e70c136c1b78ddc1fb0905bac8e733a4dc448d4f852a5dd75143fffc70be550e"
+   },
+   {
+    "path": "model-00001-of-00004.safetensors",
+    "source": "/Users/yanda/.lmstudio/models/lmstudio-community/Qwen3.6-35B-A3B-MLX-4bit/model-00001-of-00004.safetensors",
+    "size_bytes": 5288196018,
+    "digest": "sha256:09f3e6ecb0b7af6e6a38bc8169a134c821b0924c2679b2bb8f4426ad38d032b8"
+   },
+   {
+    "path": "model-00002-of-00004.safetensors",
+    "source": "/Users/yanda/.lmstudio/models/lmstudio-community/Qwen3.6-35B-A3B-MLX-4bit/model-00002-of-00004.safetensors",
+    "size_bytes": 5368472749,
+    "digest": "sha256:31dcdb1c49eebdb1505bd14e3cb33f9cf900bd2546b638f2464694ae763a033f"
+   },
+   {
+    "path": "model-00003-of-00004.safetensors",
+    "source": "/Users/yanda/.lmstudio/models/lmstudio-community/Qwen3.6-35B-A3B-MLX-4bit/model-00003-of-00004.safetensors",
+    "size_bytes": 5368324139,
+    "digest": "sha256:3e66de06a1f03dade16a612a368cfce4a4c9caa4efd7d28185454384082cec03"
+   },
+   {
+    "path": "model-00004-of-00004.safetensors",
+    "source": "/Users/yanda/.lmstudio/models/lmstudio-community/Qwen3.6-35B-A3B-MLX-4bit/model-00004-of-00004.safetensors",
+    "size_bytes": 4377211365,
+    "digest": "sha256:a5d0cf03519c26f8b506df6b0ba60526e5c08c8cea22d0c21ce92950e58a5422"
+   },
+   {
+    "path": "model.safetensors.index.json",
+    "source": "/Users/yanda/.lmstudio/models/lmstudio-community/Qwen3.6-35B-A3B-MLX-4bit/model.safetensors.index.json",
+    "size_bytes": 215755,
+    "digest": "sha256:0b28df60e33753a14e816d3b31577ae2c93884c58430a4a6de6ae9ea483842ea"
+   },
+   {
+    "path": "preprocessor_config.json",
+    "source": "/Users/yanda/.lmstudio/models/lmstudio-community/Qwen3.6-35B-A3B-MLX-4bit/preprocessor_config.json",
+    "size_bytes": 390,
+    "digest": "sha256:27225450ac9c6529872ee1924fcb0962ff5634834f817040f444118116f4e516"
+   },
+   {
+    "path": "processor_config.json",
+    "source": "/Users/yanda/.lmstudio/models/lmstudio-community/Qwen3.6-35B-A3B-MLX-4bit/processor_config.json",
+    "size_bytes": 1191,
+    "digest": "sha256:d89ef49ce9cd37fbf510158e13c1ef063d9286411c1ec9049932dbe0487143b1"
+   },
+   {
+    "path": "tokenizer.json",
+    "source": "/Users/yanda/.lmstudio/models/lmstudio-community/Qwen3.6-35B-A3B-MLX-4bit/tokenizer.json",
+    "size_bytes": 19989343,
+    "digest": "sha256:87a7830d63fcf43bf241c3c5242e96e62dd3fdc29224ca26fed8ea333db72de4"
+   },
+   {
+    "path": "tokenizer_config.json",
+    "source": "/Users/yanda/.lmstudio/models/lmstudio-community/Qwen3.6-35B-A3B-MLX-4bit/tokenizer_config.json",
+    "size_bytes": 9169,
+    "digest": "sha256:672488283cdbf3530ecd2e3f90da54f9998cbae6befb5b32877590f72c7a9b2c"
+   },
+   {
+    "path": "video_preprocessor_config.json",
+    "source": "/Users/yanda/.lmstudio/models/lmstudio-community/Qwen3.6-35B-A3B-MLX-4bit/video_preprocessor_config.json",
+    "size_bytes": 385,
+    "digest": "sha256:7768af27c1fafa9cc9011c1dc20067e03f8915e03b63504550e11d5066986d13"
+   },
+   {
+    "path": "vocab.json",
+    "source": "/Users/yanda/.lmstudio/models/lmstudio-community/Qwen3.6-35B-A3B-MLX-4bit/vocab.json",
+    "size_bytes": 6722759,
+    "digest": "sha256:ce99b4cb2983d118806ce0a8b777a35b093e2000a503ebde25853284c9dfa003"
+   }
+  ]
+ }
+}

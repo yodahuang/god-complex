@@ -1,0 +1,101 @@
+# Studio (Mac) Rigplane node agent. Generated; do not edit by hand.
+
+[agent]
+node_id_file = "/Users/yanda/.local/state/rigplane/node-id"
+coordinator_url = "http://192.168.1.124:7443"
+token_file = "/Users/yanda/.config/rigplane/agent-token"
+state_dir = "/Users/yanda/.local/state/rigplane/agent"
+model_cache_dir = "/Users/yanda/.local/share/rigplane/models"
+link_local_model_files = true
+
+[agent.registration]
+protocol_version = "1"
+node_id = "node_01a04987-5100-7010-8000-000000000010"
+agent_id = "agent_01a04987-5100-7010-8000-000000000010"
+alias = "Studio"
+agent_version = "rigplane-agent/0.1.0"
+boot_id = "configured-at-start"
+os = "darwin"
+os_version = "configured-at-start"
+architecture = "arm64"
+labels = { "site" = "studio", "accelerator.family" = "apple-silicon" }
+config_digest = "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+
+[[agent.registration.devices]]
+device_id = "device_01a04987-5100-7011-8000-000000000011"
+kind = "gpu"
+vendor = "apple"
+product = "Apple M2 Max"
+hardware_fingerprint = "apple:metal:0"
+
+[[agent.registration.devices]]
+device_id = "device_01a04987-5100-7012-8000-000000000012"
+kind = "cpu"
+vendor = "apple"
+product = "Apple M2 Max"
+hardware_fingerprint = "cpu:apple"
+
+[[agent.registration.devices]]
+device_id = "device_01a04987-5100-7013-8000-000000000013"
+kind = "disk"
+vendor = "system"
+product = "Rigplane model cache filesystem"
+hardware_fingerprint = "disk:rigplane-cache"
+attributes = { "path" = "/Users/yanda/.local/share/rigplane/models" }
+
+[[agent.registration.resource_pools]]
+pool_id = "pool_01a04987-5100-701a-8000-00000000001a"
+node_id = "node_01a04987-5100-7010-8000-000000000010"
+kind = "unified_memory"
+device_ids = ["device_01a04987-5100-7011-8000-000000000011"]
+capacity_bytes = 34359738368
+allocatable_bytes = 27917287424
+available_bytes = 27917287424
+max_leases = 1
+active_leases = 0
+exclusivity_keys = []
+measured_at = 2026-09-29T00:00:00Z
+
+[[agent.registration.resource_pools]]
+pool_id = "pool_01a04987-5100-701b-8000-00000000001b"
+node_id = "node_01a04987-5100-7010-8000-000000000010"
+kind = "cpu"
+device_ids = ["device_01a04987-5100-7012-8000-000000000012"]
+capacity_cpu_millis = 12000
+available_cpu_millis = 12000
+max_leases = 1
+active_leases = 0
+measured_at = 2026-09-29T00:00:00Z
+
+[[agent.registration.resource_pools]]
+pool_id = "pool_01a04987-5100-701c-8000-00000000001c"
+node_id = "node_01a04987-5100-7010-8000-000000000010"
+kind = "disk_cache"
+device_ids = ["device_01a04987-5100-7013-8000-000000000013"]
+capacity_bytes = 494384795648
+allocatable_bytes = 494384795648
+available_bytes = 494384795648
+max_leases = 1
+active_leases = 0
+measured_at = 2026-09-29T00:00:00Z
+
+[[agent.registration.capabilities]]
+adapter = "mlx-vlm"
+adapter_version = "mlx-vlm-0.7.4"
+operations = ["text.generate", "vision.generate"]
+input_media_types = ["application/json"]
+output_media_types = ["application/json", "text/event-stream"]
+streaming_modes = ["none", "tokens"]
+cancellation = "cooperative"
+max_context_tokens = 32768
+max_input_bytes = 1048576
+supported_model_formats = ["mlx"]
+accelerator_apis = ["metal"]
+
+[[adapters]]
+key = "mlx-vlm"
+enabled = true
+supervisor = "direct"
+endpoint = "unix:///Users/yanda/.local/state/rigplane/mlx-vlm.sock"
+command = ["/Users/yanda/Projects/rig-control-plane/.venv/bin/rigplane-mlx-vlm-worker", "--socket", "/Users/yanda/.local/state/rigplane/mlx-vlm.sock", "--backend-version", "mlx-vlm-0.7.4"]
+

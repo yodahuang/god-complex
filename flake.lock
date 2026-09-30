@@ -452,11 +452,11 @@
         "uv2nix": "uv2nix_2"
       },
       "locked": {
-        "lastModified": 1790650767,
-        "narHash": "sha256-gVvnu6RI71o7oHD7bJ0da7mUMGUbnSWhMvKwi/NqQmQ=",
+        "lastModified": 1790697348,
+        "narHash": "sha256-Yk6IQ40wUNmrYVhfXFHVylTWkR/t3MEGl1WvPG8TJKo=",
         "owner": "NousResearch",
         "repo": "hermes-agent",
-        "rev": "30a8b539d9de6ffadf5804b602b59dc171129024",
+        "rev": "5000e29936df69d5209f7cf2eea8e5776cb4cbb1",
         "type": "github"
       },
       "original": {
@@ -588,11 +588,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1790570935,
-        "narHash": "sha256-meDjn8IvYZpLxQpYOPB14+U/RI7/IbAT3JdMI9f0zMY=",
+        "lastModified": 1790659046,
+        "narHash": "sha256-FfNovzeXJEcVYFi28ZRtyzs58MLgT1+4Kvk+gwSb3MQ=",
         "owner": "nix-community",
         "repo": "nix-vscode-extensions",
-        "rev": "8df87d543439ecba7eb58a10ac34e0760ae1a078",
+        "rev": "061d4dbbe3556135301f07e8a0e67aea3ea27dc7",
         "type": "github"
       },
       "original": {
@@ -725,11 +725,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1790650382,
-        "narHash": "sha256-geEtvQ0gjjDyvyTImYwFuB2YAi6cimUDcDwHpTffl28=",
+        "lastModified": 1790697048,
+        "narHash": "sha256-QRYCrNOoeq0n5HlN/CVN66I37xfkh0s5vr+hlVGJCBg=",
         "owner": "nix-community",
         "repo": "NUR",
-        "rev": "739b64ae9e86e7867dc9cda21d1fdc486e2433d5",
+        "rev": "ddfe454300b42843f9b538e7d5d4ddba8819ec9b",
         "type": "github"
       },
       "original": {
@@ -821,8 +821,8 @@
     "pixiv-viewer": {
       "flake": false,
       "locked": {
-        "lastModified": 1790652296,
-        "narHash": "sha256-+mpqCXMCnQeYS2Hn0TIsW/J3HlnqECB13WomdfTeMeU=",
+        "lastModified": 1790697530,
+        "narHash": "sha256-E8/0D0oh43Y+Xm1dlrNZL6QK8Ve8JSYOrS8C5DvUZ98=",
         "path": "/Users/yanda/Projects/pixiv-viewer",
         "type": "path"
       },
@@ -950,8 +950,8 @@
     "rig-control-plane": {
       "flake": false,
       "locked": {
-        "lastModified": 1790659804,
-        "narHash": "sha256-tJD6YHqXE9dFfIpOyz93q7qNH8XqoptmuxCAWwJlgkM=",
+        "lastModified": 1790697600,
+        "narHash": "sha256-jj/H0sTcl6jhDHjVlgrI4Px6xIaLUVlHJr9VqNsgmUE=",
         "path": "/Users/yanda/Projects/rig-control-plane",
         "type": "path"
       },

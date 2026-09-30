@@ -275,6 +275,10 @@ in {
     enable = true;
     package = rigplanePackage;
     configFile = configFile;
+    # Studio (Mac) node: MLX-VLM OCR (PaddleOCR-VL) and Qwen-VL deployments,
+    # its agent principal, and model manifests. Regenerate with
+    # rigplane/gen_studio_config.py when the Mac's models change.
+    configFragments = [../../rigplane/studio-coordinator-fragment.toml];
     coordinator.enable = true;
     agent.enable = true;
     extraGroups = ["video" "render"];
