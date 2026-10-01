@@ -1,0 +1,10 @@
+# Python environment for the Rig's vLLM OCR worker (PaddleOCR-VL).
+# rigplane-vllm-env syncs it from uv.lock; regenerate with `uv lock`.
+[project]
+name = "rig-vllm"
+version = "0.1.0"
+requires-python = ">=3.12,<3.13"
+dependencies = ["vllm==0.30.0"]
+
+[tool.uv]
+environments = ["sys_platform == 'linux' and platform_machine == 'x86_64'"]

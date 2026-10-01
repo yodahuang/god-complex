@@ -17,6 +17,51 @@
 
   stateDirectory = "/var/lib/rigplane";
   configDirectory = "/etc/rigplane";
+
+  # PaddleOCR-VL 1.6 for crop OCR on vLLM, fetched by digest from Hugging
+  # Face. The file list and digests are the same checkpoint the Studio serves.
+  paddleOcrRevision = "c5630abae1d940eafe0697512a0325494b02ab42";
+  paddleOcrFiles = (lib.importJSON ../../rigplane/studio-model-digests.json)."paddleocr-vl-1.6".files;
+  paddleOcrModel = pkgs.linkFarm "paddleocr-vl-1.6" (map (file: {
+      name = file.path;
+      path = pkgs.fetchurl {
+        url = "https://huggingface.co/PaddlePaddle/PaddleOCR-VL-1.6/resolve/${paddleOcrRevision}/${file.path}";
+        sha256 = lib.removePrefix "sha256:" file.digest;
+      };
+    })
+    paddleOcrFiles);
+  ocrModelDirectory = "${stateDirectory}/models/ocr/paddleocr-vl-1.6";
+
+  # vLLM is not packaged with CUDA in nixpkgs, so its Python environment is a
+  # locked uv project synced into the state directory (rigplane-vllm-env). The
+  # wrapper supplies what its manylinux wheels and Triton JIT need on NixOS.
+  vllmProject = ./vllm;
+  vllmState = "${stateDirectory}/vllm";
+  vllmPython = pkgs.python312;
+  vllmWrapper = pkgs.writeShellScript "rigplane-vllm" ''
+    export LD_LIBRARY_PATH=${lib.makeLibraryPath [pkgs.stdenv.cc.cc.lib pkgs.zlib]}:/run/opengl-driver/lib
+    export TRITON_LIBCUDA_PATH=/run/opengl-driver/lib
+    export TRITON_PTXAS_PATH=${pkgs.cudaPackages.cuda_nvcc}/bin/ptxas
+    export CC=${pkgs.gcc}/bin/gcc
+    export PATH=${lib.makeBinPath [pkgs.gcc pkgs.coreutils]}:''${PATH:-}
+    export HOME=${vllmState}/home
+    export XDG_CACHE_HOME=${vllmState}/cache
+    export VLLM_CACHE_ROOT=${vllmState}/cache/vllm
+    export HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1
+    export VLLM_NO_USAGE_STATS=1 DO_NOT_TRACK=1
+    exec ${vllmState}/venv/bin/vllm "$@"
+  '';
+  vllmEnvScript = pkgs.writeShellScript "rigplane-vllm-env" ''
+    set -euo pipefail
+    export UV_PROJECT_ENVIRONMENT=${vllmState}/venv
+    export UV_CACHE_DIR=${vllmState}/uv-cache
+    export UV_PYTHON=${vllmPython}/bin/python3.12
+    export UV_PYTHON_DOWNLOADS=never
+    export UV_NO_CONFIG=1
+    export HOME=${vllmState}/home
+    ${pkgs.coreutils}/bin/mkdir -p ${vllmState}/home ${vllmState}/cache
+    exec ${pkgs.uv}/bin/uv sync --frozen --no-install-project --project ${vllmProject}
+  '';
   configFile = "${configDirectory}/config.toml";
   importDirectory = "${stateDirectory}/model-import";
   textSource = "${importDirectory}/text/Hy-MT2-7B-Q4_K_M.gguf";
@@ -58,6 +103,9 @@
     audio_binary=${lib.escapeShellArg "${audioCpp}/bin/audiocpp_server"}
     ffmpeg_binary=${lib.escapeShellArg "${pkgs.ffmpeg}/bin/ffmpeg"}
     audio_ld_library_path=${lib.escapeShellArg audioLdLibraryPath}
+    vllm_wrapper=${lib.escapeShellArg "${vllmWrapper}"}
+    ocr_source=${lib.escapeShellArg "${paddleOcrModel}"}
+    ocr_model=${lib.escapeShellArg ocrModelDirectory}
 
     sha256_file() {
       "$coreutils/sha256sum" "$1" | "$coreutils/cut" -d' ' -f1
@@ -111,6 +159,20 @@
     "$coreutils/chown" rigplane:rigplane "$text_model" "$audio_model"
     "$coreutils/chmod" 0640 "$text_model" "$audio_model"
 
+    # Copy (never hard-link) the OCR checkpoint out of the store, so the
+    # ownership change below cannot reach a store path.
+    "$coreutils/install" -d -m 0750 -o rigplane -g rigplane "$state/models/ocr" "$ocr_model"
+    for source in "$ocr_source"/*; do
+      name=$("$coreutils/basename" "$source")
+      target="$ocr_model/$name"
+      if [ ! -f "$target" ] || [ "$(sha256_file "$source")" != "$(sha256_file "$target")" ]; then
+        "$coreutils/cp" -L --reflink=auto "$source" "$target.tmp"
+        "$coreutils/mv" -f "$target.tmp" "$target"
+      fi
+      "$coreutils/chown" rigplane:rigplane "$target"
+      "$coreutils/chmod" 0640 "$target"
+    done
+
     text_digest=$(sha256_file "$text_source")
     text_size=$("$coreutils/stat" -c '%s' "$text_source")
     audio_digest=$(sha256_file "$audio_source")
@@ -132,7 +194,9 @@
     cpu_millis=$(($(${pkgs.coreutils}/bin/nproc) * 1000))
     nixos_version=$(/run/current-system/sw/bin/nixos-version --raw)
     measured_at=$(/run/current-system/sw/bin/date -u '+%Y-%m-%dT%H:%M:%SZ')
-    text_peak_bytes=$((vram_bytes * 3 / 4))
+    # Hy's measured footprint with an 8192-token unified q8_0 KV cache and four
+    # slots; the deployment's 5% margin is added on top by the estimator.
+    text_peak_bytes=$((5248 * 1024 * 1024))
     audio_peak_bytes=$((vram_bytes / 2))
     text_revision="rig-text-$(printf '%s' "$text_digest" | "$coreutils/cut" -c1-16)"
     audio_revision="rig-audio-$(printf '%s' "$audio_digest" | "$coreutils/cut" -c1-16)"
@@ -143,6 +207,7 @@
     "$sed" -i \
       -e "s|/run/current-system/sw/bin/llama-server|$llama_binary|g" \
       -e "s|/run/current-system/sw/bin/rigplane-audio-worker|$audio_bridge|g" \
+      -e "s|/run/current-system/sw/bin/rigplane-vllm|$vllm_wrapper|g" \
       -e "s|/run/current-system/sw/bin/audiocpp_server|$audio_binary|g" \
       -e "s|/run/current-system/sw/bin/ffmpeg|$ffmpeg_binary|g" \
       -e "s|/run/opengl-driver/lib|$audio_ld_library_path|g" \
@@ -227,7 +292,30 @@ in {
     "d ${stateDirectory}/models/text 0750 rigplane rigplane -"
     "d ${stateDirectory}/models/audio 0750 rigplane rigplane -"
     "d ${stateDirectory}/references 0750 rigplane rigplane -"
+    "d ${vllmState} 0750 rigplane rigplane -"
   ];
+
+  # Sync the locked vLLM environment before the agent can start the OCR
+  # worker. `uv sync --frozen` is a no-op when the venv already matches.
+  systemd.services.rigplane-vllm-env = {
+    description = "Sync the Rigplane vLLM Python environment";
+    wantedBy = ["multi-user.target"];
+    before = ["rigplane-agent.service"];
+    wants = ["network-online.target"];
+    after = ["network-online.target" "systemd-tmpfiles-setup.service"];
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = vllmEnvScript;
+      User = "rigplane";
+      Group = "rigplane";
+      RemainAfterExit = true;
+      TimeoutStartSec = "30min";
+      ProtectHome = true;
+      ProtectSystem = "strict";
+      PrivateTmp = true;
+      ReadWritePaths = [vllmState];
+    };
+  };
 
   environment.systemPackages = [llamaCpp audioCpp pkgs.ffmpeg];
 
@@ -294,5 +382,9 @@ in {
   systemd.services.rigplane-agent.after = [
     "rigplane-configure.service"
     "rigplane-coordinator.service"
+    "rigplane-vllm-env.service"
   ];
+  # Wanted, not required: without the vLLM environment only the OCR worker
+  # fails to start; translation and speech keep working.
+  systemd.services.rigplane-agent.wants = ["rigplane-vllm-env.service"];
 }
