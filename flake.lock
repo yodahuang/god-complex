@@ -950,8 +950,8 @@
     "rig-control-plane": {
       "flake": false,
       "locked": {
-        "lastModified": 1790759042,
-        "narHash": "sha256-T0i78eKeYXN6jdzCjjOFqIIPfjaKHmCp6EidvInljjk=",
+        "lastModified": 1790829635,
+        "narHash": "sha256-4NOxl4qBSAh4npn1mdV3NZn56x5brmhD9BW7qRhF/e0=",
         "path": "/Users/yanda/Projects/rig-control-plane",
         "type": "path"
       },

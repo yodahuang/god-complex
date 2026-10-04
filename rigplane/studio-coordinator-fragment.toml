@@ -136,6 +136,7 @@ warm_policy = "keep_warm"
 idle_unload_ms = 0
 queue_id = "queue_default"
 enabled = true
+expected_run_ms = 300
 
 [[deployments.backend_constraints]]
 adapter = "mlx-vlm"

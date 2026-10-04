@@ -50,6 +50,9 @@ MODELS = {
         "parameters": {"maxOutputTokens": 512, "temperature": 0.0},
         "warm_policy": "keep_warm",
         "idle_unload_ms": 0,
+        # Shares its alias with the Rig's vLLM copy; the coordinator compares
+        # predicted finish times, starting from this per-crop guess.
+        "expected_run_ms": 300,
     },
     "qwen3.6-35b-a3b-mlx-4bit": {
         "model_id": "model_01a04987-5100-7018-8000-000000000018",
@@ -129,6 +132,7 @@ for key, spec in MODELS.items():
         "parameters": spec["parameters"], "placement_selector": {"site": "studio"},
         "warm_policy": spec["warm_policy"], "idle_unload_ms": spec["idle_unload_ms"],
         "queue_id": "queue_default", "enabled": True,
+        **({"expected_run_ms": spec["expected_run_ms"]} if "expected_run_ms" in spec else {}),
     }, array=True))
     fragment.append(table("deployments.backend_constraints", {
         "adapter": "mlx-vlm", "version_spec": "*", "os": ["darwin"],
