@@ -222,10 +222,17 @@ def content_x_bounds(page: fitz.Page, y0: float, y1: float) -> tuple[float, floa
     xs1: list[float] = []
     page_width = page.rect.width
 
-    for bx0, by0, bx1, by1, *_ in page.get_text("blocks"):
-        if by1 > y0 and by0 < y1:
-            xs0.append(bx0)
-            xs1.append(bx1)
+    # Per-line, horizontal text only: skips rotated margin stamps such as the
+    # vertical "arXiv:XXXX.XXXXXvN [cs.LG] date" watermark on arXiv first pages.
+    for block in page.get_text("dict")["blocks"]:
+        for line in block.get("lines", []):
+            dx, dy = line["dir"]
+            if abs(dy) > 0.1 * abs(dx) + 1e-6:
+                continue
+            bx0, by0, bx1, by1 = line["bbox"]
+            if by1 > y0 and by0 < y1:
+                xs0.append(bx0)
+                xs1.append(bx1)
 
     for img in page.get_images(full=True):
         for r in page.get_image_rects(img[0]):
@@ -280,11 +287,16 @@ def extract_figure(
                 print(f"  ↕ y1 snapped {bottom / h:.3f} → {cap.y1 / h:.3f} (caption end)")
                 bottom = cap.y1
 
-            # Snap y0 → actual figure top
+            # Snap y0 → actual figure top, but only to tighten the hint window.
+            # figure_top() falls back to "first text block on the page" for vector
+            # figures with little gap above the caption, which can land far above
+            # the figure (in the abstract, say); never let it widen past the hint.
             detected_top = figure_top(page, cap)
-            if abs(detected_top - top) > 2:
+            if detected_top > top + 2:
                 print(f"  ↕ y0 snapped {top / h:.3f} → {detected_top / h:.3f} (figure top)")
-            top = detected_top
+                top = detected_top
+            elif detected_top < top - 2:
+                print(f"  ↕ y0 kept at hint {top / h:.3f} (detected top {detected_top / h:.3f} is above it)")
 
         x0, x1 = content_x_bounds(page, top, bottom)
         region = fitz.Rect(x0, top, x1, bottom) & page.rect

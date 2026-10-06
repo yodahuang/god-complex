@@ -6,7 +6,15 @@
   lib,
   pkgs,
   ...
-}: {
+}: let
+  # launchd jobs that reach the home LAN run through a named launcher so macOS
+  # files their Local Network permission under that name, not a shared "uv".
+  lanLauncher = name:
+    lib.getExe (pkgs.callPackage ./pkgs/lan-launcher {
+      inherit name;
+      id = "rocks.yanda.${name}";
+    });
+in {
   imports = [./modules/macos-default-apps.nix];
 
   # The atuin daemon's launchd agent defaults to the `user` domain, but
@@ -26,6 +34,7 @@
     enable = pkgs.stdenv.hostPlatform.isDarwin;
     config = {
       ProgramArguments = [
+        (lanLauncher "pixiv-semantic-translate")
         "${pkgs.uv}/bin/uv"
         "run"
         "--project"
@@ -57,6 +66,7 @@
     enable = pkgs.stdenv.hostPlatform.isDarwin;
     config = {
       ProgramArguments = [
+        (lanLauncher "rigplane-agent")
         "${pkgs.uv}/bin/uv"
         "run"
         "--project"

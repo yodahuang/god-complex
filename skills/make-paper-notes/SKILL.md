@@ -172,46 +172,27 @@ Only embed figures where a visual genuinely replaces words that are hard to conv
 
 When the paper's own figures are missing, poor, or conflate things the discussion had to untangle, author your own SVG diagrams (a system overview, loss routing, a two-level hierarchy). Confirm with the user first (see "Before writing"). Save each to `imgs/` with a descriptive slug and embed with a display-width hint: `![[name.svg|680]]` — without the hint, embedded SVGs often render too small.
 
-Follow this house convention so diagrams stay consistent and theme-aware:
+**Always build them with figkit**, the `figkit` command installed system-wide. Don't hand-write SVG and don't hand-place coordinates. figkit already enforces the house conventions: a CSS-variable palette with a dark-mode override, no inline styles, `context-stroke` arrowheads, legible text sizes, sub/superscript `tspan`s, and `<title>`/`<desc>`. It also lays out, measures, and checks the figure. If you ever must add raw SVG (`c.raw(...)`, `Figure(css=..., defs=...)`), keep to those same conventions: style by class, color by `var(--…)`, and use Unicode for math symbols.
 
-- **Theme-aware (light + dark).** Don't hardcode a color on each element. Define the palette as CSS variables in `:root` inside one `<style>` block, and override them under `@media (prefers-color-scheme: dark)`. Embedded SVGs follow the OS/browser color scheme (which Obsidian and the Quartz site track), so one file renders correctly in both themes.
-- **No inline styles.** All styling lives in the `<style>` block as classes (box roles, text colors, arrows, captions). Shapes carry only `class=` and geometry.
-- **Arrowheads recolor too.** Give the marker path `stroke="context-stroke"` so it inherits its line's color, hence the theme variable.
-- **Legible sizing.** Title text ~14–15px, sub ~11.5–12px. In dark mode, secondary text sitting on the transparent page background (captions, legends) must be light enough — a mid-grey that's fine on white is too dim on dark. Use ~`#cbc9c0`, not `#a3a199`. Text inside filled boxes is exempt.
-- **Typeset math, not ASCII.** Use Unicode for symbols and single-letter sub/superscripts (`π θ → ×`, `Eᵣ aₜ sᵖₜ ĝᵣ zₕ`). For subscripts with no Unicode glyph (the `c` in `D_c`) or multi-letter subscripts (`ℒ_recon`), use `<tspan baseline-shift="sub" font-size="0.72em">…</tspan>`. Keep `<title>`/`<desc>` in plain ASCII for screen readers.
-- **Accessibility.** Every diagram gets a `<title>` and a one-sentence `<desc>`.
+Write a generator script in the scratchpad that does `from figkit import *`, and run it with `figkit gen.py` (a Python with figkit, fonttools, and `rsvg-convert` available). The worked example `scripts/examples/recap_pipeline.py` shows every feature; read it before your first figkit diagram in a session. To read the library itself, run `figkit -c "import figkit; print(figkit.__file__)"`.
 
-Skeleton (purple = token/latent, teal = learned net, gray = data/IO; each role has fill `--Xf`, stroke `--Xs`, title `--Xt`, and add green/orange accents as needed):
+### How figkit works
 
-```svg
-<svg width="100%" viewBox="0 0 680 H" role="img" xmlns="http://www.w3.org/2000/svg">
-<title>…</title><desc>…</desc>
-<defs>
-<marker id="a" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker>
-<style>
-text{font-family:'Anthropic Sans',-apple-system,system-ui,sans-serif}
-.box{stroke-width:1.1}.arw{stroke:var(--line);stroke-width:1.6;fill:none}
-.r-p{fill:var(--pf);stroke:var(--ps)}.k-p{fill:var(--pt)}.m-p{fill:var(--ps)}
-.title{font-size:14.5px;font-weight:500}.sub{font-size:11.5px}.leg{font-size:12px;fill:var(--legend)}
-:root{--ink:#20201a;--line:#73726c;--legend:#5f5e5a;--pf:#eeedfe;--ps:#534ab7;--pt:#3c3489}
-@media (prefers-color-scheme:dark){:root{--ink:#e9e7e0;--line:#a8a69d;--legend:#cbc9c0;--pf:#2b2552;--ps:#9387e6;--pt:#d2ccf7}}
-</style>
-</defs>
-<!-- body: <rect class="box r-p"/> + <text class="title k-p">…</text> -->
-</svg>
-```
+The model is **nested local coordinates**. Every node draws from its own (0, 0); containers place children with `translate()`. Nothing needs a global coordinate.
 
-### Render the SVG to eyeball it before finishing
+- **Layout nodes** size themselves from real font metrics: `VStack(*kids, gap, align)`, `HStack(*kids, gap, grow=i)` (child `i` takes the leftover width), `Pad`, `Box(child, role, w, h, pad, dash, valign)`, `Titled(title, child)` (a band), `Text(s, cls, role)`, `Para(s, cls)` (wraps to the available width, so never hand-split lines), `Spacer`.
+- **`Canvas(fn)`** is the diagram inside a diagram. `fn(c)` or `fn(c, avail_w)` draws freely with the pen (`rect circle line arrow path text lines card chip chips cyl brace cross axis hist segments stacked place`; `card(x, y, title, sub, role, cy=wire_y)` is a titled box centered on a wire and returns its edges for attaching arrows). The canvas sizes itself to what was drawn, including anything at negative coords. Use `lin(d0, d1, r0, r1)` for data-to-pixel scales, and `c.place(node, x, y)` to nest layout back inside a drawing.
+- **Markup in every string:** `x_t`, `V_{pre}`, `π^{k−1}`, `**bold**`, `{p|colored by role p}`.
+- **Cross-node connectors:** `.tag("id")` any node, then `Figure(..., overlay=fn)` where `fn(c, A)` draws in figure coords and `A("id")` returns that node's `(x0, y0, x1, y1)`.
+- **Text classes** (`STYLES`): `hd title sub lead ex leg legb ct tiny tinyb micro`. Roles: `g` data, `t` learned net, `p` token/latent, `e` good/output, `o` bad/rollout. Extra CSS classes go in `Figure(css=...)`.
 
-Never ship an SVG you haven't looked at — subscripts, overlaps, tofu glyphs, and arrows crossing boxes are invisible in the source but obvious in a render. This is a **Nix machine**, so pull a renderer on demand (nothing pre-installed needed):
+### Check and render before finishing
 
-```
-nix run nixpkgs#librsvg -- --width 950 in.svg -o /path/scratchpad/out.png
-```
+`fig.save(path, preview=scratch_dir)` writes the SVG and then **checks the layout**. It warns on text overflowing its box, canvas, chip, or the figure, on an `HStack` row too wide for its parent, on text colliding with other text, and on a filled shape drawn on top of text. It also renders light and dark PNGs with the CSS variables resolved (via `rsvg-convert`). Fix every warning, then `Read` both PNGs. The checker doesn't see lines and arrows, so use the renders to catch arrows crossing labels or boxes, and tofu glyphs. Never ship an SVG you haven't looked at.
 
-Then `Read` the PNG. You're checking **layout, glyphs, and spacing — not colors.** Standalone renderers (librsvg, resvg) don't implement CSS `var()`/`@media`, so the themed boxes come out black with invisible text. That's expected and fine: the real file stays `var()`-based and themes correctly in Obsidian/Quartz (browser engines do the full cascade). You just want to confirm the geometry reads right.
+For illustrated, explanatory figures such as a step-by-step pipeline, prefer one row per step: a role-colored label box on the left, then a plain-language **lead sentence**, a one- or two-sentence body, and a small drawing that shows the step (a reward strip, a histogram, a timeline) instead of more text.
 
-If a math glyph shows as a tofu box (common: `⊙ ⊗ ∈ ∘`), it'll usually still render in Obsidian — but if it's load-bearing, draw it instead of trusting the font (e.g. `⊙` = a `<circle>` ring plus a small filled center `<circle>`, font-independent).
+If a math glyph shows as a tofu box (common: `⊙ ⊗ ∈ ∘`), it'll usually still render in Obsidian. If it's load-bearing, draw it instead of trusting the font (e.g. `⊙` = a ring `circle` plus a small filled center `circle`).
 
 ---
 

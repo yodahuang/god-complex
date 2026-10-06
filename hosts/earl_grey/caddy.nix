@@ -165,7 +165,7 @@ in {
         plugins = [
           "github.com/caddy-dns/cloudflare@v0.0.0-20250407183951-bbf79111721a"
         ];
-        hash = "sha256-GEM8c8x42iYkDtG1pG4IqTIc9qEgSVOa0cGejn5UT4U=";
+        hash = "sha256-qrTW30V+DLBgQpxMpMWQhwR5XvgiR6PhmwRv3yEDFT4=";
       };
       logFormat = ''
         level INFO

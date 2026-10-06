@@ -15,6 +15,27 @@
 
   nixpkgs.hostPlatform = "aarch64-darwin";
 
+  # Weekly store GC. nix-darwin has no programs.nh and nix.gc can't keep the
+  # last N generations, so run `nh clean all` (every user's profiles + the
+  # system profile) as root: keep 5 generations, plus anything newer than 7d.
+  launchd.daemons.nh-clean = {
+    script = ''
+      ${pkgs.nh}/bin/nh clean all --keep 5 --keep-since 7d
+    '';
+    path = [config.nix.package pkgs.coreutils];
+    serviceConfig = {
+      StartCalendarInterval = [
+        {
+          Weekday = 0;
+          Hour = 3;
+          Minute = 30;
+        }
+      ];
+      StandardOutPath = "/var/log/nh-clean.log";
+      StandardErrorPath = "/var/log/nh-clean.log";
+    };
+  };
+
   environment.shells = with pkgs; [
     bashInteractive
     zsh

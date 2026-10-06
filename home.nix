@@ -16,6 +16,7 @@
   is_darwin = pkgs.stdenv.isDarwin;
   hey-cli = pkgs.callPackage ./pkgs/hey-cli.nix {};
   wanderlog-mcp = pkgs.callPackage ./pkgs/wanderlog-mcp.nix {};
+  figkit = pkgs.callPackage ./pkgs/figkit {};
   wanderlog-mcp-with-cookie = pkgs.writeShellScriptBin "wanderlog-mcp-with-cookie" ''
     export WANDERLOG_COOKIE="$(<${config.age.secrets.wanderlog-cookie.path})"
 
@@ -117,6 +118,8 @@ in {
       # secrets.nix used to encrypt them.
       flake-inputs.agenix.packages.${pkgs.system}.default
       lefthook
+      # SVG diagram library for the make-paper-notes skill
+      figkit
       bat
       ripgrep
       eza
